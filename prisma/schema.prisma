@@ -83,4 +83,5 @@ model Experiment {
     img           String
     steps         String[]
     duration      Int?
+    feeds         Int? @default(1)
 }

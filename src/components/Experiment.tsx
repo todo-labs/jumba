@@ -9,9 +9,11 @@ const Experiment = ({ id, title, img, tag }: Experiment) => {
         <Image
           src={img}
           alt={title}
+          width={300}
+          height={200}
           className="h-[200px] w-[300px] rounded-xl"
         />
-        <h1 className="bg-primary-600 absolute top-2 right-4 rounded-md py-2 px-4 text-white">
+        <h1 className="bg-orange-600 absolute top-2 right-4 rounded-md p-2 text-white">
           #{tag}
         </h1>
       </figure>

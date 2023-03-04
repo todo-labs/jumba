@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { createExperimentSchema } from "~/schemas";
+import OpenAi from "~/utils/openAi";
 
 export const experimentRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -18,18 +19,17 @@ export const experimentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         // TODO: make the request to open ai for the recipe
-
+        const openAi = new OpenAi();
+        const recipe = await openAi.getRecipe(input.prompt);
         // TODO: save the experiment in our db
         await ctx.prisma.experiment.create({
           data: {
             ...input,
+            img: "https://source.unsplash.com/random/200x200",
           },
         });
         // TODO: return the result to the frontend
-
-        // return ctx.prisma.experiment.create({
-        //   data: { ...input },
-        // });
+        return recipe;
       } catch (error) {
         return new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

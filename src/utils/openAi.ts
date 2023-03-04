@@ -1,5 +1,4 @@
 import { Configuration, OpenAIApi } from "openai";
-import { CreateExperiment } from "~/schemas";
 
 export default class OpenAi {
   private openAiApi: OpenAIApi;
@@ -12,14 +11,26 @@ export default class OpenAi {
     this.openAiApi = new OpenAIApi(config);
   }
 
-  public async getRecipe(schema: CreateExperiment, maxTokens: number) {
-    const { ingredients, prompt, requirements } = schema;
-    const response = await openai.createCompletion({
+  public async enhancePrompt(prompt: string): Promise<string> {
+    const response = await this.openAiApi.createCompletion({
       model: "text-davinci-003",
-      prompt:
-        "Write a recipe based on these ingredients and instructions:\n\nFrito Pie\n\nIngredients:\nFritos\nChili\nShredded cheddar cheese\nSweet white or red onions, diced small\nSour cream\n\nInstructions:",
+      prompt: prompt,
       temperature: 0.3,
-      max_tokens: 120,
+      max_tokens: 1200,
+      top_p: 1.0,
+      frequency_penalty: 0.0,
+      presence_penalty: 0.0,
+    });
+
+    return response.data.choices[0].text;
+  }
+
+  public async getRecipe(prompt: string): Promise<string | undefined> {
+    const response = await this.openAiApi.createCompletion({
+      model: "text-davinci-003",
+      prompt: prompt,
+      temperature: 0.3,
+      max_tokens: 1200,
       top_p: 1.0,
       frequency_penalty: 0.0,
       presence_penalty: 0.0,

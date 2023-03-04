@@ -31,7 +31,10 @@ const Home: NextPage = () => {
       </Head>
       <Sidebar choice={selectedOption} visible={showSidebar} />
       <main className="flex w-full flex-1 flex-col p-10">
-        <section className="flex w-full justify-between">
+        <section
+          className="flex w-full justify-between"
+          onClick={() => setShowSidebar(false)}
+        >
           <h1 className="text-4xl">
             Jumba
             <a className="text-orange-600" href="https://nextjs.org">
@@ -46,7 +49,7 @@ const Home: NextPage = () => {
           />
         </section>
 
-        <section className="mt-10 flex w-full items-start justify-between">
+        <section className="mt-10 flex w-full flex-wrap">
           {options.map((option, index) => (
             <Option
               key={index}
@@ -58,9 +61,12 @@ const Home: NextPage = () => {
           ))}
         </section>
 
-        <section className="mt-10 flex min-h-screen flex-col">
+        <section
+          className="mt-10 flex min-h-screen flex-col"
+          onClick={() => setShowSidebar(false)}
+        >
           <h1 className="text-4xl">
-            Past Experiments {" "}
+            Past Experiments{" "}
             {!isError && !isLoading && (
               <span className="">({data.length})</span>
             )}

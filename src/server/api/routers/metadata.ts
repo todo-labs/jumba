@@ -2,6 +2,7 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { getIngredientsSchema } from "~/schemas";
 
+
 export const metadataRouter = createTRPCRouter({
   getAll: publicProcedure
     .input(getIngredientsSchema)

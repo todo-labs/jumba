@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import RandomSVG from "public/random.svg";
-import Slider from "./Slider";
 import IngredientsDropdown from "./IngredientsDropdown";
-import { MAX_INGREDIENTS } from "~/constants";
+import {
+  MAX_INGREDIENTS,
+  Requirements,
+  getPrompt,
+  MAX_NUM_OF_PEOPLE,
+} from "~/constants";
 import { api } from "~/utils/api";
 
 interface ISidebarProps {
@@ -11,35 +15,37 @@ interface ISidebarProps {
   visible: boolean;
 }
 
-enum Requirements {
-  QUICK = "Quick",
-  FANCY = "Fancy",
-}
-
 const Sidebar = ({ choice, visible }: ISidebarProps) => {
   const { data, isError, refetch } = api.metadata.getRandom.useQuery();
+  const createExperiment = api.experiments.create.useMutation({
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
   const [requirements, setRequirements] = useState<
     {
-      label: string;
+      label: Requirements;
       checked: boolean;
     }[]
   >(
-    Object.values(Requirements).map((val) => {
+    Object.values(Requirements).map((requirement) => {
       return {
-        label: val,
+        label: requirement,
         checked: false,
       };
     })
   );
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [prompt, setPrompt] = useState<string>("");
   const [numOfPeople, setNumOfPeople] = useState<number>(1);
 
-  const handleSelectOption = (requirement: any) => {
+  const handleSelectOption = (requirement: Requirements) => {
     const newRequirements = requirements.map((req) => {
-      if (req.label === requirement.label) {
+      if (req.label === requirement) {
         return {
           ...req,
           checked: !req.checked,
@@ -55,6 +61,27 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
     if (isError) return;
     if (selectedItems.length >= MAX_INGREDIENTS) return;
     if (data) setSelectedItems([...selectedItems, data]);
+  };
+
+  const prompt = useMemo(() => {
+    return getPrompt(
+      selectedItems,
+      choice!,
+      requirements.filter((req) => req.checked).map((req) => req.label),
+      numOfPeople
+    );
+  }, [selectedItems, choice, requirements, numOfPeople]);
+
+  const handleGenarateExperiment = async () => {
+    await createExperiment.mutateAsync({
+      ingredients: selectedItems,
+      option: choice!,
+      requirements: requirements
+        .filter((req) => req.checked)
+        .map((req) => req.label),
+      numOfPeople,
+      prompt,
+    });
   };
 
   if (!visible) return null;
@@ -97,7 +124,7 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
                     type="checkbox"
                     value={requirement.label}
                     className="form-checkbox rounded-md border-none bg-gray-300 checked:border-2 checked:border-white checked:bg-orange-600"
-                    onChange={() => handleSelectOption(requirement)}
+                    onChange={() => handleSelectOption(requirement.label)}
                   />
                   <label className="ml-4">{requirement.label}</label>
                 </li>
@@ -107,13 +134,15 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
               <input
                 type="range"
                 min={0}
-                max={10}
+                max={MAX_NUM_OF_PEOPLE}
                 step={0.5}
                 value={numOfPeople}
                 onChange={(e) => setNumOfPeople(Number(e.target.value))}
                 className="h-8 w-full cursor-pointer"
               />
-              <label className="ml-auto font-medium">{numOfPeople} People</label>
+              <label className="ml-auto font-medium">
+                {numOfPeople} People
+              </label>
             </div>
           </ul>
         </section>
@@ -121,8 +150,8 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
           <h1 className="mt-2 mb-4 text-2xl">Prompt</h1>
           <textarea
             className="h-32 w-full rounded-lg border-2 border-gray-200 bg-gray-50 p-2"
-            placeholder="What are you craving?"
             readOnly
+            value={prompt}
           />
         </section>
         <button
@@ -133,6 +162,7 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
             requirements.every((req) => !req.checked) ||
             numOfPeople < 0
           }
+          onClick={() => handleGenarateExperiment()}
         >
           Generate new Experiment
         </button>
