@@ -1,13 +1,17 @@
 import { type NextPage } from "next";
 import { useState } from "react";
 import Head from "next/head";
+import { Experiment as IExperiment } from "@prisma/client";
 
 import { api } from "~/utils/api";
 import Option from "~/components/Option";
 import Experiment from "~/components/Experiment";
 import Sidebar from "~/components/Sidebar";
+import DefaultState from "~/components/DefaultState";
 import { options } from "~/constants";
-import { Experiment as IExperiment } from "@prisma/client";
+
+import WarningSVG from "public/warning.svg";
+import ExperimentSVG from "public/experiment.svg";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<string>();
@@ -42,7 +46,7 @@ const Home: NextPage = () => {
           />
         </section>
 
-        <section className="mt-10 flex w-full items-start justify-evenly">
+        <section className="mt-10 flex w-full items-start justify-between">
           {options.map((option, index) => (
             <Option
               key={index}
@@ -55,15 +59,29 @@ const Home: NextPage = () => {
         </section>
 
         <section className="mt-10 flex min-h-screen flex-col">
-          <h1 className="text-4xl">Past Experiments ({data?.length})</h1>
+          <h1 className="text-4xl">
+            Past Experiments {" "}
+            {!isError && !isLoading && (
+              <span className="">({data.length})</span>
+            )}
+          </h1>
           <div className="mt-10 flex flex-row space-x-6">
             {isLoading ? (
-              <div className="flex items-center">
-                <h1 className="text-2xl">Loading...</h1>
-              </div>
+              <DefaultState
+                title="Loading Experiments..."
+                description="We're working on getting all the experiments uploaded by people."
+                btnText=""
+                onClick={() => console.log("clicked")}
+              />
             ) : isError ? (
-              <div>Error</div>
-            ) : (
+              <DefaultState
+                title="Error Loading Experiments"
+                icon={WarningSVG}
+                description="We're working on getting all the experiments uploaded by people."
+                btnText=""
+                onClick={() => console.log("clicked")}
+              />
+            ) : data.length > 0 ? (
               data?.map((experiment: IExperiment, index: number) => (
                 <Experiment
                   key={index}
@@ -73,6 +91,14 @@ const Home: NextPage = () => {
                   tag={experiment.tag}
                 />
               ))
+            ) : (
+              <DefaultState
+                title="No Experiments Yet"
+                icon={ExperimentSVG}
+                description="It seems that no one has uploaded any experiments yet. Be the first one to share your findings with the community!"
+                btnText="Create"
+                onClick={() => console.log("clicked")}
+              />
             )}
           </div>
         </section>

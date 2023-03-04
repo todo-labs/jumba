@@ -81,5 +81,6 @@ model Experiment {
     ingredients   String[]
     prompt        String
     img           String
+    steps         String[]
     duration      Int?
 }
