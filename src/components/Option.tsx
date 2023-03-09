@@ -8,8 +8,8 @@ interface IOptionProps {
 const Option = ({ title, icon, selected, onClick }: IOptionProps) => {
   return (
     <div
-      className={`flex h-36 w-32 bg-gray-50 cursor-pointer flex-col items-center justify-center rounded-xl border-2 hover:border-orange-600 hover:border-4 hover:bg-orange-100 ${
-        selected && "border-orange-600 border-4 bg-orange-100 shadow-lg"
+      className={`m-3 mr-3 flex h-36 w-32 cursor-pointer flex-col items-center justify-center rounded-xl border-2 bg-gray-50 hover:border-4 hover:border-primary-600 hover:bg-primary-100 ${
+        selected ? "border-4 border-primary-600 bg-primary-100 shadow-lg" : ""
       }`}
       data-te-sidenav-toggle-ref
       data-te-target="#sidenav-2"

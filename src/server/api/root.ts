@@ -1,6 +1,6 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { experimentRouter } from "~/server/api/routers/experiment";
-import { metadataRouter } from "~/server/api/routers/metadata";
+import { ingredientRouter } from "~/server/api/routers/ingredient";
 
 /**
  * This is the primary router for your server.
@@ -9,7 +9,7 @@ import { metadataRouter } from "~/server/api/routers/metadata";
  */
 export const appRouter = createTRPCRouter({
   experiments: experimentRouter,
-  metadata: metadataRouter,
+  ingredients: ingredientRouter,
 });
 
 // export type definition of API

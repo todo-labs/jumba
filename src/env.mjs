@@ -19,6 +19,11 @@ const server = z.object({
     process.env.VERCEL ? z.string().min(1) : z.string().url()
   ),
   OPEN_API_KEY: z.string().min(1).optional(),
+  EMAIL_HOST: z.string().min(1).optional(),
+  EMAIL_PORT: z.string().min(1).optional(),
+  EMAIL_USER: z.string().min(1).optional(),
+  EMAIL_PASSWORD: z.string().min(1).optional(),
+  EMAIL_FROM: z.string().min(1).optional(),
 });
 
 /**
@@ -41,6 +46,11 @@ const processEnv = {
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   OPEN_API_KEY: process.env.OPEN_API_KEY,
+  EMAIL_HOST: process.env.EMAIL_HOST,
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+  EMAIL_PORT: process.env.EMAIL_PORT,
+  EMAIL_FROM: process.env.EMAIL_FROM,
+  EMAIL_USER: process.env.SMTP_USER,
 };
 
 // Don't touch the part below

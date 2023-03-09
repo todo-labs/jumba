@@ -21,7 +21,6 @@ export default class OpenAi {
       frequency_penalty: 0.0,
       presence_penalty: 0.0,
     });
-
     return response.data.choices[0].text;
   }
 

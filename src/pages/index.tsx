@@ -1,13 +1,14 @@
 import { type NextPage } from "next";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Head from "next/head";
 import { Experiment as IExperiment } from "@prisma/client";
 
-import { api } from "~/utils/api";
 import Option from "~/components/Option";
 import Experiment from "~/components/Experiment";
 import Sidebar from "~/components/Sidebar";
 import DefaultState from "~/components/DefaultState";
+
+import { api } from "~/utils/api";
 import { options } from "~/constants";
 
 import WarningSVG from "public/warning.svg";
@@ -15,13 +16,30 @@ import ExperimentSVG from "public/experiment.svg";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<string>();
-  const { data, isLoading, isError } = api.experiments.getAll.useQuery();
+  const { data, isLoading, isError, refetch } = api.experiments.getAll.useQuery();
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
 
   const handleOptionPress = (option: string) => {
     setSelectedOption(option);
     setShowSidebar(true);
   };
+
+  const filterExperiments = useMemo<IExperiment[]>(() => {
+    if (!selectedOption) {
+      return data;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return data?.filter((experiment: IExperiment) => {
+      return (
+        experiment.title.includes(search) ||
+        experiment.tag.toString().includes(search) ||
+        experiment.ingredients.filter((ingredient) =>
+          ingredient.includes(search)
+        ).length > 0
+      );
+    });
+  }, [data, selectedOption, search]);
 
   return (
     <div className="relative flex h-screen min-h-full items-start justify-center overflow-y-hidden border">
@@ -37,7 +55,7 @@ const Home: NextPage = () => {
         >
           <h1 className="text-4xl">
             Jumba
-            <a className="text-orange-600" href="https://nextjs.org">
+            <a className="text-primary-600" href="https://nextjs.org">
               .
             </a>
           </h1>
@@ -46,6 +64,8 @@ const Home: NextPage = () => {
             type="search"
             name="search"
             placeholder="Search past 'Experiments'"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </section>
 
@@ -84,26 +104,26 @@ const Home: NextPage = () => {
                 title="Error Loading Experiments"
                 icon={WarningSVG}
                 description="We're working on getting all the experiments uploaded by people."
-                btnText=""
-                onClick={() => console.log("clicked")}
+                btnText="retry"
+                onClick={() => refetch()}
               />
-            ) : data.length > 0 ? (
-              data?.map((experiment: IExperiment, index: number) => (
-                <Experiment
-                  key={index}
-                  id={experiment.id}
-                  title={experiment.title}
-                  img={experiment.img}
-                  tag={experiment.tag}
-                />
-              ))
+            ) : filterExperiments.length > 0 ? (
+              filterExperiments?.map(
+                (experiment: IExperiment, index: number) => (
+                  <Experiment
+                    key={index}
+                    id={experiment.id}
+                    title={experiment.title}
+                    img={experiment.img}
+                    tag={experiment.tag}
+                  />
+                )
+              )
             ) : (
               <DefaultState
                 title="No Experiments Yet"
                 icon={ExperimentSVG}
                 description="It seems that no one has uploaded any experiments yet. Be the first one to share your findings with the community!"
-                btnText="Create"
-                onClick={() => console.log("clicked")}
               />
             )}
           </div>

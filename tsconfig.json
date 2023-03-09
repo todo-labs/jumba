@@ -28,6 +28,6 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs"
-, "prisma/seed.js"  ],
+, "prisma/seed.js", "prisma/load-ingredients-db.js"  ],
   "exclude": ["node_modules"]
 }

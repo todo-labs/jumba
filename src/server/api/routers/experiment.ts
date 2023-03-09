@@ -16,19 +16,23 @@ export const experimentRouter = createTRPCRouter({
   }),
   create: publicProcedure
     .input(createExperimentSchema)
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       try {
         // TODO: make the request to open ai for the recipe
         const openAi = new OpenAi();
-        const recipe = await openAi.getRecipe(input.prompt);
-        // TODO: save the experiment in our db
-        await ctx.prisma.experiment.create({
-          data: {
-            ...input,
-            img: "https://source.unsplash.com/random/200x200",
-          },
-        });
-        // TODO: return the result to the frontend
+        const prompt = await openAi.enhancePrompt(input.prompt);
+        const recipe = await openAi.getRecipe(prompt);
+
+        // // TODO: save the experiment in our db
+        // await ctx.prisma.experiment.create({
+        //   data: {
+        //     ...input,
+        //     img: "https://source.unsplash.com/random/200x200",
+        //     title: "Recipe Title",
+            
+        //   },
+        // });
+        // // TODO: return the result to the frontend
         return recipe;
       } catch (error) {
         return new TRPCError({

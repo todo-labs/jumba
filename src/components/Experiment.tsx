@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { Experiment } from "@prisma/client";
 
-const Experiment = ({ id, title, img, tag }: Experiment) => {
+const Experiment = ({ id, title, img, tag }: Partial<Experiment>) => {
   return (
     <div className="flex flex-col items-center justify-center rounded-xl">
       <figure className="relative">
@@ -13,7 +13,7 @@ const Experiment = ({ id, title, img, tag }: Experiment) => {
           height={200}
           className="h-[200px] w-[300px] rounded-xl"
         />
-        <h1 className="bg-orange-600 absolute top-2 right-4 rounded-md p-2 text-white">
+        <h1 className="absolute top-2 right-4 rounded-md bg-primary-600 p-2 text-white">
           #{tag}
         </h1>
       </figure>

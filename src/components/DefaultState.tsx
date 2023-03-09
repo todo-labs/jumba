@@ -13,7 +13,7 @@ export default function DefaultState(props: IDefaultStateProps) {
   const { title, description, btnText, onClick, size = "lg" } = props;
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
-      {props.icon && <props.icon className="h-38 w-20 fill-orange-600" />}
+      {props.icon && <props.icon className="h-38 w-20 fill-primary-600" />}
       <h1
         className={`mt-10 ${
           size === "sm" ? "text-2xl" : "text-6xl"
@@ -30,7 +30,7 @@ export default function DefaultState(props: IDefaultStateProps) {
       </p>
       {btnText && onClick && (
         <button
-          className="mt-10 rounded-lg bg-orange-600 px-5 py-2 text-white"
+          className="mt-10 rounded-lg px-5 py-2 text-primary-600"
           onClick={onClick}
         >
           {btnText}

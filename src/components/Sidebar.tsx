@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import RandomSVG from "public/random.svg";
 import IngredientsDropdown from "./IngredientsDropdown";
@@ -16,15 +16,8 @@ interface ISidebarProps {
 }
 
 const Sidebar = ({ choice, visible }: ISidebarProps) => {
-  const { data, isError, refetch } = api.metadata.getRandom.useQuery();
-  const createExperiment = api.experiments.create.useMutation({
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+  const { data, isError, refetch } = api.ingredients.getRandom.useQuery();
+  const createExperiment = api.experiments.create.useMutation();
 
   const [requirements, setRequirements] = useState<
     {
@@ -72,15 +65,16 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
     );
   }, [selectedItems, choice, requirements, numOfPeople]);
 
-  const handleGenarateExperiment = async () => {
+  const handleGenerateExperiment = async () => {
     await createExperiment.mutateAsync({
       ingredients: selectedItems,
-      option: choice!,
+      category: choice!,
       requirements: requirements
         .filter((req) => req.checked)
         .map((req) => req.label),
       numOfPeople,
-      prompt,
+      prompt: prompt.map((p) => p.text).join(" "),
+      tag: Math.floor(Math.random() * 1000),
     });
   };
 
@@ -89,7 +83,7 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
   return (
     <nav
       id="sidenav-2"
-      className="fixed top-0 right-0 z-[1035] h-screen w-96 -translate-x-full overflow-hidden bg-white shadow-[0_4px_12px_0_rgba(0,0,0,0.07),_0_2px_4px_rgba(0,0,0,0.05)] data-[te-sidenav-hidden='false']:translate-x-0"
+      className="fixed top-0 right-0 z-[1035] h-screen w-96 -translate-x-full overflow-scroll bg-white shadow-[0_4px_12px_0_rgba(0,0,0,0.07),_0_2px_4px_rgba(0,0,0,0.05)] data-[te-sidenav-hidden='false']:translate-x-0"
       data-te-sidenav-init
       data-te-sidenav-hidden="false"
       data-te-sidenav-mode="side"
@@ -101,13 +95,19 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
             Ingredients
             <span className="ml-2 text-sm text-gray-400">
               {"("}
-              <span className="text-orange-500">{selectedItems.length}</span>/
+              <span className="text-primary-500 font-medium">{selectedItems.length}</span>/
               {MAX_INGREDIENTS}
               {")"}
             </span>
           </h1>
           <button onClick={getRandom}>
-            <RandomSVG className="h-8 w-8 fill-orange-400" />
+            <RandomSVG
+              className={`h-8 w-8 ${
+                selectedItems.length === MAX_INGREDIENTS
+                  ? "fill-gray-200"
+                  : "fill-primary-400"
+              }`}
+            />
           </button>
         </div>
         <IngredientsDropdown
@@ -123,7 +123,7 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
                   <input
                     type="checkbox"
                     value={requirement.label}
-                    className="form-checkbox rounded-md border-none bg-gray-300 checked:border-2 checked:border-white checked:bg-orange-600"
+                    className="form-checkbox rounded-md border-none bg-gray-300 checked:border-2 checked:border-white checked:bg-primary-600"
                     onChange={() => handleSelectOption(requirement.label)}
                   />
                   <label className="ml-4">{requirement.label}</label>
@@ -141,28 +141,40 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
                 className="h-8 w-full cursor-pointer"
               />
               <label className="ml-auto font-medium">
-                {numOfPeople} People
+                {numOfPeople} {numOfPeople === 1 ? " person" : " people"}
               </label>
             </div>
           </ul>
         </section>
         <section className="h-1/3 border-t-2">
           <h1 className="mt-2 mb-4 text-2xl">Prompt</h1>
-          <textarea
-            className="h-32 w-full rounded-lg border-2 border-gray-200 bg-gray-50 p-2"
-            readOnly
-            value={prompt}
-          />
+          <div className="h-32 w-full overflow-x-scroll scroll-smooth rounded-lg border-2 border-gray-200 bg-gray-50 p-2">
+            {selectedItems.length > 1 &&
+              prompt.map((item, index) => {
+                return (
+                  <span
+                    key={index}
+                    className={
+                      item.highlighted
+                        ? "font-medium text-primary-600"
+                        : "text-gray-400"
+                    }
+                  >
+                    {item.text}
+                  </span>
+                );
+              })}
+          </div>
         </section>
         <button
-          className="w-full rounded-lg bg-orange-400 p-2 py-3 font-medium capitalize text-white disabled:bg-gray-300"
+          className="w-full rounded-lg bg-primary-400 p-2 py-3 font-medium capitalize text-white disabled:bg-gray-300"
           disabled={
             selectedItems.length < 2 ||
             selectedItems.length > MAX_INGREDIENTS ||
             requirements.every((req) => !req.checked) ||
             numOfPeople < 0
           }
-          onClick={() => handleGenarateExperiment()}
+          onClick={() => handleGenerateExperiment()}
         >
           Generate new Experiment
         </button>
