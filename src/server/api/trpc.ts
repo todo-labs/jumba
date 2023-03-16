@@ -19,6 +19,7 @@ import { type Session } from "next-auth";
 
 import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
+import { formatZodError } from "~/utils/api";
 
 type CreateContextOptions = {
   session: Session | null;

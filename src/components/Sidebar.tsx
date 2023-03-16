@@ -1,4 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { Ingredient } from "@prisma/client";
 
 import RandomSVG from "public/random.svg";
 import IngredientsDropdown from "./IngredientsDropdown";
@@ -9,16 +11,43 @@ import {
   MAX_NUM_OF_PEOPLE,
 } from "~/constants";
 import { api } from "~/utils/api";
+import { useModal } from "~/utils/useModal";
 
 interface ISidebarProps {
   choice: string | undefined;
   visible: boolean;
+  setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Sidebar = ({ choice, visible }: ISidebarProps) => {
+const Sidebar = ({ choice, visible, setShowSidebar }: ISidebarProps) => {
+  const [selectedIngredients, setSelectedIngredients] = useState<
+    Partial<Ingredient>[]
+  >([]);
+  const [numOfPeople, setNumOfPeople] = useState<number>(1);
+  const { setTitle, setMessage, setShowModal, Modal, setType } = useModal();
   const { data, isError, refetch } = api.ingredients.getRandom.useQuery();
-  const createExperiment = api.experiments.create.useMutation();
-
+  const createExperiment = api.experiments.create.useMutation({
+    onError: (error) => {
+      setTitle(error.data?.code);
+      setType("error");
+      setMessage(error.message);
+      setShowModal(true);
+    },
+    onSuccess: (data) => {
+      console.log(data)
+      setSelectedIngredients([]);
+      setNumOfPeople(1);
+      setRequirements(
+        Object.values(Requirements).map((requirement) => {
+          return {
+            label: requirement,
+            checked: false,
+          };
+        })
+      );
+    },
+  });
+  const { data: session } = useSession();
   const [requirements, setRequirements] = useState<
     {
       label: Requirements;
@@ -32,9 +61,6 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
       };
     })
   );
-
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [numOfPeople, setNumOfPeople] = useState<number>(1);
 
   const handleSelectOption = (requirement: Requirements) => {
     const newRequirements = requirements.map((req) => {
@@ -50,24 +76,24 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
   };
 
   const getRandom = () => {
+    if (selectedIngredients.length >= MAX_INGREDIENTS) return;
     void refetch();
     if (isError) return;
-    if (selectedItems.length >= MAX_INGREDIENTS) return;
-    if (data) setSelectedItems([...selectedItems, data]);
+    if (data) setSelectedIngredients([...selectedIngredients, data]);
   };
 
   const prompt = useMemo(() => {
     return getPrompt(
-      selectedItems,
+      selectedIngredients,
       choice!,
       requirements.filter((req) => req.checked).map((req) => req.label),
       numOfPeople
     );
-  }, [selectedItems, choice, requirements, numOfPeople]);
+  }, [selectedIngredients, choice, requirements, numOfPeople]);
 
-  const handleGenerateExperiment = async () => {
-    await createExperiment.mutateAsync({
-      ingredients: selectedItems,
+  const handleGenerateExperiment = () => {
+    createExperiment.mutate({
+      ingredients: selectedIngredients.map((ingredient) => ingredient.id),
       category: choice!,
       requirements: requirements
         .filter((req) => req.checked)
@@ -78,32 +104,76 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
     });
   };
 
+  const loadingIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 100 100"
+      width="24"
+      height="24"
+    >
+      <circle
+        cx="50"
+        cy="50"
+        r="30"
+        fill="none"
+        stroke="#fff"
+        stroke-width="10"
+      >
+        <animate
+          attributeName="stroke-dasharray"
+          from="0, 188.5"
+          to="376.99, 188.5"
+          dur="1s"
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="stroke-dashoffset"
+          from="0"
+          to="-188.5"
+          dur="1s"
+          repeatCount="indefinite"
+        />
+      </circle>
+    </svg>
+  );
+
   if (!visible) return null;
 
   return (
-    <nav
-      id="sidenav-2"
-      className="fixed top-0 right-0 z-[1035] h-screen w-96 -translate-x-full overflow-scroll bg-white shadow-[0_4px_12px_0_rgba(0,0,0,0.07),_0_2px_4px_rgba(0,0,0,0.05)] data-[te-sidenav-hidden='false']:translate-x-0"
-      data-te-sidenav-init
-      data-te-sidenav-hidden="false"
-      data-te-sidenav-mode="side"
-      data-te-sidenav-content="#content"
-    >
-      <section className="space-y-4 p-6">
+    <>
+      <section className="fixed right-0 z-50 h-screen w-full space-y-4 overflow-scroll bg-white p-4 shadow-[0_4px_12px_0_rgba(0,0,0,0.07),_0_2px_4px_rgba(0,0,0,0.05)] xl:z-0 lg:w-96">
         <div className="flex w-full items-center justify-between">
-          <h1 className="text-2xl">
+          <h1 className="flex items-center justify-center text-2xl">
+            <span className="" onClick={() => setShowSidebar(false)}>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M15.41 7.41L14 6L8 12L14 18L15.41 16.59L11.83 13H20V11H11.83L15.41 7.41Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
             Ingredients
             <span className="ml-2 text-sm text-gray-400">
               {"("}
-              <span className="text-primary-500 font-medium">{selectedItems.length}</span>/
-              {MAX_INGREDIENTS}
+              <span className="font-medium text-primary-500">
+                {selectedIngredients.length}
+              </span>
+              /{MAX_INGREDIENTS}
               {")"}
             </span>
           </h1>
-          <button onClick={getRandom}>
+          <button onClick={getRandom} disabled={!session}>
             <RandomSVG
               className={`h-8 w-8 ${
-                selectedItems.length === MAX_INGREDIENTS
+                selectedIngredients.length === MAX_INGREDIENTS || !session
                   ? "fill-gray-200"
                   : "fill-primary-400"
               }`}
@@ -111,10 +181,10 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
           </button>
         </div>
         <IngredientsDropdown
-          selectedItems={selectedItems}
-          setSelectedItems={setSelectedItems}
+          selectedItems={selectedIngredients}
+          setSelectedItems={setSelectedIngredients}
         />
-        <section className="h-1/3 border-t-2">
+        <section className="border-t-2">
           <h1 className="mt-2 mb-4 text-2xl">Requirements</h1>
           <ul>
             {requirements.map((requirement, index) => {
@@ -146,10 +216,10 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
             </div>
           </ul>
         </section>
-        <section className="h-1/3 border-t-2">
+        <section className="border-t-2">
           <h1 className="mt-2 mb-4 text-2xl">Prompt</h1>
-          <div className="h-32 w-full overflow-x-scroll scroll-smooth rounded-lg border-2 border-gray-200 bg-gray-50 p-2">
-            {selectedItems.length > 1 &&
+          <div className="h-fit min-h-32 w-full overflow-x-scroll scroll-smooth rounded-lg border-2 border-gray-200 bg-gray-50 p-2 xl:h-32">
+            {selectedIngredients.length > 1 &&
               prompt.map((item, index) => {
                 return (
                   <span
@@ -166,20 +236,38 @@ const Sidebar = ({ choice, visible }: ISidebarProps) => {
               })}
           </div>
         </section>
-        <button
-          className="w-full rounded-lg bg-primary-400 p-2 py-3 font-medium capitalize text-white disabled:bg-gray-300"
-          disabled={
-            selectedItems.length < 2 ||
-            selectedItems.length > MAX_INGREDIENTS ||
-            requirements.every((req) => !req.checked) ||
-            numOfPeople < 0
-          }
-          onClick={() => handleGenerateExperiment()}
-        >
-          Generate new Experiment
-        </button>
+        {!session ? (
+          <button
+            onClick={signIn}
+            className="w-full rounded-lg bg-primary-400 p-2 py-3 font-medium capitalize text-white"
+          >
+            Login
+          </button>
+        ) : (
+          <button
+            className={`w-full rounded-lg ${
+              createExperiment.isLoading ? "bg-primary-600" : "bg-primary-400"
+            } p-2 py-3 font-medium capitalize text-white disabled:bg-gray-300`}
+            disabled={
+              selectedIngredients.length < 2 ||
+              selectedIngredients.length > MAX_INGREDIENTS ||
+              requirements.every((req) => !req.checked) ||
+              numOfPeople < 0
+            }
+            onClick={handleGenerateExperiment}
+          >
+            {createExperiment.isLoading ? (
+              <span className="flex items-center justify-center">
+                {loadingIcon}
+              </span>
+            ) : (
+              <span>Generate</span>
+            )}
+          </button>
+        )}
       </section>
-    </nav>
+      <Modal />
+    </>
   );
 };
 

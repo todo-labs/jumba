@@ -10,13 +10,10 @@ export const ingredientRouter = createTRPCRouter({
         const { query } = input;
         const ingredients = await ctx.prisma.ingredient.findMany({
           where: {
-            name: {
-              contains: query,
-            },
+            name: { contains: query!, mode: "insensitive" },
+            // approved: true,
           },
-          select: {
-            name: true,
-          },
+          select: { name: true, id: true, },
         });
         if (!ingredients) {
           return new TRPCError({
@@ -37,6 +34,7 @@ export const ingredientRouter = createTRPCRouter({
       const ingredients = await ctx.prisma.ingredient.findMany({
         select: {
           name: true,
+          id: true,
         },
       });
       if (!ingredients) {
@@ -60,17 +58,13 @@ export const ingredientRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       try {
         const { name } = input;
-        await ctx.prisma.ingredient.create({
+        const ingredient = await ctx.prisma.ingredient.create({
           data: {
             name,
-            createdBy: {
-              connect: {
-                id: ctx.userId,
-              },
-            },
+            userId: ctx.session?.user.id,
           },
         });
-        return true;
+        return ingredient;
       } catch (error) {
         return new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

@@ -24,6 +24,7 @@ const server = z.object({
   EMAIL_USER: z.string().min(1).optional(),
   EMAIL_PASSWORD: z.string().min(1).optional(),
   EMAIL_FROM: z.string().min(1).optional(),
+  PEXELS_API_KEY: z.string().min(1).optional(),
 });
 
 /**
@@ -50,7 +51,8 @@ const processEnv = {
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
   EMAIL_PORT: process.env.EMAIL_PORT,
   EMAIL_FROM: process.env.EMAIL_FROM,
-  EMAIL_USER: process.env.SMTP_USER,
+  EMAIL_USER: process.env.EMAIL_USER,
+  PEXELS_API_KEY: process.env.PEXELS_API_KEY,
 };
 
 // Don't touch the part below

@@ -9,6 +9,8 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import type { Role } from "@prisma/client";
+import { createTransport } from "nodemailer";
+import { html, text } from "~/utils/mailer";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -32,12 +34,7 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        session.user.role = user.role
-      }
+    session({ session }) {
       return session;
     },
   },
@@ -51,10 +48,42 @@ export const authOptions: NextAuthOptions = {
           user: env.EMAIL_USER,
           pass: env.EMAIL_PASSWORD,
         },
+        secure: false,
       },
       from: env.EMAIL_FROM,
+      async sendVerificationRequest({
+        identifier: email,
+        url,
+        provider: { server, from },
+      }) {
+        try {
+          const transport = createTransport(server);
+          await transport.sendMail({
+            to: email,
+            from: from,
+            subject: "Sign in to Jumba.ai",
+            text: text({ url }),
+            html: html({ url }),
+          });
+        } catch (error) {
+          console.error("SEND_VERIFICATION_EMAIL_ERROR", error);
+        }
+      },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
+  jwt: {
+    maxAge: 7 * 24 * 60 * 60, // 1 week
+  },
+  secret: env.NEXTAUTH_SECRET,
+  pages: {
+    verifyRequest: "/auth/verify-request",
+    error: "/auth/error",
+    signIn: "/auth/sign-in",
+  },
+  debug: env.NODE_ENV === "development",
 };
 
 /**

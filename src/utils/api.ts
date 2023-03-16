@@ -8,6 +8,7 @@ import { httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import superjson from "superjson";
+import { ZodError } from "zod";
 
 import { type AppRouter } from "~/server/api/root";
 
@@ -66,3 +67,10 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
  * @example type HelloOutput = RouterOutputs['example']['hello']
  */
 export type RouterOutputs = inferRouterOutputs<AppRouter>;
+
+export const formatZodError = (error: ZodError) => {
+  if (error instanceof ZodError) {
+    return error.flatten().fieldErrors;
+  }
+  return error;
+};

@@ -16,24 +16,64 @@ export const experimentRouter = createTRPCRouter({
   }),
   create: publicProcedure
     .input(createExperimentSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
         // TODO: make the request to open ai for the recipe
         const openAi = new OpenAi();
-        const prompt = await openAi.enhancePrompt(input.prompt);
-        const recipe = await openAi.getRecipe(prompt);
+        const recipe = await openAi.getRecipe(input.prompt);
+        const ingredientsRegex = /-\s*(.*)/g;
+        const instructionsRegex = /(\d+)\.(.*)/g;
 
-        // // TODO: save the experiment in our db
-        // await ctx.prisma.experiment.create({
-        //   data: {
-        //     ...input,
-        //     img: "https://source.unsplash.com/random/200x200",
-        //     title: "Recipe Title",
-            
-        //   },
-        // });
+        const ingredients = [];
+        const instructions = [];
+
+        let ingredientsMatch = ingredientsRegex.exec(recipe);
+        while (ingredientsMatch) {
+          ingredients.push(ingredientsMatch[1].trim());
+          ingredientsMatch = ingredientsRegex.exec(recipe);
+        }
+
+        let instructionsMatch = instructionsRegex.exec(recipe);
+        while (instructionsMatch) {
+          instructions.push(instructionsMatch[2].trim());
+          instructionsMatch = instructionsRegex.exec(recipe);
+        }
+
+        // find ingredients that are already in the db
+        const ingredientsInDb = await ctx.prisma.ingredient.findMany({
+          where: {
+            OR: ingredients.map((ingredient) => ({
+              name: {
+                contains: ingredient.toLowerCase(),
+              },
+            })),
+          },
+        });
+
+        // create a list of ingredients that are not in the db
+        const ingredientsNotInDb = ingredients.filter((ingredient) => {
+          return !ingredientsInDb.some(
+            (i) => i.name.toLowerCase() === ingredient.toLowerCase()
+          );
+        });
+
+        // add the new ingredients to the db
+        // const newIngredients = await Promise.all(
+        //   ingredientsNotInDb.map(async (ingredient) => {
+        //     return ctx.prisma.ingredient.create({
+        //       data: {
+        //         name: ingredient,
+        //       },
+        //     });
+        //   })
+        // );
+
+        // NOTE: add the ingredients that are not in the db
+        console.log("ingredients: ", ingredients);
+        console.log("ingredientsInDb: ", ingredientsInDb);
+        console.log("ingredientsNotInDb: ", ingredientsNotInDb);
+        // NOTE: add the experiment to the db
         // // TODO: return the result to the frontend
-        return recipe;
       } catch (error) {
         return new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
