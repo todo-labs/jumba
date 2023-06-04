@@ -1,24 +1,24 @@
+import { Category } from "@prisma/client";
 import z from "zod";
 import { MAX_INGREDIENTS, MAX_NUM_OF_PEOPLE, Requirements } from "~/constants";
 
 export const createExperimentSchema = z.object({
-  prompt: z.string(),
-  ingredients: z.array(z.string().cuid()).max(MAX_INGREDIENTS),
-  requirements: z.array(z.nativeEnum(Requirements)).max(1),
-  category: z.string(),
-  tag: z.number().max(999),
-  numOfPeople: z.number().max(MAX_NUM_OF_PEOPLE),
-});
-
-export const getIngredientsSchema = z.object({
-  query: z.string().nullish(),
-});
-
-export const addIngredientSchema = z.object({
-  // make sure the ingredient name is not numbers
-  name: z.string().refine((v) => isNaN(Number(v)), {
-    message: "Ingredient name cannot be numbers",
+  ingredients: z.string().min(3).max(300).refine((val) => {
+    const ingredients = val.split(",");
+    return ingredients.length <= MAX_INGREDIENTS 
+      && ingredients.every((ingredient) => isNaN(Number(ingredient)));
   }),
+  requirements: z.nativeEnum(Requirements),
+  category: z.nativeEnum(Category),
+  // numOfPeople: z.string().refine((val) => {
+  //   if (isNaN(Number(val))) return false;
+  //   const numOfPeople = Number(val);
+  //   return numOfPeople <= MAX_NUM_OF_PEOPLE && numOfPeople > 0;
+  //   }),
+});
+
+export const getByIdSchema = z.object({
+  id: z.string().nonempty().cuid(),
 });
 
 export type CreateExperiment = z.infer<typeof createExperimentSchema>;

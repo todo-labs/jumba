@@ -1,10 +1,12 @@
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "~/components/Toaster"
 
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
+import LoadingScreen from "~/components/Loading";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -12,7 +14,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      <LoadingScreen />
       <Component {...pageProps} />
+      <Toaster />
     </SessionProvider>
   );
 };

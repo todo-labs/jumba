@@ -1,84 +1,73 @@
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { createExperimentSchema } from "~/schemas";
-import OpenAi from "~/utils/openAi";
+
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
+import { createExperimentSchema, getByIdSchema } from "~/schemas";
+import { getRecipe } from "~/utils/ai";
 
 export const experimentRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    try {
-      return ctx.prisma.experiment.findMany();
-    } catch (error) {
-      return new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Something went wrong",
-      });
-    }
+    return await ctx.prisma.experiment.findMany({
+      include: {
+        createdBy: true,
+      },
+    });
   }),
-  create: publicProcedure
+  create: protectedProcedure
     .input(createExperimentSchema)
     .mutation(async ({ input, ctx }) => {
       try {
-        // TODO: make the request to open ai for the recipe
-        const openAi = new OpenAi();
-        const recipe = await openAi.getRecipe(input.prompt);
-        const ingredientsRegex = /-\s*(.*)/g;
-        const instructionsRegex = /(\d+)\.(.*)/g;
+        const recipe = await getRecipe(
+          input.category,
+          input.ingredients.split(","),
+          input.requirements,
+          3
+        );
 
-        const ingredients = [];
-        const instructions = [];
-
-        let ingredientsMatch = ingredientsRegex.exec(recipe);
-        while (ingredientsMatch) {
-          ingredients.push(ingredientsMatch[1].trim());
-          ingredientsMatch = ingredientsRegex.exec(recipe);
+        if (!recipe) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Could not generate a recipe",
+          });
         }
 
-        let instructionsMatch = instructionsRegex.exec(recipe);
-        while (instructionsMatch) {
-          instructions.push(instructionsMatch[2].trim());
-          instructionsMatch = instructionsRegex.exec(recipe);
-        }
+        const tag = Math.floor(Math.random() * 1000);
 
-        // find ingredients that are already in the db
-        const ingredientsInDb = await ctx.prisma.ingredient.findMany({
-          where: {
-            OR: ingredients.map((ingredient) => ({
-              name: {
-                contains: ingredient.toLowerCase(),
-              },
-            })),
+        // TODO: check for duplicates
+
+        console.log("RECIPE", recipe);
+        const data = await ctx.prisma.experiment.create({
+          data: {
+            steps: recipe.steps,
+            feeds: 3,
+            inspiration: recipe.inspiration,
+            createdById: ctx.session?.user.id,
+            title: recipe.title,
+            tag,
+            category: input.category,
+            img: "",
           },
         });
-
-        // create a list of ingredients that are not in the db
-        const ingredientsNotInDb = ingredients.filter((ingredient) => {
-          return !ingredientsInDb.some(
-            (i) => i.name.toLowerCase() === ingredient.toLowerCase()
-          );
-        });
-
-        // add the new ingredients to the db
-        // const newIngredients = await Promise.all(
-        //   ingredientsNotInDb.map(async (ingredient) => {
-        //     return ctx.prisma.ingredient.create({
-        //       data: {
-        //         name: ingredient,
-        //       },
-        //     });
-        //   })
-        // );
-
-        // NOTE: add the ingredients that are not in the db
-        console.log("ingredients: ", ingredients);
-        console.log("ingredientsInDb: ", ingredientsInDb);
-        console.log("ingredientsNotInDb: ", ingredientsNotInDb);
-        // NOTE: add the experiment to the db
-        // // TODO: return the result to the frontend
-      } catch (error) {
-        return new TRPCError({
+        return data;
+      } catch (err) {
+        console.log(err);
+        throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Something went wrong",
+          message: "Could not generate a recipe",
         });
       }
     }),
+  getOne: publicProcedure.input(getByIdSchema).query(async ({ input, ctx }) => {
+    return await ctx.prisma.experiment.findUnique({
+      where: {
+        id: input.id,
+      },
+      include: {
+        createdBy: true,
+      },
+    });
+  }),
 });

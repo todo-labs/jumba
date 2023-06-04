@@ -1,22 +1,33 @@
 import { type NextPage } from "next";
 import { useState, useMemo } from "react";
 import Head from "next/head";
-import { Experiment as IExperiment } from "@prisma/client";
 import { useSession, signOut } from "next-auth/react";
+import { IExperiment } from "types";
+import { Category } from "@prisma/client";
+import { FolderClosedIcon, Loader2Icon, MailWarning } from "lucide-react";
 
 import Option from "~/components/Option";
-import Experiment from "~/components/Experiment";
+import ExperimentCard from "~/components/Experiment";
 import Sidebar from "~/components/Sidebar";
 import DefaultState from "~/components/DefaultState";
+import { Button } from "~/components/Button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/AlertDialog";
 
 import { api } from "~/utils/api";
 import { options } from "~/constants";
 
-import WarningSVG from "public/warning.svg";
-import ExperimentSVG from "public/experiment.svg";
-
 const Home: NextPage = () => {
-  const [selectedOption, setSelectedOption] = useState<string>();
+  const [selectedOption, setSelectedOption] = useState<Category>();
   const { data, isLoading, isError, refetch } =
     api.experiments.getAll.useQuery();
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
@@ -24,7 +35,7 @@ const Home: NextPage = () => {
 
   const { data: session } = useSession();
 
-  const handleOptionPress = (option: string) => {
+  const handleOptionPress = (option: Category) => {
     setSelectedOption(option);
     setShowSidebar(true);
   };
@@ -37,7 +48,7 @@ const Home: NextPage = () => {
         experiment.title.includes(search) ||
         experiment.tag.toString().includes(search) ||
         experiment.ingredients.filter((ingredient) =>
-          ingredient.includes(search)
+          ingredient.name.includes(search)
         ).length > 0
       );
     });
@@ -53,7 +64,10 @@ const Home: NextPage = () => {
         <section className="flex w-full justify-between">
           <h1 className="text-4xl">
             Jumba
-            <a className="text-primary-600" href="https://nextjs.org">
+            <a
+              className="text-primary-600"
+              href="https://blogr.conceptcodes.dev/introducing-jumba-ai"
+            >
               .
             </a>
           </h1>
@@ -67,17 +81,33 @@ const Home: NextPage = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
             {session && (
-              <button
-                className="rounded-xl bg-primary-600 p-3 text-white"
-                onClick={() => signOut()}
-              >
-                Logout
-              </button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button>Logout</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => void signOut()}>
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </div>
         </section>
 
-        <section className="mt-10 flex overflow-x-scroll overflow-hidden">
+        <section className="mt-10 flex overflow-hidden overflow-x-scroll">
           {options.map((option, index) => (
             <Option
               key={index}
@@ -96,10 +126,11 @@ const Home: NextPage = () => {
               <span className="">({data.length})</span>
             )}
           </h1>
-          <div className="mt-10 flex flex-row space-x-6">
+          <div className="mt-10 flex flex-row">
             {isLoading ? (
               <DefaultState
                 title="Loading Experiments..."
+                icon={Loader2Icon}
                 description="We're working on getting all the experiments uploaded by people."
                 btnText=""
                 onClick={() => console.log("clicked")}
@@ -107,27 +138,29 @@ const Home: NextPage = () => {
             ) : isError ? (
               <DefaultState
                 title="Error Loading Experiments"
-                icon={WarningSVG}
+                icon={MailWarning}
                 description="We're working on getting all the experiments uploaded by people."
                 btnText="retry"
                 onClick={() => refetch()}
               />
             ) : filterExperiments.length > 0 ? (
-              filterExperiments?.map(
-                (experiment: IExperiment, index: number) => (
-                  <Experiment
-                    key={index}
-                    id={experiment.id}
-                    title={experiment.title}
-                    img={experiment.img}
-                    tag={experiment.tag}
-                  />
-                )
-              )
+              <section className="flex w-full flex-wrap">
+                {filterExperiments.map(
+                  (experiment: IExperiment, index: number) => (
+                    <ExperimentCard
+                      key={index}
+                      id={experiment.id}
+                      title={experiment.title}
+                      img={experiment.img}
+                      tag={experiment.tag}
+                    />
+                  )
+                )}
+              </section>
             ) : (
               <DefaultState
                 title="No Experiments Yet"
-                icon={ExperimentSVG}
+                icon={FolderClosedIcon}
                 description="It seems that no one has uploaded any experiments yet. Be the first one to share your findings with the community!"
               />
             )}
