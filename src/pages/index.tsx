@@ -5,7 +5,7 @@ import { useSession, signOut, signIn } from "next-auth/react";
 import { IExperiment } from "types";
 import { Category } from "@prisma/client";
 import { FolderClosedIcon, Loader2Icon, MailWarning } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
@@ -57,6 +57,8 @@ import { createExperimentSchema } from "~/schemas";
 import { env } from "~/env.mjs";
 import { ScrollArea } from "~/components/ui/ScrollArea";
 import Link from "next/link";
+import { UserNav } from "~/components/UserNav";
+import { cn } from "~/utils";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
@@ -111,6 +113,12 @@ const Home: NextPage = () => {
       category: selectedOption,
       requirements: Requirements.QUICK,
     },
+    mode: "onChange",
+  });
+
+  const { fields, append } = useFieldArray({
+    name: "ingredients",
+    control: form.control,
   });
 
   async function onSubmit(values: z.infer<typeof createExperimentSchema>) {
@@ -160,30 +168,7 @@ const Home: NextPage = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            {session && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button>Logout</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => void signOut()}>
-                      Continue
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
+            <UserNav />
           </div>
         </section>
 
@@ -256,26 +241,40 @@ const Home: NextPage = () => {
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="ingredients"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ingredients</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        {...field}
-                        disabled={createExperiment.isLoading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                    <FormDescription>
-                      Split the ingredients with a comma
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
+              <div>
+                {fields.map((field, index) => (
+                  <FormField
+                    control={form.control}
+                    key={field.id}
+                    name={`ingredients.${index}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={cn(index !== 0 && "sr-only")}>
+                          Ingredients
+                        </FormLabel>
+                        <FormDescription
+                          className={cn(index !== 0 && "sr-only")}
+                        >
+                          Add all the ingredients needed for this experiment 😁.
+                        </FormDescription>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+                <Button
+                  type="button"
+                  variant="link"
+                  size="sm"
+                  className="mt-1"
+                  onClick={() => append("")}
+                >
+                  Add Ingredient
+                </Button>
+              </div>
               <FormField
                 control={form.control}
                 name="requirements"
@@ -289,7 +288,7 @@ const Home: NextPage = () => {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Think of somtheing later" />
+                          <SelectValue placeholder="Think of something later" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

@@ -32,7 +32,7 @@ export const experimentRouter = createTRPCRouter({
       try {
         const recipe = await getRecipe(
           input.category || "Random",
-          input.ingredients.split(","),
+          input.ingredients,
           input.requirements,
           input.numOfPeople
         );
@@ -92,7 +92,7 @@ export const experimentRouter = createTRPCRouter({
       await ctx.prisma.reviews.create({
         data: {
           comment: input.comment,
-          rating: input.rating,
+          rating: input.rating!,
           reviewedById: ctx.session?.user.id,
           experimentId: input.experimentId,
         },
