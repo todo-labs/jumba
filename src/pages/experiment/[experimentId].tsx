@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -30,7 +30,7 @@ import {
 } from "~/components/ui/Form";
 import { Slider } from "~/components/ui/Slider";
 import { Button } from "~/components/ui/Button";
-import { Loader2Icon } from "lucide-react";
+import { Loader2Icon, LockIcon } from "lucide-react";
 
 const ExperimentPage: NextPage = () => {
   const router = useRouter();
@@ -41,13 +41,20 @@ const ExperimentPage: NextPage = () => {
     isError,
     isLoading,
     refetch,
-  } = api.experiments.getOne.useQuery({ id: experimentId as string });
+  } = api.experiments.getOne.useQuery(
+    { id: experimentId as string },
+    {
+      enabled: !!experimentId,
+      staleTime: 1000 * 60 * 60 * 24,
+    }
+  );
 
   const form = useForm<LeaveReview>({
     resolver: zodResolver(leaveReviewSchema),
     defaultValues: {
       comment: "",
       rating: 5,
+      experimentId: "",
     },
   });
 
@@ -57,7 +64,7 @@ const ExperimentPage: NextPage = () => {
         title: "Success",
         description: `Your review has been submitted`,
       });
-      await refetch();
+      // await refetch();
       form.reset();
     },
     onError(error) {
@@ -87,6 +94,10 @@ const ExperimentPage: NextPage = () => {
 
   async function onSubmit(values: LeaveReview) {
     try {
+      console.log({
+        ...values,
+        experimentId: experimentId as string,
+      });
       await leaveReviewMutation.mutateAsync({
         ...values,
         experimentId: experimentId as string,
@@ -229,7 +240,7 @@ const ExperimentPage: NextPage = () => {
                               max={10}
                               step={1}
                               disabled={leaveReviewMutation.isLoading}
-                              defaultValue={[field.value!]}
+                              defaultValue={[field.value]}
                               onValueChange={(value) =>
                                 field.onChange(value[0])
                               }
@@ -239,9 +250,9 @@ const ExperimentPage: NextPage = () => {
                         </FormItem>
                       )}
                     />
-                    <CardFooter>
+                    {session?.user ? (
                       <Button
-                        className="w-fit"
+                        className="w-full"
                         type="submit"
                         disabled={leaveReviewMutation.isLoading}
                       >
@@ -251,7 +262,12 @@ const ExperimentPage: NextPage = () => {
                           "Submit"
                         )}
                       </Button>
-                    </CardFooter>
+                    ) : (
+                      <Button className="w-full lg:w-fit" onClick={() => void signIn()}>
+                        <LockIcon className="mr-2" />
+                        Login
+                      </Button>
+                    )}
                   </form>
                 </Form>
               </CardContent>

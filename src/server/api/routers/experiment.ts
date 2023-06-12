@@ -92,7 +92,7 @@ export const experimentRouter = createTRPCRouter({
       await ctx.prisma.reviews.create({
         data: {
           comment: input.comment,
-          rating: input.rating!,
+          rating: input.rating,
           reviewedById: ctx.session?.user.id,
           experimentId: input.experimentId,
         },

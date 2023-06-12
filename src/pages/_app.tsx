@@ -8,6 +8,8 @@ import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
 import LoadingScreen from "~/components/Loading";
+import { ThemeProvider } from "~/components/ui/ThemeProvider";
+
 import { cn } from "~/utils";
 
 const dmSans = DM_Sans({
@@ -22,11 +24,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      <ThemeProvider attribute="class">
       <main className={cn(dmSans.className)}>
         <LoadingScreen />
         <Component {...pageProps} />
         <Toaster />
       </main>
+      </ThemeProvider>
     </SessionProvider>
   );
 };

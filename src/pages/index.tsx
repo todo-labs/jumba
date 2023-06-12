@@ -4,7 +4,7 @@ import Head from "next/head";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { IExperiment } from "types";
 import { Category } from "@prisma/client";
-import { FolderClosedIcon, Loader2Icon, MailWarning } from "lucide-react";
+import { FolderClosedIcon, Loader2Icon, LockIcon, MailWarning } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -347,7 +347,8 @@ const Home: NextPage = () => {
                 </Button>
               ) : (
                 <Button className="w-full" onClick={() => void signIn()}>
-                  Sign In to Create Experiment
+                  <LockIcon className="mr-2" />
+                        Login
                 </Button>
               )}
             </form>

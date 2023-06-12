@@ -16,7 +16,7 @@ export const getByIdSchema = z.object({
 
 export const leaveReviewSchema = z.object({
   experimentId: z.string().nonempty().cuid(),
-  rating: z.number().min(1).max(10).optional(),
+  rating: z.number().min(1).max(10),
   comment: z.string().min(20).max(300),
 });
 
