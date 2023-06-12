@@ -37,8 +37,8 @@ export async function getRecipe(
     You are writing a cookbook for {category} cusine. You are tasked with coming up with a recipe using the following ingredients: {ingredients}.
     Please provide the recipe in the following format: {formatInstructions}
     The recipe must be {requirements} and feed {feeds} people.
-    The recipe must include a title, inspiration, ingredients, steps, and duration.
-    Be very expressive with your instructions. I want the user to be able to follow the instructions and make the recipe.
+    The recipe must include a unique title, inspiration, ingredients, steps, and duration.
+    Be very expressive/detailed with your instructions/steps. I want the user to be able to follow the instructions and make the recipe.
     Recipe: 
   `;
   const format = recipeParser.getFormatInstructions()

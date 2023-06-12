@@ -1,7 +1,5 @@
-"use client"
 
 import type { NextPage } from "next";
-import { useState, useMemo } from "react";
 import { useRouter } from "next/router";
 
 import Head from "next/head";

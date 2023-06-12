@@ -1,14 +1,16 @@
 import { type NextPage } from "next";
 import { useState, useMemo } from "react";
 import Head from "next/head";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, signIn } from "next-auth/react";
 import { IExperiment } from "types";
 import { Category } from "@prisma/client";
 import { FolderClosedIcon, Loader2Icon, MailWarning } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 import Option from "~/components/Option";
 import ExperimentCard from "~/components/Experiment";
-import Sidebar from "~/components/Sidebar";
 import DefaultState from "~/components/DefaultState";
 import { Button } from "~/components/Button";
 import {
@@ -22,9 +24,38 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/AlertDialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/Dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/Form";
+import { Input } from "~/components/Input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/Select";
+import { Slider } from "~/components/Slider";
 
 import { api } from "~/utils/api";
-import { options } from "~/constants";
+import { Requirements, options } from "~/constants";
+import { useToast } from "~/hooks/useToast";
+import { createExperimentSchema } from "~/schemas";
+import { env } from "~/env.mjs";
+import { ToastAction } from "~/components/Toast";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
@@ -39,6 +70,48 @@ const Home: NextPage = () => {
     setSelectedOption(option);
     setShowSidebar(true);
   };
+
+  const { toast } = useToast();
+
+  const utils = api.useContext();
+
+  const createExperiment = api.experiments.create.useMutation({
+    async onSuccess(value, variables, context) {
+      toast({
+        title: "Success",
+        description: `Experiment #${value.tag} created successfully`,
+      });
+      form.reset();
+      await utils.experiments.getAll.invalidate();
+    },
+    async onError(error) {
+      toast({
+        title: "Error",
+        description: error?.message || "Something went wrong",
+        variant: "destructive",
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
+    },
+  });
+
+  const form = useForm<z.infer<typeof createExperimentSchema>>({
+    resolver: zodResolver(createExperimentSchema),
+    defaultValues: {
+      numOfPeople: 1,
+      ingredients: "",
+      category: selectedOption,
+      requirements: Requirements.QUICK,
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof createExperimentSchema>) {
+    try {
+      await createExperiment.mutateAsync(values);
+      setShowSidebar(false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const filterExperiments = useMemo<IExperiment[]>(() => {
     if (!selectedOption) return data;
@@ -65,15 +138,14 @@ const Home: NextPage = () => {
           <h1 className="text-4xl">
             Jumba
             <a
-              className="text-primary-600"
+              className="text-primary"
               href="https://blogr.conceptcodes.dev/introducing-jumba-ai"
             >
               .
             </a>
           </h1>
           <div className="flex w-1/3 space-x-3">
-            <input
-              className="hidden h-10 w-8/12 rounded-lg border-2 border-gray-300 bg-slate-100 px-5 pr-16 text-sm focus:outline-none xl:block"
+            <Input
               type="search"
               name="search"
               placeholder="Search past 'Experiments'"
@@ -126,7 +198,7 @@ const Home: NextPage = () => {
               <span className="">({data.length})</span>
             )}
           </h1>
-          <div className="mt-10 flex flex-row">
+          <div className="mt-10">
             {isLoading ? (
               <DefaultState
                 title="Loading Experiments..."
@@ -144,16 +216,10 @@ const Home: NextPage = () => {
                 onClick={() => refetch()}
               />
             ) : filterExperiments.length > 0 ? (
-              <section className="flex w-full flex-wrap">
+              <section className="grid grid-cols-1 xl:grid-cols-3 h-full gap-3">
                 {filterExperiments.map(
                   (experiment: IExperiment, index: number) => (
-                    <ExperimentCard
-                      key={index}
-                      id={experiment.id}
-                      title={experiment.title}
-                      img={experiment.img}
-                      tag={experiment.tag}
-                    />
+                    <ExperimentCard key={index} {...experiment} />
                   )
                 )}
               </section>
@@ -167,11 +233,105 @@ const Home: NextPage = () => {
           </div>
         </section>
       </main>
-      <Sidebar
-        choice={selectedOption}
-        visible={showSidebar}
-        setShowSidebar={setShowSidebar}
-      />
+      <Dialog open={showSidebar} onOpenChange={setShowSidebar}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>New {selectedOption} Experiment</DialogTitle>
+            <DialogDescription>
+              Pick all the options needed to create a new experiment.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="ingredients"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ingredients</FormLabel>
+                    <FormControl>
+                      <Input type="text" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    <FormDescription>
+                      Split the ingredients with a comma
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="requirements"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Requirements</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Think of somtheing later" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.keys(Requirements).map((requirement, index) => {
+                          return (
+                            <SelectItem key={index} value={requirement}>
+                              {requirement}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="numOfPeople"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Number of People
+                      {form.watch("numOfPeople") &&
+                        `: ${form.watch("numOfPeople")}`}
+                    </FormLabel>
+                    <FormControl>
+                      <Slider
+                        min={1}
+                        max={parseInt(env.NEXT_PUBLIC_MAX_PEOPLE)}
+                        step={1}
+                        defaultValue={[field.value]}
+                        onValueChange={(value) => field.onChange(value[0])}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {session?.user ? (
+                <Button
+                  className="w-full"
+                  type="submit"
+                  disabled={createExperiment.isLoading}
+                >
+                  {createExperiment.isLoading ? (
+                    <Loader2Icon className="mr-2 animate-spin" />
+                  ) : (
+                    "Submit"
+                  )}
+                </Button>
+              ) : (
+                <Button className="w-full" onClick={() => void signIn()}>
+                  Sign In to Create Experiment
+                </Button>
+              )}
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

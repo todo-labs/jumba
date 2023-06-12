@@ -80,7 +80,7 @@ model Experiment {
   inspiration String?
   category    Category
   ingredients String[]
-  img         String
+  imgs        String[]
   steps       String[]
   duration    Int?
   feeds       Int?     @default(1)

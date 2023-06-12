@@ -33,6 +33,15 @@ const server = z.object({
  */
 const client = z.object({
   // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+  NEXT_PUBLIC_MAX_PEOPLE: z.string().refine((val) => {
+    const num = parseInt(val);
+    return num > 0;
+    }
+  ),
+  NEXT_PUBLIC_MAX_INGREDIENTS: z.string().refine((val) => {
+    const num = parseInt(val);
+    return num > 0;
+    }),
 });
 
 /**
@@ -53,6 +62,8 @@ const processEnv = {
   EMAIL_FROM: process.env.EMAIL_FROM,
   EMAIL_USER: process.env.EMAIL_USER,
   PEXELS_API_KEY: process.env.PEXELS_API_KEY,
+  NEXT_PUBLIC_MAX_PEOPLE: process.env.NEXT_PUBLIC_MAX_PEOPLE,
+  NEXT_PUBLIC_MAX_INGREDIENTS: process.env.NEXT_PUBLIC_MAX_INGREDIENTS,
 };
 
 // Don't touch the part below

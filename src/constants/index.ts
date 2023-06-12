@@ -1,6 +1,4 @@
 
-export const MAX_INGREDIENTS = 5;
-export const MAX_NUM_OF_PEOPLE = 10;
 import { Category } from "@prisma/client"
 
 export enum Requirements {

@@ -1,20 +1,17 @@
 import { Category } from "@prisma/client";
 import z from "zod";
-import { MAX_INGREDIENTS, MAX_NUM_OF_PEOPLE, Requirements } from "~/constants";
+import { Requirements } from "~/constants";
+import { env } from "~/env.mjs";
 
 export const createExperimentSchema = z.object({
   ingredients: z.string().min(3).max(300).refine((val) => {
     const ingredients = val.split(",");
-    return ingredients.length <= MAX_INGREDIENTS 
+    return ingredients.length <= parseInt(env.NEXT_PUBLIC_MAX_INGREDIENTS) 
       && ingredients.every((ingredient) => isNaN(Number(ingredient)));
   }),
   requirements: z.nativeEnum(Requirements),
-  category: z.nativeEnum(Category),
-  // numOfPeople: z.string().refine((val) => {
-  //   if (isNaN(Number(val))) return false;
-  //   const numOfPeople = Number(val);
-  //   return numOfPeople <= MAX_NUM_OF_PEOPLE && numOfPeople > 0;
-  //   }),
+  category: z.nativeEnum(Category).optional(),
+  numOfPeople: z.number().int().min(1).max(parseInt(env.NEXT_PUBLIC_MAX_PEOPLE)),
 });
 
 export const getByIdSchema = z.object({

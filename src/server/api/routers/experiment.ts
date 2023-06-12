@@ -7,6 +7,7 @@ import {
 } from "~/server/api/trpc";
 import { createExperimentSchema, getByIdSchema } from "~/schemas";
 import { getRecipe } from "~/utils/ai";
+import { Category } from "@prisma/client";
 
 export const experimentRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -20,8 +21,9 @@ export const experimentRouter = createTRPCRouter({
     .input(createExperimentSchema)
     .mutation(async ({ input, ctx }) => {
       try {
+        const category = input.category || Category.BREAKFAST;
         const recipe = await getRecipe(
-          input.category,
+          category,
           input.ingredients.split(","),
           input.requirements,
           3
@@ -47,8 +49,8 @@ export const experimentRouter = createTRPCRouter({
             createdById: ctx.session?.user.id,
             title: recipe.title,
             tag,
-            category: input.category,
-            img: "",
+            category,
+            imgs: [],
           },
         });
         return data;
