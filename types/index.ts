@@ -1,6 +1,7 @@
-import { Experiment, Ingredient, User } from "@prisma/client";
+import { Experiment, Imgs, Reviews, User } from "@prisma/client";
 
 export type IExperiment = Experiment & {
-    ingredients: Ingredient[];
+    Imgs: Imgs[];
+    Reviews: Reviews[];
     createdBy: User | null;
   };

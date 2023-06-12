@@ -3,7 +3,7 @@ import type { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
 
 import { getServerAuthSession } from "~/server/auth";
-import { Button } from "~/components/Button";
+import { Button } from "~/components/ui/Button";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);

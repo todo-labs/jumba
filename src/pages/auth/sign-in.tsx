@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { getServerAuthSession } from "~/server/auth";
 import { Loader2Icon } from "lucide-react";
-import { Button } from "~/components/Button";
+import { Button } from "~/components/ui/Button";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);

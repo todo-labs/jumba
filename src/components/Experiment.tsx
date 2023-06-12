@@ -1,41 +1,34 @@
 import * as React from "react";
-import { Experiment } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./Card";
-import { Badge } from "./badge";
+import { Card, CardContent, CardDescription, CardTitle } from "./ui/Card";
+import { Badge } from "./ui/Badge";
 
 import { cn } from "~/utils";
+import { IExperiment } from "types";
 
 const Experiment = ({
   title,
   id,
-  imgs,
   tag,
+  Imgs,
   inspiration,
   createdById,
-}: Partial<Experiment>) => {
+}: IExperiment) => {
   const { data: session } = useSession();
   return (
     <Card className="flex flex-col justify-center rounded-xl border-none shadow-none">
       <figure className="relative">
         <Link href={`/experiment/${id}`}>
           <Image
-            src={imgs[0] ?? "/default-food.jpeg"}
+            src={Imgs[0]?.url ?? "/default-food.jpeg"}
             alt={title || "Default Food"}
             width={300}
             height={200}
             className={cn("h-[200px] w-full rounded-xl", {
-              "object-cover": imgs[0],
+              "object-cover": Imgs[0]?.url,
               "border-2 border-primary": session?.user.id === createdById,
             })}
           />
@@ -44,7 +37,9 @@ const Experiment = ({
       </figure>
       <CardContent className="mt-2 flex w-full flex-col justify-between">
         <CardTitle className="overflow-ellipsis text-2xl">{title}</CardTitle>
-        <CardDescription className="text-sm">{inspiration}</CardDescription>
+        <CardDescription className="truncate text-sm">
+          {inspiration}
+        </CardDescription>
       </CardContent>
     </Card>
   );

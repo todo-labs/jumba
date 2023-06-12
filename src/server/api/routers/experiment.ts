@@ -5,15 +5,24 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { createExperimentSchema, getByIdSchema } from "~/schemas";
+import {
+  createExperimentSchema,
+  getByIdSchema,
+  leaveReviewSchema,
+} from "~/schemas";
 import { getRecipe } from "~/utils/ai";
-import { Category } from "@prisma/client";
 
 export const experimentRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.experiment.findMany({
       include: {
         createdBy: true,
+        Imgs: {
+          select: {
+            approved: true,
+            url: true,
+          },
+        },
       },
     });
   }),
@@ -21,12 +30,11 @@ export const experimentRouter = createTRPCRouter({
     .input(createExperimentSchema)
     .mutation(async ({ input, ctx }) => {
       try {
-        const category = input.category || Category.BREAKFAST;
         const recipe = await getRecipe(
-          category,
+          input.category || "Random",
           input.ingredients.split(","),
           input.requirements,
-          3
+          input.numOfPeople
         );
 
         if (!recipe) {
@@ -40,17 +48,17 @@ export const experimentRouter = createTRPCRouter({
 
         // TODO: check for duplicates
 
-        console.log("RECIPE", recipe);
         const data = await ctx.prisma.experiment.create({
           data: {
+            tag,
             steps: recipe.steps,
-            feeds: 3,
+            feeds: input.numOfPeople,
             inspiration: recipe.inspiration,
             createdById: ctx.session?.user.id,
             title: recipe.title,
-            tag,
-            category,
-            imgs: [],
+            ingredients: recipe.ingredients,
+            category: input.category,
+            duration: recipe.duration,
           },
         });
         return data;
@@ -69,7 +77,25 @@ export const experimentRouter = createTRPCRouter({
       },
       include: {
         createdBy: true,
+        Reviews: {
+          include: {
+            reviewedBy: true,
+          },
+        },
+        Imgs: true,
       },
     });
   }),
+  leaveReview: protectedProcedure
+    .input(leaveReviewSchema)
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.reviews.create({
+        data: {
+          comment: input.comment,
+          rating: input.rating,
+          reviewedById: ctx.session?.user.id,
+          experimentId: input.experimentId,
+        },
+      });
+    }),
 });

@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Head from "next/head";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { IExperiment } from "types";
@@ -12,7 +12,7 @@ import { z } from "zod";
 import Option from "~/components/Option";
 import ExperimentCard from "~/components/Experiment";
 import DefaultState from "~/components/DefaultState";
-import { Button } from "~/components/Button";
+import { Button } from "~/components/ui/Button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,14 +23,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/AlertDialog";
+} from "~/components/ui/AlertDialog";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "~/components/Dialog";
+} from "~/components/ui/Dialog";
 import {
   Form,
   FormControl,
@@ -39,23 +39,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/components/Form";
-import { Input } from "~/components/Input";
+} from "~/components/ui/Form";
+import { Input } from "~/components/ui/Input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/components/Select";
-import { Slider } from "~/components/Slider";
+} from "~/components/ui/Select";
+import { Slider } from "~/components/ui/Slider";
 
 import { api } from "~/utils/api";
 import { Requirements, options } from "~/constants";
 import { useToast } from "~/hooks/useToast";
 import { createExperimentSchema } from "~/schemas";
 import { env } from "~/env.mjs";
-import { ToastAction } from "~/components/Toast";
+import { ScrollArea } from "~/components/ui/ScrollArea";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
@@ -66,7 +67,13 @@ const Home: NextPage = () => {
 
   const { data: session } = useSession();
 
-  const handleOptionPress = (option: Category) => {
+  const handleOptionPress = (option: Category | "Random") => {
+    if (option === "Random") {
+      const randomOption = options[Math.floor(Math.random() * options.length)];
+      setSelectedOption(randomOption.title);
+      setShowSidebar(true);
+      return;
+    }
     setSelectedOption(option);
     setShowSidebar(true);
   };
@@ -76,29 +83,31 @@ const Home: NextPage = () => {
   const utils = api.useContext();
 
   const createExperiment = api.experiments.create.useMutation({
-    async onSuccess(value, variables, context) {
+    async onSuccess(value) {
       toast({
         title: "Success",
         description: `Experiment #${value.tag} created successfully`,
       });
-      form.reset();
       await utils.experiments.getAll.invalidate();
+      form.reset();
     },
-    async onError(error) {
+    onError(error) {
       toast({
         title: "Error",
         description: error?.message || "Something went wrong",
         variant: "destructive",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
     },
   });
 
+  useEffect(() => {
+    form.setValue("category", selectedOption);
+  }, [selectedOption]);
+
   const form = useForm<z.infer<typeof createExperimentSchema>>({
     resolver: zodResolver(createExperimentSchema),
     defaultValues: {
-      numOfPeople: 1,
-      ingredients: "",
+      numOfPeople: 2,
       category: selectedOption,
       requirements: Requirements.QUICK,
     },
@@ -116,12 +125,13 @@ const Home: NextPage = () => {
   const filterExperiments = useMemo<IExperiment[]>(() => {
     if (!selectedOption) return data;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    const term = search.toLowerCase();
     return data?.filter((experiment: IExperiment) => {
       return (
-        experiment.title.includes(search) ||
-        experiment.tag.toString().includes(search) ||
+        experiment.title.toLowerCase().includes(term) ||
+        experiment.tag.toString().toLowerCase().includes(term) ||
         experiment.ingredients.filter((ingredient) =>
-          ingredient.name.includes(search)
+          ingredient.toLowerCase().includes(term)
         ).length > 0
       );
     });
@@ -135,15 +145,13 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex w-full flex-col p-10">
         <section className="flex w-full justify-between">
-          <h1 className="text-4xl">
+          <Link
+            className="text-4xl"
+            href="https://blogr.conceptcodes.dev/introducing-jumba-ai"
+          >
             Jumba
-            <a
-              className="text-primary"
-              href="https://blogr.conceptcodes.dev/introducing-jumba-ai"
-            >
-              .
-            </a>
-          </h1>
+            <span className="text-primary">.</span>
+          </Link>
           <div className="flex w-1/3 space-x-3">
             <Input
               type="search"
@@ -216,13 +224,15 @@ const Home: NextPage = () => {
                 onClick={() => refetch()}
               />
             ) : filterExperiments.length > 0 ? (
-              <section className="grid grid-cols-1 xl:grid-cols-3 h-full gap-3">
-                {filterExperiments.map(
-                  (experiment: IExperiment, index: number) => (
-                    <ExperimentCard key={index} {...experiment} />
-                  )
-                )}
-              </section>
+              <ScrollArea className="h-[600px]">
+                <section className="grid h-full grid-cols-1 gap-3 xl:grid-cols-3">
+                  {filterExperiments.map(
+                    (experiment: IExperiment, index: number) => (
+                      <ExperimentCard key={index} {...experiment} />
+                    )
+                  )}
+                </section>
+              </ScrollArea>
             ) : (
               <DefaultState
                 title="No Experiments Yet"
@@ -236,7 +246,10 @@ const Home: NextPage = () => {
       <Dialog open={showSidebar} onOpenChange={setShowSidebar}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>New {selectedOption} Experiment</DialogTitle>
+            <DialogTitle>
+              New <span className="text-primary">{selectedOption}</span>{" "}
+              Experiment
+            </DialogTitle>
             <DialogDescription>
               Pick all the options needed to create a new experiment.
             </DialogDescription>
@@ -250,7 +263,11 @@ const Home: NextPage = () => {
                   <FormItem>
                     <FormLabel>Ingredients</FormLabel>
                     <FormControl>
-                      <Input type="text" {...field} />
+                      <Input
+                        type="text"
+                        {...field}
+                        disabled={createExperiment.isLoading}
+                      />
                     </FormControl>
                     <FormMessage />
                     <FormDescription>
@@ -268,6 +285,7 @@ const Home: NextPage = () => {
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
+                      disabled={createExperiment.isLoading}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -277,7 +295,11 @@ const Home: NextPage = () => {
                       <SelectContent>
                         {Object.keys(Requirements).map((requirement, index) => {
                           return (
-                            <SelectItem key={index} value={requirement}>
+                            <SelectItem
+                              key={index}
+                              value={requirement}
+                              disabled={createExperiment.isLoading}
+                            >
                               {requirement}
                             </SelectItem>
                           );
@@ -303,6 +325,7 @@ const Home: NextPage = () => {
                         min={1}
                         max={parseInt(env.NEXT_PUBLIC_MAX_PEOPLE)}
                         step={1}
+                        disabled={createExperiment.isLoading}
                         defaultValue={[field.value]}
                         onValueChange={(value) => field.onChange(value[0])}
                       />

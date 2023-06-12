@@ -1,7 +1,7 @@
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-import { Toaster } from "~/components/Toaster";
+import { Toaster } from "~/components/ui/Toaster";
 import { DM_Sans } from "next/font/google";
 
 import { api } from "~/utils/api";

@@ -1,5 +1,6 @@
 import React from "react";
 import type { LucideIcon } from "lucide-react";
+import { Button } from "./ui/Button";
 
 interface IDefaultStateProps {
   title: string;
@@ -14,7 +15,7 @@ export default function DefaultState(props: IDefaultStateProps) {
   const { title, description, btnText, onClick, size = "lg" } = props;
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
-      {props.icon && <props.icon className="h-28 w-28 fill-primary-600" />}
+      {props.icon && <props.icon className="h-28 w-28 text-primary" />}
       <h1
         className={`mt-10 ${
           size === "sm" ? "text-2xl" : "text-4xl xl:text-6xl"
@@ -30,12 +31,11 @@ export default function DefaultState(props: IDefaultStateProps) {
         {description}
       </p>
       {btnText && onClick && (
-        <button
-          className="mt-10 rounded-lg px-5 py-2 text-primary-600"
+        <Button
           onClick={onClick}
         >
           {btnText}
-        </button>
+        </Button>
       )}
     </div>
   );

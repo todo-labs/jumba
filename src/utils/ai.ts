@@ -16,11 +16,11 @@ const recipeModel = new OpenAI({
 
 const recipeParser = StructuredOutputParser.fromZodSchema(
   z.object({
-    title: z.string().describe("The title of the recipe"),
-    inspiration: z.string().describe("The inspiration for the recipe"),
-    ingredients: z.array(z.string()).describe("The ingredients of the recipe"),
-    steps: z.array(z.string()).describe("The instructions of the recipe"),
-    duration: z.string().describe("The duration of the recipe"),
+    title: z.string().describe("The unique title of the recipe"),
+    inspiration: z.string().describe("The inspiration for the recipe, 2-3 sentences, very expressive"),
+    ingredients: z.array(z.string()).describe("The ingredients needed to create the recipe, make sure to include the amount of each ingredient"),
+    steps: z.array(z.string()).describe("The detailed step by step instructions on how to create the recipe"),
+    duration: z.number().describe("The duration of the recipe in minutes"),
   })
 );
 
@@ -63,14 +63,6 @@ export async function getRecipe(
     outputParser: recipeParser,
     verbose: true,
   });
-
-
-  console.log('PROMPT', await template.format({
-    category,
-    ingredients,
-    requirements,
-    feeds,
-  }))
 
   console.log(`\nAI is thinking...`)
   const start = performance.now()

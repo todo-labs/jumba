@@ -2,7 +2,7 @@ import { Category } from "@prisma/client";
 import { 
   Card, 
   CardDescription
-} from "./Card"
+} from "./ui/Card"
 import { cn } from "~/utils"
 
 interface IOptionProps {
@@ -15,7 +15,7 @@ interface IOptionProps {
 const Option = ({ title, icon, selected, onClick }: IOptionProps) => {
   return (
     <Card
-      className={cn('p-6 xl:m-3 mr-3 flex flex-col h-36 w-32 cursor-pointer text-center items-center justify-center rounded-xl border-2 bg-gray-50 hover:text-white hover:border-4 hover:border-primary hover:bg-primary',
+      className={cn('p-6 xl:m-3 mr-3 flex flex-col h-36 w-32 cursor-pointer text-center items-center justify-center rounded-xl border-2 bg-gray-50 hover:text-white hover:border-4 hover:border-primary',
         { "border-4 border-primary bg-primary shadow-lg": selected })}
       onClick={onClick}
     >

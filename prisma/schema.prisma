@@ -1,5 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -10,7 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -52,6 +49,8 @@ model User {
   sessions      Session[]
   role          Role         @default(USER)
   Experiment    Experiment[]
+  Imgs          Imgs[]
+  Reviews       Reviews[]
 }
 
 model VerificationToken {
@@ -71,19 +70,44 @@ enum Category {
   DINNER
 }
 
+model Imgs {
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  url          String
+  Experiment   Experiment @relation(fields: [experimentId], references: [id])
+  experimentId String
+  approved     Boolean    @default(false)
+  uploadedBy   User?      @relation(fields: [uploadedById], references: [id])
+  uploadedById String?
+}
+
+model Reviews {
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  rating       Int
+  comment      String?
+  Experiment   Experiment @relation(fields: [experimentId], references: [id])
+  experimentId String
+  reviewedBy   User?      @relation(fields: [reviewedById], references: [id])
+  reviewedById String?
+}
+
 model Experiment {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   title       String
   tag         Int
   inspiration String?
   category    Category
   ingredients String[]
-  imgs        String[]
   steps       String[]
   duration    Int?
-  feeds       Int?     @default(1)
-  createdBy   User?    @relation(fields: [createdById], references: [id])
+  feeds       Int?      @default(1)
+  createdBy   User?     @relation(fields: [createdById], references: [id])
   createdById String?
+  Imgs        Imgs[]
+  Reviews     Reviews[]
 }
