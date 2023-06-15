@@ -24,13 +24,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <ThemeProvider attribute="class">
       <main className={cn(dmSans.className)}>
-        <LoadingScreen />
-        <Component {...pageProps} />
-        <Toaster />
+        <ThemeProvider attribute="class">
+          <LoadingScreen />
+          <Component {...pageProps} />
+          <Toaster />
+        </ThemeProvider>
       </main>
-      </ThemeProvider>
     </SessionProvider>
   );
 };

@@ -16,6 +16,9 @@ import { getRecipe } from "~/utils/ai";
 export const experimentRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.experiment.findMany({
+      where: {
+        createdById: ctx.session?.user.id,
+      },
       include: {
         createdBy: true,
         Imgs: {

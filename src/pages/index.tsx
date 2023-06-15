@@ -1,23 +1,14 @@
 import { type NextPage } from "next";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Head from "next/head";
-import { useSession, signIn } from "next-auth/react";
-import type { IExperiment } from "types";
+import type { IExperiment, IExperimentWithoutReviews } from "types";
 import Link from "next/link";
 import type { Category } from "@prisma/client";
-import {
-  FolderClosedIcon,
-  Loader2Icon,
-  LockIcon,
-  MailWarning,
-} from "lucide-react";
-import { useFieldArray, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { FolderClosedIcon, Loader2Icon, MailWarning } from "lucide-react";
 
 import Option from "~/components/Option";
 import ExperimentCard from "~/components/Experiment";
 import DefaultState from "~/components/DefaultState";
-import { Button } from "~/components/ui/Button";
 import {
   Dialog,
   DialogContent,
@@ -25,33 +16,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/Dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/components/ui/Form";
+
 import { Input } from "~/components/ui/Input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/Select";
-import { Slider } from "~/components/ui/Slider";
+
 import { UserNav } from "~/components/user/Nav";
 import QueryWrapper from "~/components/QueryWrapper";
 
 import { api } from "~/utils/api";
-import { Requirements, options } from "~/constants";
-import { useToast } from "~/hooks/useToast";
-import { type CreateExperiment, createExperimentSchema } from "~/schemas";
-import { env } from "~/env.mjs";
-import { cn } from "~/utils";
+import { options } from "~/constants";
+import CreateExperimentModal from "~/components/CreateExperimentModal";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
@@ -59,89 +32,27 @@ const Home: NextPage = () => {
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
 
-  const { data: session } = useSession();
-
   const handleOptionPress = (option: Category) => {
     setSelectedOption(option);
     setShowSidebar(true);
   };
 
-  const { toast } = useToast();
-
-  const utils = api.useContext();
-
-  const createExperiment = api.experiments.create.useMutation({
-    async onSuccess(value) {
-      toast({
-        title: "Success",
-        description: `Experiment #${value.tag} created successfully`,
-        action: (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              window.open(`/experiments/${value.id}`, "_blank");
-            }}
-          >
-            View
-          </Button>
-        ),
-      });
-      await utils.experiments.getAll.invalidate();
-      form.reset();
-    },
-    onError(error) {
-      toast({
-        title: "Error",
-        description: error?.message || "Something went wrong",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const form = useForm<CreateExperiment>({
-    resolver: zodResolver(createExperimentSchema),
-    defaultValues: {
-      numOfPeople: 2,
-      category: selectedOption,
-      requirements: Requirements.QUICK,
-      ingredients: [],
-    },
-    mode: "onChange",
-  });
-
-  useEffect(() => {
-    form.setValue("category", selectedOption as Category);
-  }, [form, selectedOption]);
-
-  const { fields, append } = useFieldArray({
-    control: form.control,
-    name: "ingredients",
-  });
-
-  async function onSubmit(values: CreateExperiment) {
-    try {
-      await createExperiment.mutateAsync(values);
-      setShowSidebar(false);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const filterExperiments = useMemo<any[]>(() => {
-    if (!selectedOption) return experimentsQuery.data;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    const term = search.toLowerCase();
-    return experimentsQuery.data?.filter((experiment: any) => {
-      return (
-        experiment.title.toLowerCase().includes(term) ||
-        experiment.tag.toString().toLowerCase().includes(term) ||
-        experiment.ingredients.filter((ingredient: string) =>
-          ingredient.toLowerCase().includes(term)
-        ).length > 0
-      );
-    });
-  }, [experimentsQuery, selectedOption, search]);
+  // const filterExperiments = useMemo<IExperimentWithoutReviews[]>(() => {
+  //   if (!selectedOption) return experimentsQuery.data;
+  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  //   const term = search.toLowerCase();
+  //   return experimentsQuery.data?.filter(
+  //     (experiment: IExperimentWithoutReviews) => {
+  //       return (
+  //         experiment.title.toLowerCase().includes(term) ||
+  //         experiment.tag.toString().toLowerCase().includes(term) ||
+  //         experiment.ingredients.filter((ingredient: string) =>
+  //           ingredient.toLowerCase().includes(term)
+  //         ).length > 0
+  //       );
+  //     }
+  //   );
+  // }, [experimentsQuery, selectedOption, search]);
 
   return (
     <div className="flex h-screen items-start justify-center">
@@ -238,120 +149,10 @@ const Home: NextPage = () => {
               Pick all the options needed to create a new experiment.
             </DialogDescription>
           </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div>
-                {fields.map((field, index) => (
-                  <FormField
-                    control={form.control}
-                    key={field.id}
-                    name={`ingredients.${index}`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={cn(index !== 0 && "sr-only")}>
-                          Ingredients
-                        </FormLabel>
-                        <FormDescription
-                          className={cn(index !== 0 && "sr-only")}
-                        >
-                          Add all the ingredients needed for this experiment 😁.
-                        </FormDescription>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
-                <Button
-                  type="button"
-                  variant="link"
-                  size="sm"
-                  className="mt-1"
-                  onClick={() => append("")}
-                >
-                  Add Ingredient
-                </Button>
-              </div>
-              <FormField
-                control={form.control}
-                name="requirements"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Requirements</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={createExperiment.isLoading}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Think of something later" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {Object.keys(Requirements).map((requirement, index) => {
-                          return (
-                            <SelectItem
-                              key={index}
-                              value={requirement}
-                              disabled={createExperiment.isLoading}
-                            >
-                              {requirement}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="numOfPeople"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Number of People
-                      {form.watch("numOfPeople") &&
-                        `: ${form.watch("numOfPeople")}`}
-                    </FormLabel>
-                    <FormControl>
-                      <Slider
-                        min={1}
-                        max={parseInt(env.NEXT_PUBLIC_MAX_PEOPLE)}
-                        step={1}
-                        disabled={createExperiment.isLoading}
-                        defaultValue={[field.value]}
-                        onValueChange={(value) => field.onChange(value[0])}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {session?.user ? (
-                <Button
-                  className="w-full"
-                  type="submit"
-                  disabled={createExperiment.isLoading}
-                >
-                  {createExperiment.isLoading ? (
-                    <Loader2Icon className="mr-2 animate-spin" />
-                  ) : (
-                    "Submit"
-                  )}
-                </Button>
-              ) : (
-                <Button className="w-full" onClick={() => void signIn()}>
-                  <LockIcon className="mr-2" />
-                  Login
-                </Button>
-              )}
-            </form>
-          </Form>
+          <CreateExperimentModal
+            category={selectedOption as Category}
+            onClose={() => setShowSidebar(false)}
+          />
         </DialogContent>
       </Dialog>
     </div>

@@ -56,12 +56,14 @@ export function DataTableRowActions<TData>({
 
   const handleDeleteReminder = async () => {
     try {
-      console.log(row);
-      await deleteMutation.mutateAsync(row.original?.id);
+      await deleteMutation.mutateAsync({
+        // TODO: fix this, use Experiment type instead of TData
+        id: "",
+      });
       toast({
         title: "Reminder deleted",
         description: "Your reminder has been deleted.",
-      })
+      });
     } catch (error) {
       toast({
         title: "Error",
@@ -91,30 +93,6 @@ export function DataTableRowActions<TData>({
                 View Message
               </DropdownMenuItem>
             </DialogTrigger>
-            {/* <DropdownMenuItem>
-          <Copy className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-          Make a copy
-        </DropdownMenuItem> */}
-            {/* <DropdownMenuItem>
-          <Star className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-          Favorite
-        </DropdownMenuItem> */}
-            {/*<DropdownMenuSeparator />
-         <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <Tags className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Labels
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.label}>
-              {labels.map((label) => (
-                <DropdownMenuRadioItem key={label.value} value={label.value}>
-                  {label.label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent> 
-        </DropdownMenuSub> */}
             <DropdownMenuSeparator />
             <AlertDialogTrigger asChild>
               <DropdownMenuItem>
