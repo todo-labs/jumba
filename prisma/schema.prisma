@@ -63,12 +63,13 @@ model VerificationToken {
 }
 
 enum Category {
-  BREAKFAST
   ASAIN
-  MEXICAN
+  AFRICAN
+  BREAKFAST
   DESSERT
-  INDIAN
   DINNER
+  MEXICAN
+  INDIAN
 }
 
 model Imgs {

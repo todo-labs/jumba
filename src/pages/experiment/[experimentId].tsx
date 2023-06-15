@@ -172,7 +172,7 @@ const ExperimentPage: NextPage = () => {
               <li key={step}>{step}</li>
             ))}
           </ol>
-          <h2
+          {/* <h2
             className="mt-10 scroll-m-20 border-b pb-1 text-3xl font-semibold tracking-tight first:mt-0"
             id="Reviews"
           >
@@ -289,7 +289,7 @@ const ExperimentPage: NextPage = () => {
                 </Form>
               </CardContent>
             </Card>
-          )}
+          )} */}
         </div>
       </article>
     </div>

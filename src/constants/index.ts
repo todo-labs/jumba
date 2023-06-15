@@ -12,10 +12,10 @@ type IOption = {
 };
 
 export const options: IOption[] = [
-  // {
-  //   title: "Random",
-  //   icon: "🙈",
-  // },
+  {
+    title: Category.AFRICAN,
+    icon: "🌍",
+  },
   {
     title: Category.BREAKFAST,
     icon: "🥞",

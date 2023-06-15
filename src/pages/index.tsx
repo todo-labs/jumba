@@ -2,8 +2,9 @@ import { type NextPage } from "next";
 import { useState, useMemo, useEffect } from "react";
 import Head from "next/head";
 import { useSession, signIn } from "next-auth/react";
-import { IExperiment } from "types";
-import { Category } from "@prisma/client";
+import type { IExperiment } from "types";
+import Link from "next/link";
+import type { Category } from "@prisma/client";
 import {
   FolderClosedIcon,
   Loader2Icon,
@@ -42,33 +43,25 @@ import {
   SelectValue,
 } from "~/components/ui/Select";
 import { Slider } from "~/components/ui/Slider";
+import { UserNav } from "~/components/user/Nav";
+import QueryWrapper from "~/components/QueryWrapper";
 
 import { api } from "~/utils/api";
 import { Requirements, options } from "~/constants";
 import { useToast } from "~/hooks/useToast";
-import { CreateExperiment, createExperimentSchema } from "~/schemas";
+import { type CreateExperiment, createExperimentSchema } from "~/schemas";
 import { env } from "~/env.mjs";
-import { ScrollArea } from "~/components/ui/ScrollArea";
-import Link from "next/link";
-import { UserNav } from "~/components/user/Nav";
 import { cn } from "~/utils";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
-  const { data, isLoading, isError, refetch } =
-    api.experiments.getAll.useQuery();
+  const experimentsQuery = api.experiments.getAll.useQuery();
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
 
   const { data: session } = useSession();
 
   const handleOptionPress = (option: Category) => {
-    // if (option === "Random") {
-    //   const randomOption = options[Math.floor(Math.random() * options.length)];
-    //   setSelectedOption(randomOption.title);
-    //   setShowSidebar(true);
-    //   return;
-    // }
     setSelectedOption(option);
     setShowSidebar(true);
   };
@@ -82,6 +75,17 @@ const Home: NextPage = () => {
       toast({
         title: "Success",
         description: `Experiment #${value.tag} created successfully`,
+        action: (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              window.open(`/experiments/${value.id}`, "_blank");
+            }}
+          >
+            View
+          </Button>
+        ),
       });
       await utils.experiments.getAll.invalidate();
       form.reset();
@@ -95,10 +99,6 @@ const Home: NextPage = () => {
     },
   });
 
-  useEffect(() => {
-    form.setValue("category", selectedOption as Category);
-  }, [selectedOption]);
-
   const form = useForm<CreateExperiment>({
     resolver: zodResolver(createExperimentSchema),
     defaultValues: {
@@ -109,6 +109,10 @@ const Home: NextPage = () => {
     },
     mode: "onChange",
   });
+
+  useEffect(() => {
+    form.setValue("category", selectedOption as Category);
+  }, [form, selectedOption]);
 
   const { fields, append } = useFieldArray({
     control: form.control,
@@ -125,10 +129,10 @@ const Home: NextPage = () => {
   }
 
   const filterExperiments = useMemo<any[]>(() => {
-    if (!selectedOption) return data;
+    if (!selectedOption) return experimentsQuery.data;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     const term = search.toLowerCase();
-    return data?.filter((experiment: any) => {
+    return experimentsQuery.data?.filter((experiment: any) => {
       return (
         experiment.title.toLowerCase().includes(term) ||
         experiment.tag.toString().toLowerCase().includes(term) ||
@@ -137,7 +141,7 @@ const Home: NextPage = () => {
         ).length > 0
       );
     });
-  }, [data, selectedOption, search]);
+  }, [experimentsQuery, selectedOption, search]);
 
   return (
     <div className="flex h-screen items-start justify-center">
@@ -167,7 +171,7 @@ const Home: NextPage = () => {
         </section>
 
         <section className="mt-10 flex overflow-hidden overflow-x-scroll">
-          {options.map((option, index) => (
+          {options.sort().map((option, index) => (
             <Option
               key={index}
               title={option.title}
@@ -181,45 +185,45 @@ const Home: NextPage = () => {
         <section className="mt-10 flex h-full flex-col">
           <h1 className="text-2xl xl:text-4xl">
             Past Experiments{" "}
-            {!isError && !isLoading && (
-              <span className="">({data.length})</span>
-            )}
+            <span className="">({experimentsQuery.data?.length || 0})</span>
           </h1>
           <div className="mt-10">
-            {isLoading ? (
-              <DefaultState
-                title="Loading Experiments..."
-                icon={Loader2Icon}
-                iconClassName="animate-spin"
-                description="We're working on getting all the experiments uploaded by people."
-                btnText=""
-                onClick={() => console.log("clicked")}
-              />
-            ) : isError ? (
-              <DefaultState
-                title="Error Loading Experiments"
-                icon={MailWarning}
-                description="We're working on getting all the experiments uploaded by people."
-                btnText="retry"
-                onClick={() => void refetch()}
-              />
-            ) : filterExperiments.length > 0 ? (
-              <ScrollArea className="h-[800px]">
-                <section className="xxl:grid-cols-6 grid h-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {filterExperiments.map(
-                    (experiment: IExperiment, index: number) => (
-                      <ExperimentCard key={index} {...experiment} />
-                    )
-                  )}
-                </section>
-              </ScrollArea>
-            ) : (
-              <DefaultState
-                title="No Experiments Yet"
-                icon={FolderClosedIcon}
-                description="It seems that no one has uploaded any experiments yet. Be the first one to share your findings with the community!"
-              />
-            )}
+            <QueryWrapper
+              query={experimentsQuery}
+              components={{
+                Loading: () => (
+                  <DefaultState
+                    title="Loading Experiments..."
+                    icon={Loader2Icon}
+                    iconClassName="animate-spin"
+                    description="We're working on getting all the experiments uploaded by people."
+                    btnText=""
+                    onClick={() => console.log("clicked")}
+                  />
+                ),
+                Error: () => (
+                  <DefaultState
+                    title="Error Loading Experiments"
+                    icon={MailWarning}
+                    description="We're working on getting all the experiments uploaded by people."
+                    btnText="retry"
+                    onClick={() => void experimentsQuery.refetch()}
+                  />
+                ),
+                Empty: () => (
+                  <DefaultState
+                    title="No Experiments Yet"
+                    icon={FolderClosedIcon}
+                    description="It seems that no one has uploaded any experiments yet. Be the first one to share your findings with the community!"
+                  />
+                ),
+              }}
+              renderItem={(experiment: IExperiment, index: number) => (
+                <ExperimentCard key={index} {...experiment} />
+              )}
+              height={500}
+              containerStyle="grid grid-cols-3 gap-3 w-full items-start"
+            />
           </div>
         </section>
       </main>
@@ -345,11 +349,7 @@ const Home: NextPage = () => {
                   <LockIcon className="mr-2" />
                   Login
                 </Button>
-              {Object.keys(Requirements).map((requirement, index) => (
-                <SelectOption key={index} value={Requirements[requirement]}>
-                  {Requirements[requirement]}
-                </SelectOption>
-              ))}
+              )}
             </form>
           </Form>
         </DialogContent>

@@ -35,6 +35,7 @@
     "@radix-ui/react-toast": "^1.1.4",
     "@svgr/webpack": "^6.5.1",
     "@tanstack/react-query": "^4.20.2",
+    "@tanstack/react-table": "^8.9.2",
     "@trpc/client": "^10.9.0",
     "@trpc/next": "^10.9.0",
     "@trpc/react-query": "^10.9.0",

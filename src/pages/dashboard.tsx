@@ -22,12 +22,12 @@ import {
   TabsList,
   TabsTrigger,
 } from "~/components/ui/Tabs";
-import { CalendarDateRangePicker } from "~/components/dashboard/date-range-picker";
 import { Overview } from "~/components/dashboard/overview";
-import { RecentSales } from "~/components/dashboard/recent-sales";
+import { RecentlyCreatedExperiments } from "~/components/dashboard/recently-created-experiments";
 
 import { api } from "~/utils/api";
 import SettingsLayout from "~/components/user/SidebarNav";
+import ExperimentTable from "~/components/dashboard/experiments-table";
 
 export default function DashboardPage() {
 
@@ -64,18 +64,11 @@ export default function DashboardPage() {
         <div className="flex-1 space-y-4 p-8 pt-6">
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-            <div className="flex items-center space-x-2">
-              <CalendarDateRangePicker />
-              <Button size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Download
-              </Button>
-            </div>
           </div>
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="experiments">Experiments</TabsTrigger>
               <TabsTrigger value="reports" disabled>
                 Reports
               </TabsTrigger>
@@ -151,19 +144,19 @@ export default function DashboardPage() {
                 </Card>
                 <Card className="col-span-3">
                   <CardHeader>
-                    <CardTitle>Recent Sales</CardTitle>
+                    <CardTitle>Recently Created Experiments</CardTitle>
                     <CardDescription>
-                      You made 265 sales this month.
+                      {/* You made 265 sales this month. */}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <RecentSales />
+                    <RecentlyCreatedExperiments />
                   </CardContent>
                 </Card>
               </div>
             </TabsContent>
-            <TabsContent value="analytics">
-              <h1>Not Implemented Yet</h1>
+            <TabsContent value="experiments">
+              <ExperimentTable />
             </TabsContent>
           </Tabs>
         </div>

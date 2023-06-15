@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 
 import {
+  adminProcedure,
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
@@ -43,7 +44,8 @@ export const experimentRouter = createTRPCRouter({
         if (!recipe) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "Could not generate a recipe",
+            message:
+              "Something went wrong while generating a recipe. Try again",
           });
         }
 
@@ -98,6 +100,15 @@ export const experimentRouter = createTRPCRouter({
           rating: input.rating,
           reviewedById: ctx.session?.user.id,
           experimentId: input.experimentId,
+        },
+      });
+    }),
+  remove: adminProcedure
+    .input(getByIdSchema)
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.experiment.delete({
+        where: {
+          id: input.id,
         },
       });
     }),
