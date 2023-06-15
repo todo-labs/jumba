@@ -30,6 +30,7 @@ import { Button } from "~/components/ui/Button";
 import { api } from "~/utils/api";
 import { type LeaveReview, leaveReviewSchema } from "~/schemas";
 import { useToast } from "~/hooks/useToast";
+import { Separator } from "~/components/ui/Separator";
 
 const ExperimentPage: NextPage = () => {
   const router = useRouter();
@@ -62,8 +63,6 @@ const ExperimentPage: NextPage = () => {
         title: "Success",
         description: `Your review has been submitted`,
       });
-      // await refetch();
-      form.reset();
     },
     onError(error) {
       toast({
@@ -90,16 +89,12 @@ const ExperimentPage: NextPage = () => {
     })} ${date.getDate()}, ${date.getFullYear()}`;
   };
 
-  function onSubmit(values: LeaveReview) {
+  async function onSubmit(values: LeaveReview) {
     try {
-      alert({
+      await leaveReviewMutation.mutateAsync({
         ...values,
         experimentId: experimentId as string,
       });
-      // await leaveReviewMutation.mutateAsync({
-      //   ...values,
-      //   experimentId: experimentId as string,
-      // });
     } catch (error) {
       console.error(error);
     }
@@ -123,6 +118,34 @@ const ExperimentPage: NextPage = () => {
           <blockquote className="flex flex-col border-l-2 py-6 pl-6 text-xl italic text-muted-foreground">
             {experiment?.inspiration}
           </blockquote>
+        </div>
+        <div className="mt-3 flex flex-col lg:flex-row lg:space-x-6">
+          <div className="flex-1">
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center space-x-4">
+                <Avatar>
+                  <AvatarImage src={experiment?.createdBy?.image} />
+                  <AvatarFallback>
+                    {displayUserName(experiment?.createdBy?.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <h2 className="text-xl font-semibold">
+                    {displayUserName(experiment?.createdBy?.name)}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {formatDate(experiment?.createdAt!)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1">
+            <h1>
+              Serves:{" "}
+              <strong className="text-primary">{experiment?.feeds}</strong>
+            </h1>
+          </div>
         </div>
         <div>
           <h2

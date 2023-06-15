@@ -27,6 +27,7 @@ import { Overview } from "~/components/dashboard/overview";
 import { RecentSales } from "~/components/dashboard/recent-sales";
 
 import { api } from "~/utils/api";
+import SettingsLayout from "~/components/user/SidebarNav";
 
 export default function DashboardPage() {
 
@@ -41,7 +42,8 @@ export default function DashboardPage() {
 
 
   return (
-    <main>
+    <SettingsLayout>
+    <main className="w-full">
       <div className="md:hidden">
         <Image
           src="/examples/dashboard-light.png"
@@ -167,5 +169,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </main>
+    </SettingsLayout>
   );
 }

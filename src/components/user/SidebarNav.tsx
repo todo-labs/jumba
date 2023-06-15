@@ -5,14 +5,16 @@ import { usePathname } from "next/navigation";
 import { Metadata } from "next";
 import Image from "next/image";
 
-import { Separator } from "~/components/ui/Separator";
 import { buttonVariants } from "~/components/ui/Button";
 import { cn } from "~/utils";
+import { Role } from "@prisma/client";
+import { useSession } from "next-auth/react";
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
     href: string;
     title: string;
+    enabled?: boolean;
   }[];
 }
 
@@ -28,6 +30,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
       {...props}
     >
       {items.map((item) => (
+        item.enabled === false ? null : (
         <Link
           key={item.href}
           href={item.href}
@@ -41,6 +44,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
         >
           {item.title}
         </Link>
+      )
       ))}
     </nav>
   );
@@ -51,22 +55,31 @@ export const metadata: Metadata = {
   description: "Advanced form example using react-hook-form and Zod.",
 };
 
-const sidebarNavItems = [
-  {
-    title: "Profile",
-    href: "/profile",
-  },
-  {
-    title: "Settings",
-    href: "/settings",
-  },
-];
-
 interface SettingsLayoutProps {
   children: React.ReactNode;
 }
 
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
+
+  const { data: session } = useSession();
+
+  const sidebarNavItems = [
+    {
+      title: "Profile",
+      href: "/profile",
+      enabled: true
+    },
+    {
+      title: "Settings",
+      href: "/settings",
+      enabled: true
+    },
+    {
+      title: "Dashboard",
+      href: "/dashboard",
+      enabled: session?.user?.role === Role.ADMIN
+    },
+  ];
   return (
     <>
       <div className="md:hidden">
@@ -90,7 +103,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
           <aside className="-mx-4 lg:w-1/5">
             <SidebarNav items={sidebarNavItems} />
           </aside>
-          <div className="flex-1 lg:max-w-2xl">{children}</div>
+          <div className="flex-1">{children}</div>
         </div>
       </div>
     </>

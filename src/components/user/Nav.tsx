@@ -1,7 +1,6 @@
 import { LogOut, PlusCircle, Settings, User } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import router from "next/router";
-import { Role } from "@prisma/client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
 import { Button } from "../ui/Button";
@@ -79,12 +78,6 @@ export function UserNav() {
               <Settings className="mr-2 h-4 w-4" />
               <p className="capitalize">Settings</p>
             </DropdownMenuItem>
-            {session?.user?.role === Role.ADMIN && (
-              <DropdownMenuItem>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                <p className="capitalize">Dashboard</p>
-              </DropdownMenuItem>
-            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>

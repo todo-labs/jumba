@@ -205,7 +205,7 @@ const Home: NextPage = () => {
               />
             ) : filterExperiments.length > 0 ? (
               <ScrollArea className="h-[800px]">
-                <section className="xxl:grid-cols-6 grid h-full grid-cols-1 gap-4 lg:grid-cols-3">
+                <section className="xxl:grid-cols-6 grid h-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {filterExperiments.map(
                     (experiment: IExperiment, index: number) => (
                       <ExperimentCard key={index} {...experiment} />

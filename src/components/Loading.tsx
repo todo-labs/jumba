@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { Loader2Icon } from "lucide-react";
 
 const LoadingScreen = () => {
   const [isLoading, setLoading] = useState(false);
@@ -23,7 +24,8 @@ const LoadingScreen = () => {
   if (isLoading) {
     // Return your loading screen component here
     return (
-    <div className="flex items-center justify-center h-screen bg-gray-900">
+    <div className="flex flex-col items-center justify-center h-screen">
+        <Loader2Icon className="w-16 h-16 text-white/30 animate-spin" />
         <h1 className="text-4xl text-white">Loading...</h1>
       </div>
     );
