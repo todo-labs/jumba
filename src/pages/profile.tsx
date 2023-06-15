@@ -1,20 +1,13 @@
 import type { NextPage } from "next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Metadata } from "next";
 
 import { cn } from "~/utils";
 import { Button } from "~/components/ui/Button";
 import { Calendar } from "~/components/ui/Calendar";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "~/components/ui/Command";
 import { Input } from "~/components/ui/Input";
 import {
   Popover,
@@ -34,9 +27,8 @@ import {
 
 import { Separator } from "~/components/ui/Separator";
 import { profileSchema, Profile } from "~/schemas";
-import { languages } from "~/constants";
 import SettingsLayout from "~/components/user/SidebarNav";
-import { Textarea } from "~/components/ui/TextArea";
+import { api } from "~/utils/api";
 
 export const metadata: Metadata = {
   title: "Forms",
@@ -44,23 +36,37 @@ export const metadata: Metadata = {
 };
 
 const ProfilePage: NextPage = () => {
+  const { data: profile } = api.profile.get.useQuery();
+
   const form = useForm<Profile>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: "John Doe",
-      dob: new Date("1990-01-01"),
+      name: profile?.name || "",
+      dob: profile?.dob ? new Date(profile.dob) : new Date(),
     },
   });
 
-  function onSubmit(data: Profile) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  const updateProfileMutation = api.profile.update.useMutation({
+    onSuccess() {
+      toast({
+        title: "Success",
+        description: `Your profile has been updated`,
+      });
+    },
+    onError(error) {
+      toast({
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
+
+  async function onSubmit(data: Profile) {
+    try {
+      await updateProfileMutation.mutateAsync(data);
+    } catch (error) {
+      console.error(error);
+    }
   }
   return (
     <SettingsLayout>
@@ -87,27 +93,6 @@ const ProfilePage: NextPage = () => {
                   <FormDescription>
                     This is the name that will be displayed on your profile and
                     in emails.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bio</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Tell us a little bit about yourself"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    You can <span>@mention</span> other users and organizations
-                    to link to them.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -152,67 +137,6 @@ const ProfilePage: NextPage = () => {
                   </Popover>
                   <FormDescription>
                     Your date of birth is used to calculate your age.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="language"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Language</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-[200px] justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? languages.find(
-                                (language) => language.value === field.value
-                              )?.label
-                            : "Select language"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search language..." />
-                        <CommandEmpty>No language found.</CommandEmpty>
-                        <CommandGroup>
-                          {languages.map((language) => (
-                            <CommandItem
-                              value={language.value}
-                              key={language.value}
-                              onSelect={(value) => {
-                                form.setValue("language", value);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  language.value === field.value
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {language.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>
-                    This is the language that will be used in the dashboard.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

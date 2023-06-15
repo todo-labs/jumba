@@ -1,4 +1,4 @@
-import { CreditCard, LogOut, PlusCircle, Settings, User } from "lucide-react";
+import { LogOut, PlusCircle, Settings, User } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import router from "next/router";
 import { Role } from "@prisma/client";
@@ -12,7 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "../ui/DropdownMenu";
 import {

@@ -32,10 +32,6 @@ export const profileSchema = z.object({
   dob: z.date({
     required_error: "A date of birth is required.",
   }),
-  language: z.string({
-    required_error: "Please select a language.",
-  }),
-  bio: z.string().max(160).min(4),
 });
 
 export type CreateExperiment = z.infer<typeof createExperimentSchema>;

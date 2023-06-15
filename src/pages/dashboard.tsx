@@ -2,10 +2,11 @@ import Image from "next/image";
 import {
   Activity,
   CreditCard,
-  DollarSign,
   Download,
+  ChefHatIcon,
   Users,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { Button } from "~/components/ui/Button";
 import {
@@ -25,7 +26,20 @@ import { CalendarDateRangePicker } from "~/components/dashboard/date-range-picke
 import { Overview } from "~/components/dashboard/overview";
 import { RecentSales } from "~/components/dashboard/recent-sales";
 
+import { api } from "~/utils/api";
+
 export default function DashboardPage() {
+
+  const { data: session } = useSession();
+
+  const { data: totalExperiments } = api.admin.totalExperiments.useQuery(undefined, {
+    enabled: !!session?.user,
+  });
+  const { data: totalUsers } = api.admin.totalUsers.useQuery(undefined, {
+    enabled: !!session?.user,
+  });
+
+
   return (
     <main>
       <div className="md:hidden">
@@ -74,27 +88,27 @@ export default function DashboardPage() {
                     <CardTitle className="text-sm font-medium">
                       Total Experiments
                     </CardTitle>
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    <ChefHatIcon className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">$45,231.89</div>
-                    <p className="text-xs text-muted-foreground">
-                      +20.1% from last month
-                    </p>
+                    <div className="text-2xl font-bold">
+                      {totalExperiments || 0}
+                      </div>
+                    
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Subscriptions
+                      Total Users
                     </CardTitle>
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">+2350</div>
-                    <p className="text-xs text-muted-foreground">
-                      +180.1% from last month
-                    </p>
+                    <div className="text-2xl font-bold">
+                      {totalUsers || 0}
+                    </div>
+                  
                   </CardContent>
                 </Card>
                 <Card>

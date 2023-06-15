@@ -66,6 +66,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
+import { Role } from "@prisma/client";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -110,6 +111,23 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+/** Reusable middleware to ensure the user is an admin */
+export const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
+  if (
+    !ctx.session ||
+    !ctx.session.user ||
+    (ctx.session.user.role !== Role.ADMIN)
+  ) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
 /**
  * Protected (authenticated) procedure
  *
@@ -119,3 +137,13 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+/**
+ * Admin procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to admins, use this. It verifies
+ * the session is valid and guarantees `ctx.session.user` is not null and is an admin.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const adminProcedure = t.procedure.use(enforceUserIsAdmin);

@@ -51,6 +51,7 @@ model User {
   Experiment    Experiment[]
   Imgs          Imgs[]
   Reviews       Reviews[]
+  dob           DateTime?
 }
 
 model VerificationToken {

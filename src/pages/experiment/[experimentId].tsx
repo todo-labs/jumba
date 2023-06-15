@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2Icon, LockIcon } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -52,6 +52,7 @@ const ExperimentPage: NextPage = () => {
     defaultValues: {
       comment: "",
       rating: 5,
+      experimentId: experimentId as string,
     },
   });
 
@@ -91,7 +92,7 @@ const ExperimentPage: NextPage = () => {
 
   function onSubmit(values: LeaveReview) {
     try {
-      console.log({
+      alert({
         ...values,
         experimentId: experimentId as string,
       });
@@ -248,17 +249,6 @@ const ExperimentPage: NextPage = () => {
                         </FormItem>
                       )}
                     />
-                    {/* {session?.user ? (
-                      
-                    ) : (
-                      <Button
-                        className="w-full lg:w-fit"
-                        onClick={() => void signIn()}
-                      >
-                        <LockIcon className="mr-2" />
-                        Login
-                      </Button>
-                    )} */}
                     <Button
                       className="w-full"
                       type="submit"
