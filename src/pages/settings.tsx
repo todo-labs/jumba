@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import SettingsLayout from "~/components/UserSidebarNav";
+import SettingsLayout from "~/components/user/SidebarNav";
 
 const SettingsPage: NextPage = () => {
   return (

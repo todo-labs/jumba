@@ -24,6 +24,9 @@ export const experimentRouter = createTRPCRouter({
           },
         },
       },
+      orderBy: {
+        tag: "asc",
+      },
     });
   }),
   create: protectedProcedure

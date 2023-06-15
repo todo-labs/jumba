@@ -3,22 +3,18 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import { signIn, useSession } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2Icon, LockIcon } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
 } from "~/components/ui/Card";
 import { ScrollArea } from "~/components/ui/ScrollArea";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
 import { Textarea } from "~/components/ui/TextArea";
-
-import { api } from "~/utils/api";
-import { LeaveReview, leaveReviewSchema } from "~/schemas";
-import { useForm } from "react-hook-form";
-import { useToast } from "~/hooks/useToast";
 import {
   Form,
   FormControl,
@@ -30,17 +26,19 @@ import {
 } from "~/components/ui/Form";
 import { Slider } from "~/components/ui/Slider";
 import { Button } from "~/components/ui/Button";
-import { Loader2Icon, LockIcon } from "lucide-react";
+
+import { api } from "~/utils/api";
+import { type LeaveReview, leaveReviewSchema } from "~/schemas";
+import { useToast } from "~/hooks/useToast";
 
 const ExperimentPage: NextPage = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const { experimentId: experimentId } = router.query;
+  const { experimentId } = router.query;
   const {
     data: experiment,
     isError,
     isLoading,
-    refetch,
   } = api.experiments.getOne.useQuery(
     { id: experimentId as string },
     {
@@ -54,12 +52,11 @@ const ExperimentPage: NextPage = () => {
     defaultValues: {
       comment: "",
       rating: 5,
-      experimentId: "",
     },
   });
 
   const leaveReviewMutation = api.experiments.leaveReview.useMutation({
-    async onSuccess() {
+    onSuccess() {
       toast({
         title: "Success",
         description: `Your review has been submitted`,
@@ -92,16 +89,16 @@ const ExperimentPage: NextPage = () => {
     })} ${date.getDate()}, ${date.getFullYear()}`;
   };
 
-  async function onSubmit(values: LeaveReview) {
+  function onSubmit(values: LeaveReview) {
     try {
       console.log({
         ...values,
         experimentId: experimentId as string,
       });
-      await leaveReviewMutation.mutateAsync({
-        ...values,
-        experimentId: experimentId as string,
-      });
+      // await leaveReviewMutation.mutateAsync({
+      //   ...values,
+      //   experimentId: experimentId as string,
+      // });
     } catch (error) {
       console.error(error);
     }
@@ -158,13 +155,13 @@ const ExperimentPage: NextPage = () => {
           {!!experiment?.Reviews && experiment.Reviews.length > 0 ? (
             <ScrollArea className="space-y-4">
               {experiment.Reviews.map((review) => (
-                <Card>
+                <Card key={review.id}>
                   <CardHeader>
                     <div className="flex items-center">
                       <Avatar>
-                        <AvatarImage src={experiment.createdBy?.image!} />
+                        <AvatarImage src={review.reviewedBy?.image} />
                         <AvatarFallback>
-                          {displayUserName(experiment.createdBy?.name)}
+                          {displayUserName(review.reviewedBy?.name)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
@@ -217,8 +214,9 @@ const ExperimentPage: NextPage = () => {
                           <FormLabel>What did you think?</FormLabel>
                           <FormControl>
                             <Textarea
-                              {...field}
+                              className="resize-none"
                               disabled={leaveReviewMutation.isLoading}
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -250,24 +248,28 @@ const ExperimentPage: NextPage = () => {
                         </FormItem>
                       )}
                     />
-                    {session?.user ? (
-                      <Button
-                        className="w-full"
-                        type="submit"
-                        disabled={leaveReviewMutation.isLoading}
-                      >
-                        {leaveReviewMutation.isLoading ? (
-                          <Loader2Icon className="mr-2 animate-spin" />
-                        ) : (
-                          "Submit"
-                        )}
-                      </Button>
+                    {/* {session?.user ? (
+                      
                     ) : (
-                      <Button className="w-full lg:w-fit" onClick={() => void signIn()}>
+                      <Button
+                        className="w-full lg:w-fit"
+                        onClick={() => void signIn()}
+                      >
                         <LockIcon className="mr-2" />
                         Login
                       </Button>
-                    )}
+                    )} */}
+                    <Button
+                      className="w-full"
+                      type="submit"
+                      disabled={leaveReviewMutation.isLoading}
+                    >
+                      {leaveReviewMutation.isLoading ? (
+                        <Loader2Icon className="mr-2 animate-spin" />
+                      ) : (
+                        "Submit"
+                      )}
+                    </Button>
                   </form>
                 </Form>
               </CardContent>

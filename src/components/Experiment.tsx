@@ -33,7 +33,7 @@ const Experiment = ({
             })}
           />
         </Link>
-        <Badge className="absolute right-4 top-2 rounded-md">#{tag}</Badge>
+        <Badge className="absolute right-4 top-2 text-white rounded-md">#{tag}</Badge>
       </figure>
       <CardContent className="mt-2 flex w-full flex-col justify-between">
         <CardTitle className="overflow-ellipsis text-2xl">{title}</CardTitle>

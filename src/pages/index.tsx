@@ -4,7 +4,12 @@ import Head from "next/head";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { IExperiment } from "types";
 import { Category } from "@prisma/client";
-import { FolderClosedIcon, Loader2Icon, LockIcon, MailWarning } from "lucide-react";
+import {
+  FolderClosedIcon,
+  Loader2Icon,
+  LockIcon,
+  MailWarning,
+} from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,17 +18,6 @@ import Option from "~/components/Option";
 import ExperimentCard from "~/components/Experiment";
 import DefaultState from "~/components/DefaultState";
 import { Button } from "~/components/ui/Button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "~/components/ui/AlertDialog";
 import {
   Dialog,
   DialogContent,
@@ -53,11 +47,11 @@ import { Slider } from "~/components/ui/Slider";
 import { api } from "~/utils/api";
 import { Requirements, options } from "~/constants";
 import { useToast } from "~/hooks/useToast";
-import { createExperimentSchema } from "~/schemas";
+import { CreateExperiment, createExperimentSchema } from "~/schemas";
 import { env } from "~/env.mjs";
 import { ScrollArea } from "~/components/ui/ScrollArea";
 import Link from "next/link";
-import { UserNav } from "~/components/UserNav";
+import { UserNav } from "~/components/user/Nav";
 import { cn } from "~/utils";
 
 const Home: NextPage = () => {
@@ -106,7 +100,7 @@ const Home: NextPage = () => {
     form.setValue("category", selectedOption);
   }, [selectedOption]);
 
-  const form = useForm<z.infer<typeof createExperimentSchema>>({
+  const form = useForm<CreateExperiment>({
     resolver: zodResolver(createExperimentSchema),
     defaultValues: {
       numOfPeople: 2,
@@ -121,7 +115,7 @@ const Home: NextPage = () => {
     control: form.control,
   });
 
-  async function onSubmit(values: z.infer<typeof createExperimentSchema>) {
+  async function onSubmit(values: CreateExperiment) {
     try {
       await createExperiment.mutateAsync(values);
       setShowSidebar(false);
@@ -196,6 +190,7 @@ const Home: NextPage = () => {
               <DefaultState
                 title="Loading Experiments..."
                 icon={Loader2Icon}
+                iconClassName="animate-spin"
                 description="We're working on getting all the experiments uploaded by people."
                 btnText=""
                 onClick={() => console.log("clicked")}
@@ -206,11 +201,11 @@ const Home: NextPage = () => {
                 icon={MailWarning}
                 description="We're working on getting all the experiments uploaded by people."
                 btnText="retry"
-                onClick={() => refetch()}
+                onClick={() => void refetch()}
               />
             ) : filterExperiments.length > 0 ? (
-              <ScrollArea className="h-[600px]">
-                <section className="grid h-full grid-cols-1 gap-3 xl:grid-cols-3">
+              <ScrollArea className="h-[800px]">
+                <section className="xxl:grid-cols-6 grid h-full grid-cols-1 gap-4 lg:grid-cols-3">
                   {filterExperiments.map(
                     (experiment: IExperiment, index: number) => (
                       <ExperimentCard key={index} {...experiment} />
@@ -348,7 +343,7 @@ const Home: NextPage = () => {
               ) : (
                 <Button className="w-full" onClick={() => void signIn()}>
                   <LockIcon className="mr-2" />
-                        Login
+                  Login
                 </Button>
               )}
             </form>

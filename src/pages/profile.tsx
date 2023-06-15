@@ -35,7 +35,7 @@ import {
 import { Separator } from "~/components/ui/Separator";
 import { profileSchema, Profile } from "~/schemas";
 import { languages } from "~/constants";
-import SettingsLayout from "~/components/UserSidebarNav";
+import SettingsLayout from "~/components/user/SidebarNav";
 import { Textarea } from "~/components/ui/TextArea";
 
 export const metadata: Metadata = {

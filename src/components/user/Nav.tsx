@@ -3,8 +3,8 @@ import { useSession, signOut } from "next-auth/react";
 import router from "next/router";
 import { Role } from "@prisma/client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/Avatar";
-import { Button } from "./ui/Button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
+import { Button } from "../ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "./ui/DropdownMenu";
+} from "../ui/DropdownMenu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "./ui/AlertDialog";
+} from "../ui/AlertDialog";
 
 export function UserNav() {
   const { data: session } = useSession();

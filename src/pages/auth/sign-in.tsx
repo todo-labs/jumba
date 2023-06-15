@@ -1,12 +1,11 @@
 import type { GetServerSideProps, NextPage } from "next";
-import { signIn } from "next-auth/react";
-import { useState } from "react";
-import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
 import { getServerAuthSession } from "~/server/auth";
-import { Loader2Icon } from "lucide-react";
-import { Button } from "~/components/ui/Button";
+import { ChefHatIcon, Command } from "lucide-react";
+import { buttonVariants } from "~/components/ui/Button";
+import { UserAuthForm } from "~/components/user/AuthForm";
+import { cn } from "~/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);
@@ -25,74 +24,79 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const SignIn: NextPage = () => {
-  const [loading, setLoading] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const onSubmit = async (data) => {
-    setLoading(true);
-    await signIn("email", { email: data.email });
-    setLoading(false);
-  };
-
-
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8">
-      <Head>
-        <title>Sign in</title>
-        <meta name="description" content="Sign in to your account" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <Link
-        href="/"
-        className="mt-6 text-center text-3xl font-extrabold text-gray-900 sm:mx-auto sm:w-full sm:max-w-md"
-      >
-        Sign in to your account
-      </Link>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("email", { required: true })}
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 sm:text-sm"
-                />
-                {errors.email && (
-                  <p className="mt-2 text-sm text-red-600" role="alert">
-                    Email address is required
-                  </p>
-                )}
-              </div>
+    <>
+      <div className="md:hidden">
+        <Image
+          src="/examples/authentication-light.png"
+          width={1280}
+          height={843}
+          alt="Authentication"
+          className="block dark:hidden"
+        />
+        <Image
+          src="/examples/authentication-dark.png"
+          width={1280}
+          height={843}
+          alt="Authentication"
+          className="hidden dark:block"
+        />
+      </div>
+      <div className="container relative hidden min-h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+        <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
+          <div
+            className="absolute inset-0 bg-cover"
+            style={{
+              backgroundImage:
+                "url(https://images.unsplash.com/photo-1590069261209-f8e9b8642343?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1376&q=80)",
+            }}
+          />
+          <div className="relative z-20 flex items-center text-lg font-medium">
+            <ChefHatIcon className="mr-2 h-6 w-6" /> Jumba
+          </div>
+          <div className="relative z-20 mt-auto">
+            <blockquote className="space-y-2">
+              <p className="text-lg">
+                &ldquo;This library has saved me countless hours of work and
+                helped me deliver stunning designs to my clients faster than
+                ever before. Highly recommended!&rdquo;
+              </p>
+              <footer className="text-sm">Sofia Davis</footer>
+            </blockquote>
+          </div>
+        </div>
+        <div className="lg:p-8">
+          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+            <div className="flex flex-col space-y-2 text-center">
+              <h1 className="text-2xl font-semibold tracking-tight">
+                Sign in to your account
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Enter your email below to receive your magic link.
+              </p>
             </div>
-
-            <div>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full"
+            <UserAuthForm />
+            <p className="px-8 text-center text-sm text-muted-foreground">
+              By clicking continue, you agree to our{" "}
+              <Link
+                href="/terms"
+                className="underline underline-offset-4 hover:text-primary"
               >
-                {loading ? <Loader2Icon className="animate-spin h-8 w-8" /> : "Sign in"}
-              </Button>
-            </div>
-          </form>
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link
+                href="/privacy"
+                className="underline underline-offset-4 hover:text-primary"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
