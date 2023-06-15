@@ -7,8 +7,7 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start",
-    "seed": "prisma db push && node prisma/seed.js"
+    "start": "next start"
   },
   "prisma": {
     "schema": "prisma/schema.prisma",

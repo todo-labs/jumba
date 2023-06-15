@@ -1,4 +1,3 @@
-import { Category } from "@prisma/client";
 import { 
   Card, 
   CardDescription

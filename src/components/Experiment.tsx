@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardTitle } from "./ui/Card";
 import { Badge } from "./ui/Badge";
 
 import { cn } from "~/utils";
-import { IExperiment } from "types";
+import type { IExperiment } from "types";
 
 const Experiment = ({
   title,
