@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import { useState, useMemo, useEffect } from "react";
 import Head from "next/head";
-import { useSession, signOut, signIn } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import { IExperiment } from "types";
 import { Category } from "@prisma/client";
 import {
@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
 import Option from "~/components/Option";
 import ExperimentCard from "~/components/Experiment";
@@ -63,13 +62,13 @@ const Home: NextPage = () => {
 
   const { data: session } = useSession();
 
-  const handleOptionPress = (option: Category | "Random") => {
-    if (option === "Random") {
-      const randomOption = options[Math.floor(Math.random() * options.length)];
-      setSelectedOption(randomOption.title);
-      setShowSidebar(true);
-      return;
-    }
+  const handleOptionPress = (option: Category) => {
+    // if (option === "Random") {
+    //   const randomOption = options[Math.floor(Math.random() * options.length)];
+    //   setSelectedOption(randomOption.title);
+    //   setShowSidebar(true);
+    //   return;
+    // }
     setSelectedOption(option);
     setShowSidebar(true);
   };
@@ -97,7 +96,7 @@ const Home: NextPage = () => {
   });
 
   useEffect(() => {
-    form.setValue("category", selectedOption);
+    form.setValue("category", selectedOption as Category);
   }, [selectedOption]);
 
   const form = useForm<CreateExperiment>({
@@ -106,13 +105,14 @@ const Home: NextPage = () => {
       numOfPeople: 2,
       category: selectedOption,
       requirements: Requirements.QUICK,
+      ingredients: [],
     },
     mode: "onChange",
   });
 
   const { fields, append } = useFieldArray({
-    name: "ingredients",
     control: form.control,
+    name: "ingredients",
   });
 
   async function onSubmit(values: CreateExperiment) {
@@ -124,15 +124,15 @@ const Home: NextPage = () => {
     }
   }
 
-  const filterExperiments = useMemo<IExperiment[]>(() => {
+  const filterExperiments = useMemo<any[]>(() => {
     if (!selectedOption) return data;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     const term = search.toLowerCase();
-    return data?.filter((experiment: IExperiment) => {
+    return data?.filter((experiment: any) => {
       return (
         experiment.title.toLowerCase().includes(term) ||
         experiment.tag.toString().toLowerCase().includes(term) ||
-        experiment.ingredients.filter((ingredient) =>
+        experiment.ingredients.filter((ingredient: string) =>
           ingredient.toLowerCase().includes(term)
         ).length > 0
       );
@@ -345,7 +345,11 @@ const Home: NextPage = () => {
                   <LockIcon className="mr-2" />
                   Login
                 </Button>
-              )}
+              {Object.keys(Requirements).map((requirement, index) => (
+                <SelectOption key={index} value={Requirements[requirement]}>
+                  {Requirements[requirement]}
+                </SelectOption>
+              ))}
             </form>
           </Form>
         </DialogContent>

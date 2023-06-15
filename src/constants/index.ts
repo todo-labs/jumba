@@ -7,15 +7,15 @@ export enum Requirements {
 }
 
 type IOption = {
-  title: Category | "Random";
+  title: Category;
   icon: string;
 };
 
 export const options: IOption[] = [
-  {
-    title: "Random",
-    icon: "🙈",
-  },
+  // {
+  //   title: "Random",
+  //   icon: "🙈",
+  // },
   {
     title: Category.BREAKFAST,
     icon: "🥞",

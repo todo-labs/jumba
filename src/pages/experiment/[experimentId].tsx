@@ -78,8 +78,10 @@ const ExperimentPage: NextPage = () => {
   const displayUserName = (name: string | null | undefined) => {
     if (!name) return "N. A";
     const [firstName, lastName] = name.split(" ");
-    if (!firstName && !lastName) return "N. A";
-    return `${firstName[0] ?? "N"}. ${lastName ?? "Available"}`;
+    if (!firstName || !lastName) return "N. A";
+    else {
+      return `${firstName[0] ?? "N"}. ${lastName ?? "Available"}`;
+    }
   };
 
   const formatDate = (d: Date) => {
@@ -124,7 +126,7 @@ const ExperimentPage: NextPage = () => {
             <div className="flex flex-col space-y-4">
               <div className="flex items-center space-x-4">
                 <Avatar>
-                  <AvatarImage src={experiment?.createdBy?.image} />
+                  <AvatarImage src={experiment?.createdBy?.image as string} />
                   <AvatarFallback>
                     {displayUserName(experiment?.createdBy?.name)}
                   </AvatarFallback>
@@ -183,7 +185,7 @@ const ExperimentPage: NextPage = () => {
                   <CardHeader>
                     <div className="flex items-center">
                       <Avatar>
-                        <AvatarImage src={review.reviewedBy?.image} />
+                        <AvatarImage src={review.reviewedBy?.image as string} />
                         <AvatarFallback>
                           {displayUserName(review.reviewedBy?.name)}
                         </AvatarFallback>
