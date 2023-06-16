@@ -26,6 +26,7 @@ import {
 import { DataTablePagination } from "./pagination";
 import { DataTableToolbar } from "./toolbar";
 import Default from "~/components/DefaultState";
+import { MagnetIcon } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -113,9 +114,9 @@ export function DataTable<TData, TValue>({
                   className="py-20 text-center"
                 >
                   <Default
-                    title="defaultHome.empty.title"
-                    description="defaultHome.empty.message"
-                    // type="empty"
+                    icon={MagnetIcon}
+                    title="No Experiments"
+                    description="There are no Experiments to display. Once users create Experiments, they will appear here."
                   />
                 </TableCell>
               </TableRow>

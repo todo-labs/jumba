@@ -1,12 +1,14 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { useSession } from "next-auth/react";
-import ReviewModal from '~/components/ReviewModal'
+import { format } from "date-fns";
 
+import ReviewModal from "~/components/ReviewModal";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
 
 import { api } from "~/utils/api";
+import { displayUserName } from "~/utils";
+import type { IExperiment } from "types";
 
 const ExperimentPage: NextPage = () => {
   const router = useRouter();
@@ -23,26 +25,11 @@ const ExperimentPage: NextPage = () => {
     }
   );
 
-  const displayUserName = (name: string | null | undefined) => {
-    if (!name) return "N. A";
-    const [firstName, lastName] = name.split(" ");
-    if (!firstName || !lastName) return "N. A";
-    else {
-      return `${firstName[0] ?? "N"}. ${lastName ?? "Available"}`;
-    }
-  };
-
-  const formatDate = (d: Date) => {
-    const date = new Date(d);
-    return `${date.toLocaleString("default", {
-      month: "long",
-    })} ${date.getDate()}, ${date.getFullYear()}`;
-  };
-
-
   if (isLoading) return <div>Loading...</div>;
 
   if (isError) return <div>Error</div>;
+
+  console.log(experiment)
 
   return (
     <div className="flex h-screen items-start justify-center">
@@ -60,7 +47,7 @@ const ExperimentPage: NextPage = () => {
             {experiment?.inspiration}
           </blockquote>
         </div>
-        <div className="mt-3 flex flex-col lg:flex-row lg:items-center space-x-6 space-y-6">
+        <div className="mt-3 flex flex-col space-x-6 space-y-6 lg:flex-row lg:items-center">
           <div className="flex-1">
             <div className="flex flex-col space-y-4">
               <div className="flex items-center space-x-4">
@@ -75,7 +62,7 @@ const ExperimentPage: NextPage = () => {
                     {displayUserName(experiment?.createdBy?.name)}
                   </h2>
                   <p className="text-sm text-muted-foreground">
-                    {formatDate(experiment?.createdAt!)}
+                    {format(experiment?.createdAt as Date, "MMMM dd, yyyy")}
                   </p>
                 </div>
               </div>
@@ -94,8 +81,7 @@ const ExperimentPage: NextPage = () => {
             <h1>
               Duration:{" "}
               <strong className="text-primary">
-                {experiment?.duration}{" "}
-                Mins
+                {experiment?.duration} Mins
               </strong>
             </h1>
           </div>
@@ -123,7 +109,7 @@ const ExperimentPage: NextPage = () => {
               <li key={step}>{step}</li>
             ))}
           </ol>
-          <ReviewModal />
+          <ReviewModal experiment={experiment as IExperiment} />
         </div>
       </article>
     </div>

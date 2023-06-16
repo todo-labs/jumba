@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import type { Row } from "@tanstack/react-table";
 import { EyeIcon, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "~/hooks/useToast";
@@ -45,16 +47,18 @@ export function DataTableRowActions<TData>({
     try {
       await deleteMutation.mutateAsync({
         // TODO: fix this, use Experiment type instead of TData
-        id: "",
+        id: row.original.id,
       });
       toast({
-        title: "Reminder deleted",
-        description: "Your reminder has been deleted.",
+        title: `Experiment #${row.original.tag} deleted`,
+        description: "This Experiment has been deleted. No User can access it.",
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        description:
+          error?.message ?? "Something went wrong. Please try again.",
         variant: "destructive",
       });
     }

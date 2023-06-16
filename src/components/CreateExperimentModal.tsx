@@ -38,17 +38,19 @@ interface ICreateExperimentModalProps {
 }
 
 const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
+  const utils = api.useContext();
+  const { toast } = useToast();
+  const { data: session } = useSession();
+
   const form = useForm<CreateExperiment>({
     resolver: zodResolver(createExperimentSchema),
     defaultValues: {
       numOfPeople: 2,
       category: props.category,
       requirements: Requirements.QUICK,
-      ingredients: []
+      ingredients: [],
     },
   });
-
-  const { data: session } = useSession();
 
   useEffect(() => {
     form.setValue("category", props.category);
@@ -56,11 +58,8 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "ingredients"
+    name: "ingredients",
   });
-
-  const utils = api.useContext();
-  const { toast } = useToast();
 
   const createExperiment = api.experiments.create.useMutation({
     async onSuccess(value) {
@@ -119,7 +118,11 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
                   </FormDescription>
                   <FormControl>
                     <article className="flex flex-row">
-                      <Input {...field} />
+                      <Input
+                        onChange={(e) =>
+                          field.onChange({ name: e.target.value })
+                        }
+                      />
                       <Button
                         size="sm"
                         variant="ghost"
@@ -138,7 +141,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
             type="button"
             variant="link"
             className="mt-4 w-full border-2 border-primary bg-primary/10 font-medium"
-            onClick={() => append("")}
+            onClick={() => append({ name: "" })}
           >
             Add Ingredient
           </Button>
@@ -179,7 +182,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
         />
         <FormField
           control={form.control}
-          name="numOfPeople"
+          name="feeds"
           render={({ field }) => (
             <FormItem>
               <FormLabel>

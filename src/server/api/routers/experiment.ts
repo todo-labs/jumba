@@ -37,12 +37,7 @@ export const experimentRouter = createTRPCRouter({
     .input(createExperimentSchema)
     .mutation(async ({ input, ctx }) => {
       try {
-        const recipe = await getRecipe(
-          input.category || "Random",
-          input.ingredients,
-          input.requirements,
-          input.numOfPeople
-        );
+        const recipe = await getRecipe(input);
 
         if (!recipe) {
           throw new TRPCError({
@@ -60,9 +55,9 @@ export const experimentRouter = createTRPCRouter({
           data: {
             tag,
             steps: recipe.steps,
-            feeds: input.numOfPeople,
-            inspiration: recipe.inspiration,
             createdById: ctx.session?.user.id,
+            feeds: input.feeds,
+            inspiration: recipe.inspiration,
             title: recipe.title,
             ingredients: recipe.ingredients,
             category: input.category,
@@ -106,7 +101,7 @@ export const experimentRouter = createTRPCRouter({
         },
       });
     }),
-  remove: adminProcedure
+  remove: protectedProcedure
     .input(getByIdSchema)
     .mutation(async ({ input, ctx }) => {
       await ctx.prisma.experiment.delete({

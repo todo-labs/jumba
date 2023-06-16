@@ -4,10 +4,17 @@ import { Requirements } from "~/constants";
 import { env } from "~/env.mjs";
 
 export const createExperimentSchema = z.object({
-  ingredients: z.array(),
+  ingredients: z
+    .array(
+      z.object({
+        name: z.string().min(2).max(30),
+      })
+    )
+    .min(2)
+    .max(10),
   requirements: z.nativeEnum(Requirements),
   category: z.nativeEnum(Category),
-  numOfPeople: z.number().min(1).max(parseInt(env.NEXT_PUBLIC_MAX_PEOPLE)),
+  feeds: z.number().min(1).max(parseInt(env.NEXT_PUBLIC_MAX_PEOPLE)),
 });
 
 export const getByIdSchema = z.object({
