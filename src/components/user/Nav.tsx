@@ -51,13 +51,13 @@ export function UserNav() {
                 src={session?.user.image as string}
                 alt={session?.user.name as string}
               />
-              <AvatarFallback className="border-2 border-primary bg-primary/20">
+              <AvatarFallback className="border-2 border-primary text-primary bg-primary/20">
                 {session?.user?.name ? getInitials(session.user.name) : "👻"}
               </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuContent className="w-56 mt-2" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p>{session?.user.name || "Anonymous"}</p>

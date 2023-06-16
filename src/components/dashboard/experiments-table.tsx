@@ -72,13 +72,14 @@ const columns: ColumnDef<Experiment>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex space-x-2">
-          <span className="max-w-[500px] truncate font-medium capitalize">
+          <span className="max-w-[500px] truncate font-medium">
             {row.getValue("feeds")}
           </span>
         </div>
       );
     },
     filterFn: (row, id, value) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       return value.includes(row.getValue(id));
     },
   },
@@ -107,18 +108,20 @@ const columns: ColumnDef<Experiment>[] = [
 ];
 
 const ExperimentTable = () => {
-  const { data, isLoading, isError, refetch, isFetched } =
+  const { data, isLoading, isError, refetch } =
     api.experiments.getAll.useQuery(undefined);
 
   return isLoading ? (
     <DefaultState
-      title="defaultHome.loading.title"
-      description="defaultHome.loading.message"
+      title="Loading experiments"
+      description="Please wait while we load the experiments"
     />
   ) : isError ? (
     <DefaultState
-      title="defaultHome.error.title"
-      description="defaultHome.error.message"
+      title="Error loading experiments"
+      description="Something went wrong while loading the experiments"
+      btnText="Retry"
+      onClick={void refetch()}
     />
   ) : (
     <DataTable data={data} columns={columns} />

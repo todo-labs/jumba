@@ -3,7 +3,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession, signIn } from "next-auth/react";
 import type { Category } from "@prisma/client";
-import { Loader2Icon, LockIcon } from "lucide-react";
+import { Loader2Icon, LockIcon, Trash2Icon } from "lucide-react";
 
 import {
   Form,
@@ -44,9 +44,8 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
       numOfPeople: 2,
       category: props.category,
       requirements: Requirements.QUICK,
-      ingredients: [],
+      ingredients: []
     },
-    mode: "onChange",
   });
 
   const { data: session } = useSession();
@@ -55,10 +54,10 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
     form.setValue("category", props.category);
   }, [form, props.category]);
 
-  // const { fields, append } = useFieldArray({
-  //   control: form.control,
-  //   name: "ingredients",
-  // });
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "ingredients"
+  });
 
   const utils = api.useContext();
   const { toast } = useToast();
@@ -103,8 +102,8 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={void form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* <div>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div>
           {fields.map((field, index) => (
             <FormField
               control={form.control}
@@ -119,7 +118,16 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
                     Add all the ingredients needed for this experiment 😁.
                   </FormDescription>
                   <FormControl>
-                    <Input {...field} />
+                    <article className="flex flex-row">
+                      <Input {...field} />
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash2Icon className="h-3 w-3 text-destructive" />
+                      </Button>
+                    </article>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -129,12 +137,12 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
           <Button
             type="button"
             variant="link"
-            className="mt-4 w-full border-2 border-primary bg-primary/20 font-medium"
+            className="mt-4 w-full border-2 border-primary bg-primary/10 font-medium"
             onClick={() => append("")}
           >
             Add Ingredient
           </Button>
-        </div> */}
+        </div>
         <FormField
           control={form.control}
           name="requirements"
@@ -175,8 +183,8 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Number of People
-                {field.value}
+                Number of People:{" "}
+                <span className="text-primary">{field.value}</span>
               </FormLabel>
               <FormControl>
                 <Slider

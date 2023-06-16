@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 import { cn } from "~/utils";
 import { Button } from "~/components/ui/Button";
@@ -26,7 +26,7 @@ import {
 } from "~/components/ui/Form";
 
 import { Separator } from "~/components/ui/Separator";
-import { profileSchema, Profile } from "~/schemas";
+import { profileSchema, type Profile } from "~/schemas";
 import SettingsLayout from "~/components/user/SidebarNav";
 import { api } from "~/utils/api";
 
@@ -89,6 +89,23 @@ const ProfilePage: NextPage = () => {
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Your name" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    This is the name that will be displayed on your profile and
+                    in emails.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="profilePicture"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Profile Picture</FormLabel>
+                  <FormControl>
+                    <Input id="picture" type="file" {...field} />
                   </FormControl>
                   <FormDescription>
                     This is the name that will be displayed on your profile and

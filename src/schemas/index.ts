@@ -4,7 +4,7 @@ import { Requirements } from "~/constants";
 import { env } from "~/env.mjs";
 
 export const createExperimentSchema = z.object({
-  ingredients: z.array(z.string().min(3).max(30)).min(1).max(10),
+  ingredients: z.array(),
   requirements: z.nativeEnum(Requirements),
   category: z.nativeEnum(Category),
   numOfPeople: z.number().min(1).max(parseInt(env.NEXT_PUBLIC_MAX_PEOPLE)),
@@ -31,6 +31,9 @@ export const profileSchema = z.object({
     }),
   dob: z.date({
     required_error: "A date of birth is required.",
+  }),
+  profilePicture: z.string().url({
+    message: "Profile picture must be a valid URL.",
   }),
 });
 

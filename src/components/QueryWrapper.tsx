@@ -17,7 +17,7 @@ type QueryWrapperProps<TQueryFnData, TData> = {
   keyExtractor?: (item: TData, index: number) => string;
   renderItem: (item: TData, index: number) => React.ReactNode;
   containerStyle?: string;
-  height?: number;
+  height: number;
 };
 
 const DefaultLoadingComponent = () => <h1>Loading...</h1>;
@@ -32,7 +32,7 @@ function QueryWrapper<TQueryFnData, TData>({
   containerStyle,
   HeaderComponent,
   FooterComponent,
-  height,
+  height = 500,
 }: QueryWrapperProps<TQueryFnData, TData>) {
   const { isLoading, isError, data } = query || {};
 
@@ -55,8 +55,8 @@ function QueryWrapper<TQueryFnData, TData>({
   return (
     <div>
       {HeaderComponent && <HeaderComponent />}
-      <ScrollArea className={`h-${height ? height : 500}px`}>
-        <div className={cn(containerStyle, "w-full")}>
+      <ScrollArea className={`h-[${height}px]`}>
+        <div className={containerStyle}>
           {dataArray.map((item, index) => (
             <React.Fragment
               key={

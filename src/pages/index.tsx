@@ -1,10 +1,10 @@
 import { type NextPage } from "next";
 import { useState, useMemo } from "react";
 import Head from "next/head";
-import type { IExperiment, IExperimentWithoutReviews } from "types";
+import type { IExperiment } from "types";
 import Link from "next/link";
 import type { Category } from "@prisma/client";
-import { FolderClosedIcon, Loader2Icon, MailWarning } from "lucide-react";
+import { ChefHatIcon, FileWarningIcon, Loader2Icon } from "lucide-react";
 
 import Option from "~/components/Option";
 import ExperimentCard from "~/components/Experiment";
@@ -30,7 +30,7 @@ const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
   const experimentsQuery = api.experiments.getAll.useQuery();
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>("");
+  // const [search, setSearch] = useState<string>("");
 
   const handleOptionPress = (option: Category) => {
     setSelectedOption(option);
@@ -69,14 +69,14 @@ const Home: NextPage = () => {
             Jumba
             <span className="text-primary">.</span>
           </Link>
-          <div className="flex w-1/3 space-x-3">
-            <Input
+          <div className="flex flex-row-reverse">
+            {/* <Input
               type="search"
               name="search"
               placeholder="Search past 'Experiments'"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-            />
+            /> */}
             <UserNav />
           </div>
         </section>
@@ -107,7 +107,7 @@ const Home: NextPage = () => {
                     title="Loading Experiments..."
                     icon={Loader2Icon}
                     iconClassName="animate-spin"
-                    description="We're working on getting all the experiments uploaded by people."
+                    description="We're working on loading all your experiments."
                     btnText=""
                     onClick={() => console.log("clicked")}
                   />
@@ -115,25 +115,25 @@ const Home: NextPage = () => {
                 Error: () => (
                   <DefaultState
                     title="Error Loading Experiments"
-                    icon={MailWarning}
-                    description="We're working on getting all the experiments uploaded by people."
+                    icon={FileWarningIcon}
+                    description="We're having trouble loading your experiments. Please try again later."
                     btnText="retry"
-                    onClick={() => void experimentsQuery.refetch()}
+                    onClick={void experimentsQuery.refetch()}
                   />
                 ),
                 Empty: () => (
                   <DefaultState
                     title="No Experiments Yet"
-                    icon={FolderClosedIcon}
-                    description="It seems that no one has uploaded any experiments yet. Be the first one to share your findings with the community!"
+                    icon={ChefHatIcon}
+                    description="This is kinda Awkward. you can be the first to upload an experiment."
                   />
                 ),
               }}
               renderItem={(experiment: IExperiment, index: number) => (
                 <ExperimentCard key={index} {...experiment} />
               )}
-              height={500}
-              containerStyle="grid grid-cols-3 gap-3 w-full items-start"
+              height={400}
+              containerStyle="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 w-full items-start"
             />
           </div>
         </section>
@@ -142,11 +142,11 @@ const Home: NextPage = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              New <span className="text-primary">{selectedOption}</span>{" "}
+              New <span className="text-primary capitalize">{selectedOption?.toLowerCase()}</span>{" "}
               Experiment
             </DialogTitle>
             <DialogDescription>
-              Pick all the options needed to create a new experiment.
+              Pick all the options needed to create your new experiment.
             </DialogDescription>
           </DialogHeader>
           <CreateExperimentModal
