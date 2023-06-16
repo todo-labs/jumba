@@ -9,6 +9,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
 import { api } from "~/utils/api";
 import { displayUserName } from "~/utils";
 import type { IExperiment } from "types";
+import { ScrollArea } from "~/components/ui/ScrollArea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from "~/components/ui/Card";
 
 const ExperimentPage: NextPage = () => {
   const router = useRouter();
@@ -29,7 +36,7 @@ const ExperimentPage: NextPage = () => {
 
   if (isError) return <div>Error</div>;
 
-  console.log(experiment)
+  console.log(experiment);
 
   return (
     <div className="flex h-screen items-start justify-center">
@@ -110,6 +117,33 @@ const ExperimentPage: NextPage = () => {
             ))}
           </ol>
           <ReviewModal experiment={experiment as IExperiment} />
+          <ScrollArea className="h-[500px] space-y-4">
+            {experiment?.Reviews?.map((review) => (
+              <Card key={review.id}>
+                <CardHeader>
+                  <div className="flex items-center space-x-3">
+                    <Avatar>
+                      <AvatarImage src={review.reviewedBy?.image as string} />
+                      <AvatarFallback>
+                        {displayUserName(review.reviewedBy?.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm font-semibold">
+                        {displayUserName(review.reviewedBy?.name)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {format(review.createdAt, "MMMM dd, yyyy")}
+                      </p>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>{review.comment}</CardDescription>
+                </CardContent>
+              </Card>
+            ))}
+          </ScrollArea>
         </div>
       </article>
     </div>

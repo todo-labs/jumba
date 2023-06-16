@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import sentiment from "sentiment";
 
 import {
   adminProcedure,
@@ -92,6 +93,15 @@ export const experimentRouter = createTRPCRouter({
   leaveReview: protectedProcedure
     .input(leaveReviewSchema)
     .mutation(async ({ input, ctx }) => {
+      const score = new sentiment().analyze(input.comment).score;
+
+      if (score < 0) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Your comment is too negative",
+        });
+      }
+
       await ctx.prisma.reviews.create({
         data: {
           comment: input.comment,
@@ -101,7 +111,7 @@ export const experimentRouter = createTRPCRouter({
         },
       });
     }),
-  remove: protectedProcedure
+  remove: adminProcedure
     .input(getByIdSchema)
     .mutation(async ({ input, ctx }) => {
       await ctx.prisma.experiment.delete({

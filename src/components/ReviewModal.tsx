@@ -16,7 +16,6 @@ import {
 } from "~/components/ui/Form";
 import { Slider } from "~/components/ui/Slider";
 import { Button } from "~/components/ui/Button";
-import { Separator } from "~/components/ui/Separator";
 import { ScrollArea } from "~/components/ui/ScrollArea";
 import {
   Card,
@@ -90,115 +89,91 @@ const ReviewModal = (props: IReviewModalProps) => {
       >
         Reviews
       </h2>
-      <ScrollArea className="h-[500px] space-y-4">
-        {props.experiment?.Reviews?.map((review) => (
-          <Card key={review.id}>
+      {props.experiment?.Reviews.length === 0 ||
+        (props.experiment.Reviews.some(
+          (e) => e.reviewedById === session?.user.id
+        ) && (
+          <Card>
             <CardHeader>
-              <div className="flex items-center">
+              <div className="flex items-center space-x-3">
                 <Avatar>
-                  <AvatarImage src={review.reviewedBy?.image as string} />
+                  <AvatarImage src={session?.user.image!} />
                   <AvatarFallback>
-                    {displayUserName(review.reviewedBy?.name)}
+                    {displayUserName(session?.user?.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="text-sm font-semibold">
-                    {displayUserName(review.reviewedBy?.name)}
+                    {displayUserName(session?.user?.name)}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {format(review.createdAt, "MMMM dd, yyyy")}
+                    {format(new Date(), "MMMM dd, yyyy")}
                   </p>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <CardDescription>{review.comment}</CardDescription>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  <FormField
+                    control={form.control}
+                    name="comment"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>What did you think?</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            className="resize-none"
+                            disabled={leaveReviewMutation.isLoading}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="rating"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Rating: {field.value} / 10</FormLabel>
+                        <FormDescription>
+                          How would you rate this experiment?
+                        </FormDescription>
+                        <FormControl>
+                          <Slider
+                            min={1}
+                            max={10}
+                            step={1}
+                            disabled={leaveReviewMutation.isLoading}
+                            defaultValue={[field.value]}
+                            onValueChange={(value) => field.onChange(value[0])}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    className="w-full"
+                    type="submit"
+                    disabled={leaveReviewMutation.isLoading}
+                  >
+                    {leaveReviewMutation.isLoading ? (
+                      <Loader2Icon className="mr-2 animate-spin" />
+                    ) : (
+                      "Submit"
+                    )}
+                  </Button>
+                </form>
+              </Form>
             </CardContent>
           </Card>
         ))}
-      </ScrollArea>
-      {!!props.experiment?.Reviews && props.experiment.Reviews.length > 0 && (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center space-x-3">
-              <Avatar>
-                <AvatarImage src={session?.user.image!} />
-                <AvatarFallback>
-                  {displayUserName(session?.user?.name)}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="text-sm font-semibold">
-                  {displayUserName(session?.user?.name)}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {format(new Date(), "MMMM dd, yyyy")}
-                </p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                <FormField
-                  control={form.control}
-                  name="comment"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>What did you think?</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          className="resize-none"
-                          disabled={leaveReviewMutation.isLoading}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="rating"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Rating: {field.value} / 10</FormLabel>
-                      <FormDescription>
-                        How would you rate this experiment?
-                      </FormDescription>
-                      <FormControl>
-                        <Slider
-                          min={1}
-                          max={10}
-                          step={1}
-                          disabled={leaveReviewMutation.isLoading}
-                          defaultValue={[field.value]}
-                          onValueChange={(value) => field.onChange(value[0])}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  className="w-full"
-                  type="submit"
-                  disabled={leaveReviewMutation.isLoading}
-                >
-                  {leaveReviewMutation.isLoading ? (
-                    <Loader2Icon className="mr-2 animate-spin" />
-                  ) : (
-                    "Submit"
-                  )}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      )}
     </>
   );
 };
