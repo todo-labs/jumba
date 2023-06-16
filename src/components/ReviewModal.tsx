@@ -60,7 +60,7 @@ const ReviewModal = (props: IReviewModalProps) => {
         title: "Success",
         description: `Your review has been submitted`,
       });
-      await utils.experimentexperiments.getOne.refetch();
+      await utils.experiments.getOne.invalidate();
     },
     onError(error) {
       toast({

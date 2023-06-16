@@ -45,7 +45,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
   const form = useForm<CreateExperiment>({
     resolver: zodResolver(createExperimentSchema),
     defaultValues: {
-      numOfPeople: 2,
+      feeds: 2,
       category: props.category,
       requirements: Requirements.QUICK,
       ingredients: [],

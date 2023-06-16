@@ -4,9 +4,10 @@ import { X } from "lucide-react";
 import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import { DataTableViewOptions } from "./view-options";
+// import type { Experiment } from "@prisma/client";
 
-interface DataTableToolbarProps<TData> {
-  table: Table<TData>;
+interface DataTableToolbarProps<T> {
+  table: Table<T>;
 }
 
 export function DataTableToolbar<TData>({

@@ -51,6 +51,7 @@ export function RecentlyCreatedExperiments() {
             <div className="ml-auto font-medium">{item.category}</div>
           </div>
         )}
+        height={300}
       />
     </div>
   );
