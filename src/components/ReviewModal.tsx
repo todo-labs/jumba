@@ -90,35 +90,34 @@ const ReviewModal = (props: IReviewModalProps) => {
       >
         Reviews
       </h2>
-      {!!props.experiment?.Reviews && props.experiment.Reviews.length > 0 ? (
-        <ScrollArea className="space-y-4">
-          {props.experiment.Reviews.map((review) => (
-            <Card key={review.id}>
-              <CardHeader>
-                <div className="flex items-center">
-                  <Avatar>
-                    <AvatarImage src={review.reviewedBy?.image as string} />
-                    <AvatarFallback>
-                      {displayUserName(review.reviewedBy?.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-sm font-semibold">
-                      {displayUserName(review.reviewedBy?.name)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {format(review.createdAt, "MMMM dd, yyyy")}
-                    </p>
-                  </div>
+      <ScrollArea className="h-[500px] space-y-4">
+        {props.experiment?.Reviews?.map((review) => (
+          <Card key={review.id}>
+            <CardHeader>
+              <div className="flex items-center">
+                <Avatar>
+                  <AvatarImage src={review.reviewedBy?.image as string} />
+                  <AvatarFallback>
+                    {displayUserName(review.reviewedBy?.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-semibold">
+                    {displayUserName(review.reviewedBy?.name)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {format(review.createdAt, "MMMM dd, yyyy")}
+                  </p>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{review.comment}</CardDescription>
-              </CardContent>
-            </Card>
-          ))}
-        </ScrollArea>
-      ) : (
+              </div>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>{review.comment}</CardDescription>
+            </CardContent>
+          </Card>
+        ))}
+      </ScrollArea>
+      {!!props.experiment?.Reviews && props.experiment.Reviews.length > 0 && (
         <Card>
           <CardHeader>
             <div className="flex items-center space-x-3">
