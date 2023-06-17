@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Head from "next/head";
 import type { IExperiment } from "types";
 import Link from "next/link";
@@ -17,8 +17,6 @@ import {
   DialogTitle,
 } from "~/components/ui/Dialog";
 
-import { Input } from "~/components/ui/Input";
-
 import { UserNav } from "~/components/user/Nav";
 import QueryWrapper from "~/components/QueryWrapper";
 
@@ -30,29 +28,11 @@ const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
   const experimentsQuery = api.experiments.getAll.useQuery();
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
-  // const [search, setSearch] = useState<string>("");
 
   const handleOptionPress = (option: Category) => {
     setSelectedOption(option);
     setShowSidebar(true);
   };
-
-  // const filterExperiments = useMemo<IExperimentWithoutReviews[]>(() => {
-  //   if (!selectedOption) return experimentsQuery.data;
-  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  //   const term = search.toLowerCase();
-  //   return experimentsQuery.data?.filter(
-  //     (experiment: IExperimentWithoutReviews) => {
-  //       return (
-  //         experiment.title.toLowerCase().includes(term) ||
-  //         experiment.tag.toString().toLowerCase().includes(term) ||
-  //         experiment.ingredients.filter((ingredient: string) =>
-  //           ingredient.toLowerCase().includes(term)
-  //         ).length > 0
-  //       );
-  //     }
-  //   );
-  // }, [experimentsQuery, selectedOption, search]);
 
   return (
     <div className="flex h-screen items-start justify-center">
@@ -70,13 +50,6 @@ const Home: NextPage = () => {
             <span className="text-primary">.</span>
           </Link>
           <div className="flex flex-row-reverse">
-            {/* <Input
-              type="search"
-              name="search"
-              placeholder="Search past 'Experiments'"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            /> */}
             <UserNav />
           </div>
         </section>
@@ -142,7 +115,10 @@ const Home: NextPage = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              New <span className="text-primary capitalize">{selectedOption?.toLowerCase()}</span>{" "}
+              New{" "}
+              <span className="capitalize text-primary">
+                {selectedOption?.toLowerCase()}
+              </span>{" "}
               Experiment
             </DialogTitle>
             <DialogDescription>

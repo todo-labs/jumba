@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import type { Row } from "@tanstack/react-table";
 import { EyeIcon, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "~/hooks/useToast";
@@ -54,7 +52,7 @@ export function DataTableRowActions({
     },
   });
 
-  const handleDeleteReminder = async () => {
+  const handleDelete = async () => {
     try {
       await deleteMutation.mutateAsync({
         // TODO: fix this, use Experiment type instead of TData
@@ -106,9 +104,7 @@ export function DataTableRowActions({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDeleteReminder}>
-            Continue
-          </AlertDialogAction>
+          <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

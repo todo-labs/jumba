@@ -25,17 +25,25 @@ import {
 
 import { DataTablePagination } from "./pagination";
 import { DataTableToolbar } from "./toolbar";
-import Default from "~/components/DefaultState";
 import { MagnetIcon } from "lucide-react";
+import DefaultState from "~/components/DefaultState";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  emptyState?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  emptyState = (
+    <DefaultState
+      icon={MagnetIcon}
+      title="No Date"
+      description="There are no data to display."
+    />
+  ),
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -113,11 +121,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="py-20 text-center"
                 >
-                  <Default
-                    icon={MagnetIcon}
-                    title="No Experiments"
-                    description="There are no Experiments to display. Once users create Experiments, they will appear here."
-                  />
+                  {emptyState}
                 </TableCell>
               </TableRow>
             )}

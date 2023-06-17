@@ -28,7 +28,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
 import { api } from "~/utils/api";
 import { type LeaveReview, leaveReviewSchema } from "~/schemas";
 import { useToast } from "~/hooks/useToast";
-import { displayUserName } from "~/utils";
+import { displayUserName, getInitials } from "~/utils";
 import type { IExperiment } from "types";
 
 interface IReviewModalProps {
@@ -99,7 +99,7 @@ const ReviewModal = (props: IReviewModalProps) => {
                 <Avatar>
                   <AvatarImage src={session?.user.image!} />
                   <AvatarFallback>
-                    {displayUserName(session?.user?.name)}
+                    {getInitials(session?.user?.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div>

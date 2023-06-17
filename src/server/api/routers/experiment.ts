@@ -18,7 +18,7 @@ export const experimentRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.experiment.findMany({
       where: {
-        createdById: ctx.session?.user.id,
+        createdById: ctx.session?.user.id || undefined,
       },
       include: {
         createdBy: true,

@@ -7,7 +7,7 @@ import ReviewModal from "~/components/ReviewModal";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
 
 import { api } from "~/utils/api";
-import { displayUserName } from "~/utils";
+import { displayUserName, getInitials } from "~/utils";
 import type { IExperiment } from "types";
 import { ScrollArea } from "~/components/ui/ScrollArea";
 import {
@@ -61,7 +61,7 @@ const ExperimentPage: NextPage = () => {
                 <Avatar>
                   <AvatarImage src={experiment?.createdBy?.image as string} />
                   <AvatarFallback>
-                    {displayUserName(experiment?.createdBy?.name)}
+                    {getInitials(experiment?.createdBy?.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">

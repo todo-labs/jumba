@@ -14,6 +14,15 @@ export const displayUserName = (name: string | null | undefined) => {
   }
 };
 
+export const getInitials = (name: string | null | undefined) => {
+  if (!name) return "N. A";
+  const [firstName, lastName] = name.split(" ");
+  if (!firstName || !lastName) return "NA";
+  else {
+    return `${firstName[0] ?? "N"}${lastName[0] ?? "A"}`;
+  }
+};
+
 export const formatDate = (d: Date) => {
   const date = new Date(d);
   return `${date.toLocaleString("default", {

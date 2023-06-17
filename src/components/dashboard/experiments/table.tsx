@@ -1,11 +1,13 @@
 import type { Experiment } from "@prisma/client";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "../ui/Checkbox";
-import { DataTableColumnHeader } from "../query-table/header";
-import { DataTableRowActions } from "../query-table/row-actions";
-import DefaultState from "../DefaultState";
+
+import { Checkbox } from "~/components/ui/Checkbox";
+import { DataTableColumnHeader } from "~/components/query-table/header";
+import DefaultState from "~/components/DefaultState";
+import { DataTable } from "~/components/query-table/data-table";
+
+import { DataTableRowActions } from "./row-actions";
 import { api } from "~/utils/api";
-import { DataTable } from "../query-table/data-table";
 
 const columns: ColumnDef<Experiment>[] = [
   {
