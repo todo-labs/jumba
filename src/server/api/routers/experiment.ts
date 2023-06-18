@@ -31,7 +31,6 @@ export const experimentRouter = createTRPCRouter({
       },
       orderBy: {
         tag: "asc",
-        createdAt: "desc",
       },
     });
   }),

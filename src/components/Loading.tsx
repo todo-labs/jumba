@@ -25,8 +25,8 @@ const LoadingScreen = () => {
     // Return your loading screen component here
     return (
     <div className="flex flex-col items-center justify-center h-screen">
-        <Loader2Icon className="w-16 h-16 text-white/30 animate-spin" />
-        <h1 className="text-4xl text-white">Loading...</h1>
+        <Loader2Icon className="w-16 h-16 text-primary/30 animate-spin" />
+        <h1 className="text-4xl dark:text-white">Loading...</h1>
       </div>
     );
   }

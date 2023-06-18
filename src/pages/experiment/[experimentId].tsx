@@ -56,14 +56,14 @@ const ExperimentPage: NextPage = () => {
   const deleteReview = api.admin.removeReview.useMutation({
     onSuccess() {
       toast({
-        title: "",
-        description: "",
+        title: "Success",
+        description: "The review was deleted successfully.",
       });
     },
     onError() {
       toast({
-        title: "",
-        description: "",
+        title: "Error",
+        description: "There was an error deleting the review.",
       });
     },
   });
