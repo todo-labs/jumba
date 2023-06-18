@@ -1,4 +1,3 @@
-import { ChevronDown } from "lucide-react";
 import type { NextPage } from "next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -45,7 +44,7 @@ const SettingsPage: NextPage = () => {
   function onSubmit(data: AppearanceFormValues) {
     setTheme(data.theme);
     toast({
-      title: "Your Appreance has been updated",
+      title: "Your Appearance has been updated",
     });
   }
 

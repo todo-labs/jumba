@@ -14,7 +14,7 @@ interface IOptionProps {
 const Option = ({ title, icon, selected, onClick }: IOptionProps) => {
   return (
     <Card
-      className={cn('p-6 xl:m-3 mr-3 flex flex-col  cursor-pointer text-center items-center justify-center rounded-xl border-2 hover:text-white hover:border-4 hover:border-primary',
+      className={cn('p-6 xl:m-3 mr-3 flex flex-col max-w-[200px] cursor-pointer text-center items-center justify-center rounded-xl border-2 hover:text-white hover:border-4 hover:border-primary',
         { "border-4 border-primary bg-primary shadow-lg": selected })}
       onClick={onClick}
     >

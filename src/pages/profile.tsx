@@ -88,7 +88,11 @@ const ProfilePage: NextPage = () => {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your name" {...field} />
+                    <Input
+                      className="w-[300px]"
+                      placeholder="Your name"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     This is the name that will be displayed on your profile and
@@ -105,7 +109,12 @@ const ProfilePage: NextPage = () => {
                 <FormItem>
                   <FormLabel>Profile Picture</FormLabel>
                   <FormControl>
-                    <Input id="picture" type="file" {...field} />
+                    <Input
+                      className="w-[300px]"
+                      id="picture"
+                      type="file"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     This is the name that will be displayed on your profile and

@@ -160,9 +160,9 @@ const ExperimentPage: NextPage = () => {
             ))}
           </ol>
           <ReviewModal experiment={experiment as IExperiment} />
-          <ScrollArea className="max-h-[500px] space-y-4">
+          <ScrollArea className="max-h-[500px] py-3">
             {experiment?.Reviews?.map((review) => (
-              <Card key={review.id}>
+              <Card key={review.id} className="mb-3">
                 {session?.user.role === Role.ADMIN && (
                   <AlertDialog>
                     <AlertDialogTrigger className="float-right">

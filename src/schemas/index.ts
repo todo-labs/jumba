@@ -39,9 +39,12 @@ export const profileSchema = z.object({
   dob: z.date({
     required_error: "A date of birth is required.",
   }),
-  profilePicture: z.string().url({
-    message: "Profile picture must be a valid URL.",
-  }),
+  profilePicture: z
+    .string()
+    .url({
+      message: "Profile picture must be a valid URL.",
+    })
+    .optional(),
 });
 
 export type CreateExperiment = z.infer<typeof createExperimentSchema>;
