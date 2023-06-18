@@ -17,9 +17,11 @@ import {
 import { Button } from "~/components/ui/Button";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/RadioGroup";
 import SettingsLayout from "~/components/user/SidebarNav";
+import { Separator } from "~/components/ui/Separator";
 
 import { toast } from "~/hooks/useToast";
-import { Separator } from "~/components/ui/Separator";
+
+type Theme = "light" | "dark";
 
 const SettingsPage: NextPage = () => {
   const { setTheme, theme: currentTheme } = useTheme();
@@ -31,9 +33,8 @@ const SettingsPage: NextPage = () => {
 
   type AppearanceFormValues = z.infer<typeof appearanceFormSchema>;
 
-  // This can come from your database or API.
   const defaultValues: Partial<AppearanceFormValues> = {
-    theme: currentTheme ?? "light",
+    theme: (currentTheme as Theme) ?? "light",
   };
 
   const form = useForm<AppearanceFormValues>({

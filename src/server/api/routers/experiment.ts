@@ -31,6 +31,7 @@ export const experimentRouter = createTRPCRouter({
       },
       orderBy: {
         tag: "asc",
+        createdAt: "desc",
       },
     });
   }),
@@ -123,7 +124,6 @@ export const experimentRouter = createTRPCRouter({
             experimentId: input.experimentId,
           },
         });
-        s;
       } else {
         throw new TRPCError({
           code: "BAD_REQUEST",
