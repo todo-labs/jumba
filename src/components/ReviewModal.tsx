@@ -35,8 +35,6 @@ interface IReviewModalProps {
   experiment: IExperiment;
 }
 
-// TODO: show create review modal if user has not left a review yet, keep it sticky to top
-
 const ReviewModal = (props: IReviewModalProps) => {
   const { toast } = useToast();
 
@@ -81,6 +79,11 @@ const ReviewModal = (props: IReviewModalProps) => {
     }
   }
 
+  console.log(
+    props.experiment?.Reviews.length === 0 ||
+      props.experiment.Reviews.some((e) => e.reviewedById != session?.user.id)
+  );
+
   return (
     <>
       <h2
@@ -89,91 +92,91 @@ const ReviewModal = (props: IReviewModalProps) => {
       >
         Reviews
       </h2>
-      {props.experiment?.Reviews.length === 0 ||
-        (props.experiment.Reviews.some(
-          (e) => e.reviewedById === session?.user.id
-        ) && (
-          <Card>
-            <CardHeader>
-              <div className="flex items-center space-x-3">
-                <Avatar>
-                  <AvatarImage src={session?.user.image!} />
-                  <AvatarFallback>
-                    {getInitials(session?.user?.name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-sm font-semibold">
-                    {displayUserName(session?.user?.name)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {format(new Date(), "MMMM dd, yyyy")}
-                  </p>
-                </div>
+      {(props.experiment?.Reviews.length === 0 ||
+        props.experiment.Reviews.some(
+          (e) => e.reviewedById != session?.user.id
+        )) && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center space-x-3">
+              <Avatar>
+                <AvatarImage src={session?.user.image!} />
+                <AvatarFallback>
+                  {getInitials(session?.user?.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-semibold">
+                  {displayUserName(session?.user?.name)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {format(new Date(), "MMMM dd, yyyy")}
+                </p>
               </div>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6"
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
+                <FormField
+                  control={form.control}
+                  name="comment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>What did you think?</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          className="resize-none"
+                          disabled={leaveReviewMutation.isLoading}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="rating"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Rating: {field.value} / 10</FormLabel>
+                      <FormDescription>
+                        How would you rate this experiment?
+                      </FormDescription>
+                      <FormControl>
+                        <Slider
+                          min={1}
+                          max={10}
+                          step={1}
+                          disabled={leaveReviewMutation.isLoading}
+                          defaultValue={[field.value]}
+                          onValueChange={(value) => field.onChange(value[0])}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  className="w-full"
+                  type="submit"
+                  disabled={leaveReviewMutation.isLoading}
                 >
-                  <FormField
-                    control={form.control}
-                    name="comment"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>What did you think?</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            className="resize-none"
-                            disabled={leaveReviewMutation.isLoading}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="rating"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Rating: {field.value} / 10</FormLabel>
-                        <FormDescription>
-                          How would you rate this experiment?
-                        </FormDescription>
-                        <FormControl>
-                          <Slider
-                            min={1}
-                            max={10}
-                            step={1}
-                            disabled={leaveReviewMutation.isLoading}
-                            defaultValue={[field.value]}
-                            onValueChange={(value) => field.onChange(value[0])}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    className="w-full"
-                    type="submit"
-                    disabled={leaveReviewMutation.isLoading}
-                  >
-                    {leaveReviewMutation.isLoading ? (
-                      <Loader2Icon className="mr-2 animate-spin" />
-                    ) : (
-                      "Submit"
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        ))}
+                  {leaveReviewMutation.isLoading ? (
+                    <Loader2Icon className="mr-2 animate-spin" />
+                  ) : (
+                    "Submit"
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      )}
     </>
   );
 };

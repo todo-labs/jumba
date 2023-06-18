@@ -2,10 +2,8 @@ import type { GetServerSideProps, NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getServerAuthSession } from "~/server/auth";
-import { ChefHatIcon, Command } from "lucide-react";
-import { buttonVariants } from "~/components/ui/Button";
+import { ChefHatIcon } from "lucide-react";
 import { UserAuthForm } from "~/components/user/AuthForm";
-import { cn } from "~/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);
@@ -39,23 +37,15 @@ const SignIn: NextPage = () => {
           <div
             className="absolute inset-0 bg-cover"
             style={{
-              backgroundImage:
-                "url(/auth-bg.jpeg)",
+              backgroundImage: "url(/auth-bg.jpeg)",
             }}
           />
-          <div className="relative z-20 flex items-center text-lg font-bold text-black">
+          <Link
+            href="/"
+            className="relative z-20 flex items-center text-lg font-bold text-black"
+          >
             <ChefHatIcon className="mr-2 h-6 w-6" /> Jumba
-          </div>
-          {/* <div className="relative z-20 mt-auto">
-            <blockquote className="space-y-2">
-              <p className="text-lg text-black">
-                &ldquo;This library has saved me countless hours of work and
-                helped me deliver stunning designs to my clients faster than
-                ever before. Highly recommended!&rdquo;
-              </p>
-              <footer className="text-sm">Sofia Davis</footer>
-            </blockquote>
-          </div> */}
+          </Link>
         </div>
         <div className="lg:p-8">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">

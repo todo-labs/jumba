@@ -7,7 +7,7 @@ import { z } from "zod";
 import { env } from "~/env.mjs";
 import type { CreateExperiment } from "~/schemas";
 
-const recipeModel = new OpenAI({
+const model = new OpenAI({
   openAIApiKey: env.OPEN_API_KEY,
   temperature: 0,
   maxTokens: 2000,
@@ -38,6 +38,23 @@ const recipeParser = StructuredOutputParser.fromZodSchema(
 
 type RecipeParserResponseType = z.infer<typeof recipeParser.schema>;
 
+const sentimentParser = StructuredOutputParser.fromZodSchema(
+  z.object({
+    approved: z
+      .boolean()
+      .describe(
+        "Whether or not this review is appropriate for the given content"
+      ),
+    suggestion: z
+      .string()
+      .describe(
+        "Why this comment was not approved, if approved return an empty string"
+      ),
+  })
+);
+
+type SentimentParserResponseType = z.infer<typeof sentimentParser.schema>;
+
 export async function getRecipe(
   arg: CreateExperiment
 ): Promise<RecipeParserResponseType | undefined> {
@@ -61,7 +78,7 @@ export async function getRecipe(
   });
 
   const recipeChain = new LLMChain({
-    llm: recipeModel,
+    llm: model,
     prompt: template,
     outputKey: "review",
     outputParser: recipeParser,
@@ -80,4 +97,41 @@ export async function getRecipe(
   const end = performance.now();
   console.log(`\nAI took ${Math.fround((end - start) / 1000)}s to respond`);
   return data["review"] as RecipeParserResponseType;
+}
+
+export async function reviewComment(
+  comment: string,
+  content: string
+): Promise<SentimentParserResponseType | undefined> {
+  const promptTemplate = `Is this {comment} appropriate for the given content: {content}? If not, please provide suggestions to make it more suitable.
+  {formatInstructions}`;
+
+  const format = sentimentParser.getFormatInstructions();
+
+  const template = new PromptTemplate({
+    template: promptTemplate,
+    inputVariables: ["comment", "content"],
+    partialVariables: {
+      formatInstructions: format,
+    },
+  });
+
+  const reviewChain = new LLMChain({
+    llm: model,
+    prompt: template,
+    outputKey: "review",
+    outputParser: sentimentParser,
+    verbose: true,
+  });
+
+  console.log(`\nAI is thinking...`);
+  const start = performance.now();
+
+  const data = await reviewChain.call({ comment, content });
+
+  const end = performance.now();
+  console.log(
+    `\nAI took ${Math.fround((end - start) / 1000).toFixed(2)}s to respond`
+  );
+  return data["review"] as SentimentParserResponseType;
 }

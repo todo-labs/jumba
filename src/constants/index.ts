@@ -17,6 +17,22 @@ export const options: IOption[] = [
     icon: "🌍",
   },
   {
+    title: Category.ITALIAN,
+    icon: "🍝",
+  },
+  {
+    title: Category.AMERICAN,
+    icon: "🍔",
+  },
+  {
+    title: Category.MEDITERRANEAN,
+    icon: "🍆",
+  },
+  {
+    title: Category.VEGETARIAN,
+    icon: "🥦",
+  },
+  {
     title: Category.BREAKFAST,
     icon: "🥞",
   },
@@ -25,7 +41,7 @@ export const options: IOption[] = [
     icon: "🍜",
   },
   {
-    title: Category.MEXICAN,
+    title: Category.HISPANIC,
     icon: "🌮",
   },
   {

@@ -95,7 +95,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
       await createExperiment.mutateAsync(values);
       props.onClose();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -216,7 +216,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
             )}
           </Button>
         ) : (
-          <Button className="w-full" onClick={void signIn()}>
+          <Button className="w-full" onClick={() => void signIn()}>
             <LockIcon className="mr-2" />
             Login
           </Button>

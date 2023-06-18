@@ -2,19 +2,26 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import { Role } from "@prisma/client";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 import { buttonVariants } from "~/components/ui/Button";
 import { cn } from "~/utils";
-import { Role } from "@prisma/client";
-import { useSession } from "next-auth/react";
+import {
+  CogIcon,
+  HomeIcon,
+  LayoutDashboardIcon,
+  User2Icon,
+} from "lucide-react";
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
     href: string;
     title: string;
     enabled?: boolean;
+    icon?: React.ReactNode;
   }[];
 }
 
@@ -29,23 +36,26 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
       )}
       {...props}
     >
-      {items.map((item) => (
+      {items.map((item) =>
         item.enabled === false ? null : (
-        <Link
-          key={item.href}
-          href={item.href}
-          className={cn(
-            buttonVariants({ variant: "ghost" }),
-            pathname === item.href
-              ? "bg-muted hover:bg-muted"
-              : "hover:bg-transparent hover:underline",
-            "justify-start"
-          )}
-        >
-          {item.title}
-        </Link>
-      )
-      ))}
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              pathname === item.href
+                ? "bg-muted hover:bg-muted"
+                : "hover:bg-transparent hover:underline",
+              "justify-start items-center"
+            )}
+          >
+            {item.icon && (
+              <span className="mr-2 flex-shrink-0">{item.icon}</span>
+            )}
+            {item.title}
+          </Link>
+        )
+      )}
     </nav>
   );
 }
@@ -60,24 +70,29 @@ interface SettingsLayoutProps {
 }
 
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
-
   const { data: session } = useSession();
 
   const sidebarNavItems = [
     {
+      icon: <HomeIcon />,
+      title: "Home",
+      href: "/",
+    },
+    {
+      icon: <User2Icon />,
       title: "Profile",
       href: "/profile",
-      enabled: true
     },
     {
+      icon: <CogIcon />,
       title: "Settings",
       href: "/settings",
-      enabled: true
     },
     {
+      icon: <LayoutDashboardIcon />,
       title: "Dashboard",
       href: "/dashboard",
-      enabled: session?.user?.role === Role.ADMIN
+      enabled: session?.user?.role === Role.ADMIN,
     },
   ];
   return (

@@ -3,7 +3,11 @@ import * as z from "zod";
 
 export const adminRouter = createTRPCRouter({
   totalExperiments: adminProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.experiment.findMany();
+    return await ctx.prisma.experiment.findMany({
+      include: {
+        createdBy: true,
+      },
+    });
   }),
   totalUsers: adminProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.user.count();
@@ -39,4 +43,11 @@ export const adminRouter = createTRPCRouter({
       },
     });
   }),
+  removeReview: adminProcedure
+    .input(z.string().cuid())
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.reviews.delete({
+        where: { id: input },
+      });
+    }),
 });

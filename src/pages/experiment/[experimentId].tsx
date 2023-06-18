@@ -2,20 +2,39 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { format } from "date-fns";
+import type { IExperiment } from "types";
+import { PencilIcon, Trash2Icon } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { Role } from "@prisma/client";
 
 import ReviewModal from "~/components/ReviewModal";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
-
-import { api } from "~/utils/api";
-import { displayUserName, getInitials } from "~/utils";
-import type { IExperiment } from "types";
 import { ScrollArea } from "~/components/ui/ScrollArea";
+
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
 } from "~/components/ui/Card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/AlertDialog";
+
+import { api } from "~/utils/api";
+import { displayUserName, getInitials } from "~/utils";
+import DefaultState from "~/components/DefaultState";
+import { Button } from "~/components/ui/Button";
+import { useToast } from "~/hooks/useToast";
 
 const ExperimentPage: NextPage = () => {
   const router = useRouter();
@@ -32,11 +51,35 @@ const ExperimentPage: NextPage = () => {
     }
   );
 
+  const { toast } = useToast();
+
+  const deleteReview = api.admin.removeReview.useMutation({
+    onSuccess() {
+      toast({
+        title: "",
+        description: "",
+      });
+    },
+    onError() {
+      toast({
+        title: "",
+        description: "",
+      });
+    },
+  });
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteReview.mutateAsync(id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const { data: session } = useSession();
+
   if (isLoading) return <div>Loading...</div>;
-
   if (isError) return <div>Error</div>;
-
-  console.log(experiment);
 
   return (
     <div className="flex h-screen items-start justify-center">
@@ -117,15 +160,41 @@ const ExperimentPage: NextPage = () => {
             ))}
           </ol>
           <ReviewModal experiment={experiment as IExperiment} />
-          <ScrollArea className="h-[500px] space-y-4">
+          <ScrollArea className="max-h-[500px] space-y-4">
             {experiment?.Reviews?.map((review) => (
               <Card key={review.id}>
-                <CardHeader>
-                  <div className="flex items-center space-x-3">
+                {session?.user.role === Role.ADMIN && (
+                  <AlertDialog>
+                    <AlertDialogTrigger className="float-right">
+                      <Trash2Icon className="m-3 h-4 w-4 text-destructive" />
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete this review.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => void handleDelete(review.id)}
+                        >
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+                <CardHeader className="flex flex-row items-center justify-between space-x-3">
+                  <div className="flex space-x-3">
                     <Avatar>
                       <AvatarImage src={review.reviewedBy?.image as string} />
                       <AvatarFallback>
-                        {displayUserName(review.reviewedBy?.name)}
+                        {getInitials(review.reviewedBy?.name)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
@@ -137,9 +206,15 @@ const ExperimentPage: NextPage = () => {
                       </p>
                     </div>
                   </div>
+                  <div className="text-muted-foreground">
+                    <strong className="text-primary">{review.rating}</strong> /
+                    10
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription>{review.comment}</CardDescription>
+                  <CardDescription>
+                    <blockquote>{review.comment}</blockquote>
+                  </CardDescription>
                 </CardContent>
               </Card>
             ))}

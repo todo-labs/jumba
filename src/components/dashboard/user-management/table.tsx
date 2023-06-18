@@ -62,44 +62,44 @@ const columns: ColumnDef<Column>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+  // {
+  //   accessorKey: "createdAt",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Joined" />
+  //   ),
+  //   cell: ({ row }) => {
+  //     console.log(row)
+  //     const date = new Date(row.getValue("createdAt"));
+
+  //     if (!date) {
+  //       return <Badge color="red">Not verified</Badge>;
+  //     }
+
+  //     const status = formatDistanceToNow(date, {
+  //       addSuffix: true,
+  //     });
+
+  //     return <div className="w-[80px]">{status}</div>;
+  //   },
+  //   filterFn: (row, id, value) => {
+  //     return value.includes(row.getValue(id));
+  //   },
+  // },
   {
-    accessorKey: "emailVerified",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Joined" />
-    ),
-    cell: ({ row }) => {
-      const date: Date = row.getValue("emailVerified");
-
-      if (!date) {
-        return <Badge color="red">Not verified</Badge>;
-      }
-
-      const status = formatDistanceToNow(date, {
-        addSuffix: true,
-      });
-
-      return <div className="w-[80px]">{status}</div>;
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
-  {
-    accessorKey: "Experiments",
+    accessorKey: "Experiment",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="# of Experiments" />
     ),
     cell: ({ row }) => {
       // get status based on date
       const experiments = row.getValue("Experiment");
-      console.log(experiments)
       if (
         !experiments ||
         (Array.isArray(experiments) && experiments.length === 0)
       ) {
         return <Badge variant="destructive">No experiments</Badge>;
       } else if (Array.isArray(experiments) && experiments.length > 0) {
-        return <div className="w-[100px]">{experiments.length}</div>;
+        return <div className="w-[100px] text-center">{experiments.length}</div>;
       }
     },
     filterFn: (row, id, value) => {
@@ -119,8 +119,9 @@ const UserTable = () => {
   return isLoading ? (
     <DefaultState
       icon={Loader2Icon}
+      iconClassName="animate-spin"
       title="Loading Users"
-      description="Please wait while we load the experiments"
+      description="Please wait while we load all the users"
     />
   ) : isError ? (
     <DefaultState

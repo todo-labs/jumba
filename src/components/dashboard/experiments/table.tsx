@@ -1,4 +1,4 @@
-import type { Experiment } from "@prisma/client";
+import type { Experiment, User } from "@prisma/client";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "~/components/ui/Checkbox";
@@ -9,7 +9,11 @@ import { DataTable } from "~/components/query-table/data-table";
 import { DataTableRowActions } from "./row-actions";
 import { api } from "~/utils/api";
 
-const columns: ColumnDef<Experiment>[] = [
+type Column = Experiment & {
+  createdBy: User
+}
+
+const columns: ColumnDef<Column>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -85,24 +89,23 @@ const columns: ColumnDef<Experiment>[] = [
       return value.includes(row.getValue(id));
     },
   },
-  // {
-  //   accessorKey: "creator",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Creator" />
-  //   ),
-  //   cell: ({ row }) => {
+  {
+    accessorKey: "createdBy",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Creator" />
+    ),
+    cell: ({ row }) => {
 
-  //     console.log(row.getValue("createdBy"));
-  //     return (
-  //       <div className="flex items-center">
-  //         <span>{row.getValue("createdBy")?.name}</span>
-  //       </div>
-  //     );
-  //   },
-  //   filterFn: (row, id, value) => {
-  //     return value.includes(row.getValue(id));
-  //   },
-  // },
+      return (
+        <div className="flex items-center">
+          <span>{row.getValue("createdBy")?.name}</span>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
   {
     id: "actions",
     cell: ({ row }) => <DataTableRowActions row={row} />,
@@ -111,7 +114,7 @@ const columns: ColumnDef<Experiment>[] = [
 
 const ExperimentTable = () => {
   const { data, isLoading, isError, refetch } =
-    api.experiments.getAll.useQuery(undefined);
+    api.admin.totalExperiments.useQuery(undefined);
 
   return isLoading ? (
     <DefaultState

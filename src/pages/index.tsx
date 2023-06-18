@@ -55,15 +55,17 @@ const Home: NextPage = () => {
         </section>
 
         <section className="mt-10 flex overflow-hidden overflow-x-scroll">
-          {options.sort().map((option, index) => (
-            <Option
-              key={index}
-              title={option.title}
-              icon={option.icon}
-              selected={selectedOption === option.title}
-              onClick={() => handleOptionPress(option.title)}
-            />
-          ))}
+          {options
+            .sort((a, b) => a.title.localeCompare(b.title))
+            .map((option, index) => (
+              <Option
+                key={index}
+                title={option.title}
+                icon={option.icon}
+                selected={selectedOption === option.title}
+                onClick={() => handleOptionPress(option.title)}
+              />
+            ))}
         </section>
 
         <section className="mt-10 flex h-full flex-col">

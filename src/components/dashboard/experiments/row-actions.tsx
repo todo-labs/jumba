@@ -55,7 +55,6 @@ export function DataTableRowActions({
   const handleDelete = async () => {
     try {
       await deleteMutation.mutateAsync({
-        // TODO: fix this, use Experiment type instead of TData
         id: row.original.id,
       });
     } catch (error) {

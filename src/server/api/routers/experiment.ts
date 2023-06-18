@@ -12,7 +12,7 @@ import {
   getByIdSchema,
   leaveReviewSchema,
 } from "~/schemas";
-import { getRecipe } from "~/utils/ai";
+import { getRecipe, reviewComment } from "~/utils/ai";
 
 export const experimentRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -67,7 +67,7 @@ export const experimentRouter = createTRPCRouter({
         });
         return data;
       } catch (err) {
-        console.log(err);
+        console.error(err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Could not generate a recipe",
@@ -98,18 +98,40 @@ export const experimentRouter = createTRPCRouter({
       if (score < 0) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Your comment is too negative",
+          message:
+            "Your review is too negative. Please provide something more constructive.",
         });
       }
 
-      await ctx.prisma.reviews.create({
-        data: {
-          comment: input.comment,
-          rating: input.rating,
-          reviewedById: ctx.session?.user.id,
-          experimentId: input.experimentId,
+      const experiment = await ctx.prisma.experiment.findUnique({
+        where: {
+          id: input.experimentId,
         },
       });
+
+      const content =
+        experiment?.ingredients.concat(experiment?.steps).join(" ") || "";
+
+      const approval = await reviewComment(input.comment, content);
+
+      if (approval?.approved) {
+        await ctx.prisma.reviews.create({
+          data: {
+            comment: input.comment,
+            rating: input.rating,
+            reviewedById: ctx.session?.user.id,
+            experimentId: input.experimentId,
+          },
+        });
+        s;
+      } else {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            approval?.suggestion ||
+            "Your comment was not deemed appropriate for the current recipe. Please try again!",
+        });
+      }
     }),
   remove: adminProcedure
     .input(getByIdSchema)
