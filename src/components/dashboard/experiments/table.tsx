@@ -10,10 +10,10 @@ import { DataTableRowActions } from "./row-actions";
 import { api } from "~/utils/api";
 
 type Column = Experiment & {
-  createdBy: User
-}
+  createdBy: User;
+};
 
-const columns: ColumnDef<Column>[] = [
+const columns: ColumnDef<Experiment>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -89,23 +89,25 @@ const columns: ColumnDef<Column>[] = [
       return value.includes(row.getValue(id));
     },
   },
-  {
-    accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Creator" />
-    ),
-    cell: ({ row }) => {
+  // {
+  //   accessorKey: "createdBy",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Creator" />
+  //   ),
+  //   cell: ({ row }) => {
 
-      return (
-        <div className="flex items-center">
-          <span>{row.getValue("createdBy")?.name}</span>
-        </div>
-      );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
+  //     const name = row.getValue("createdBy");
+
+  //     return (
+  //       <div className="flex items-center">
+  //         <span>{name.nam}</span>
+  //       </div>
+  //     );
+  //   },
+  //   filterFn: (row, id, value) => {
+  //     return value.includes(row.getValue(id));
+  //   },
+  // },
   {
     id: "actions",
     cell: ({ row }) => <DataTableRowActions row={row} />,
