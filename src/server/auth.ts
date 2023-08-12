@@ -6,7 +6,7 @@ import {
 } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { env } from "@/env.mjs";
+import { env } from "@/env/server.mjs";
 import { prisma } from "@/server/db";
 import type { Role } from "@prisma/client";
 import { createTransport } from "nodemailer";

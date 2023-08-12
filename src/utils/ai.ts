@@ -4,7 +4,7 @@ import { StructuredOutputParser } from "langchain/output_parsers";
 import { PromptTemplate } from "langchain/prompts";
 import { z } from "zod";
 
-import { env } from "@/env.mjs";
+import { env } from "@/env/server.mjs";
 import type { CreateExperiment } from "@/schemas";
 
 const model = new OpenAI({

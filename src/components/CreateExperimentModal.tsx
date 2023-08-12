@@ -27,7 +27,7 @@ import { Input } from "./ui/Input";
 
 import { type CreateExperiment, createExperimentSchema } from "@/schemas";
 import { Requirements } from "@/utils/constants";
-import { env } from "@/env.mjs";
+import { env } from "@/env/client.mjs";
 import { api } from "@/utils/api";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils";
@@ -207,7 +207,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
               <FormControl>
                 <Slider
                   min={1}
-                  max={parseInt(env.NEXT_PUBLIC_MAX_PEOPLE)}
+                  max={env.NEXT_PUBLIC_MAX_PEOPLE}
                   step={1}
                   disabled={createExperiment.isLoading}
                   defaultValue={[field.value]}

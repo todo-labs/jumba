@@ -1,7 +1,7 @@
 import { Category } from "@prisma/client";
 import z from "zod";
 import { Requirements } from "@/utils/constants";
-import { env } from "@/env.mjs";
+import { env } from "@/env/client.mjs";
 
 export const createExperimentSchema = z.object({
   ingredients: z
@@ -14,7 +14,7 @@ export const createExperimentSchema = z.object({
     .max(10),
   requirements: z.nativeEnum(Requirements),
   category: z.nativeEnum(Category),
-  feeds: z.number().min(1).max(parseInt(env.NEXT_PUBLIC_MAX_PEOPLE)),
+  feeds: z.number().min(1).max(env.NEXT_PUBLIC_MAX_PEOPLE),
   desiredMeal: z.string().min(2).max(50).optional(),
 });
 
