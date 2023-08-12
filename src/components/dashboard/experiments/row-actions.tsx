@@ -1,9 +1,9 @@
 import type { Row } from "@tanstack/react-table";
 import { EyeIcon, MoreHorizontal, Trash } from "lucide-react";
-import { toast } from "~/hooks/useToast";
+import { toast } from "@/hooks/useToast";
 import type { Experiment } from "@prisma/client";
 
-import { Button } from "~/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "~/components/ui/DropdownMenu";
+} from "@/components/ui/DropdownMenu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,9 +22,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/ui/AlertDialog";
+} from "@/components/ui/AlertDialog";
 
-import { api } from "~/utils/api";
+import { api } from "@/utils/api";
 
 interface DataTableRowActionsProps<T> {
   row: Row<T>;

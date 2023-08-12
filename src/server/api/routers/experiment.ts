@@ -6,13 +6,13 @@ import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
-} from "~/server/api/trpc";
+} from "@/server/api/trpc";
 import {
   createExperimentSchema,
   getByIdSchema,
   leaveReviewSchema,
-} from "~/schemas";
-import { getRecipe, reviewComment } from "~/utils/ai";
+} from "@/schemas";
+import { getRecipe, reviewComment } from "@/utils/ai";
 
 export const experimentRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {

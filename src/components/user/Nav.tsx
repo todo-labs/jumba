@@ -1,5 +1,5 @@
 import { LogOut, PlusCircle, Settings, User } from "lucide-react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, signIn } from "next-auth/react";
 import router from "next/router";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
@@ -39,7 +39,7 @@ export function UserNav() {
     void signOut();
   };
 
-  if (!session) return null;
+  if (!session) return <Button onClick={() => void signIn()}>Login</Button>;
 
   return (
     <AlertDialog>
@@ -51,13 +51,13 @@ export function UserNav() {
                 src={session?.user.image as string}
                 alt={session?.user.name as string}
               />
-              <AvatarFallback className="border-2 border-primary text-primary bg-primary/20">
+              <AvatarFallback className="border-2 border-primary bg-primary/20 text-primary">
                 {session?.user?.name ? getInitials(session.user.name) : "👻"}
               </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56 mt-2" align="end" forceMount>
+        <DropdownMenuContent className="mt-2 w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p>{session?.user.name || "Anonymous"}</p>

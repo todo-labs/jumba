@@ -2,8 +2,8 @@ import React from "react";
 import type { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
 
-import { getServerAuthSession } from "~/server/auth";
-import { Button } from "~/components/ui/Button";
+import { getServerAuthSession } from "@/server/auth";
+import { Button } from "@/components/ui/Button";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);
@@ -34,7 +34,7 @@ const VerifyRequestPage: NextPage = () => {
           We&apos;ve sent a verification link to your email address. Please
           click the link to complete your account setup.
         </p>
-        <div className="flex space-x-5 justify-center">
+        <div className="flex justify-center space-x-5">
           <Button>Resend</Button>
           <Button onClick={() => router.back()} variant="secondary">
             Go Back

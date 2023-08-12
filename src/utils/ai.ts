@@ -4,8 +4,8 @@ import { StructuredOutputParser } from "langchain/output_parsers";
 import { PromptTemplate } from "langchain/prompts";
 import { z } from "zod";
 
-import { env } from "~/env.mjs";
-import type { CreateExperiment } from "~/schemas";
+import { env } from "@/env.mjs";
+import type { CreateExperiment } from "@/schemas";
 
 const model = new OpenAI({
   openAIApiKey: env.OPEN_API_KEY,
@@ -60,6 +60,7 @@ export async function getRecipe(
 ): Promise<RecipeParserResponseType | undefined> {
   const actionTemplate = `
     You are a Michelin star chef. Who has now switched to writing cookbooks.
+    {desiredMeal}
     You are writing a cookbook for {category} cuisine. You are tasked with coming up with a recipe using the following ingredients: {ingredients}.
     Please provide the recipe in the following format: {formatInstructions}
     The recipe must be {requirements} and feed {feeds} people.
@@ -74,6 +75,9 @@ export async function getRecipe(
     inputVariables: ["category", "ingredients", "requirements", "feeds"],
     partialVariables: {
       formatInstructions: format,
+      desiredMeal: arg.desiredMeal
+        ? `You are tasked with creating a recipe for ${arg.desiredMeal}.`
+        : "",
     },
   });
 

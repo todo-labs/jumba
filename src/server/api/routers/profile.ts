@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { profileSchema } from "~/schemas";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { profileSchema } from "@/schemas";
 
 export const profileRouter = createTRPCRouter({
   get: protectedProcedure.query(async ({ ctx }) => {

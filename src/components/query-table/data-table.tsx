@@ -13,6 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { MagnetIcon } from "lucide-react";
 
 import {
   Table,
@@ -25,8 +26,7 @@ import {
 
 import { DataTablePagination } from "./pagination";
 import { DataTableToolbar } from "./toolbar";
-import { MagnetIcon } from "lucide-react";
-import DefaultState from "~/components/DefaultState";
+import DefaultState from "@/components/DefaultState";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -40,8 +40,8 @@ export function DataTable<TData, TValue>({
   emptyState = (
     <DefaultState
       icon={MagnetIcon}
-      title="No Date"
-      description="There are no data to display."
+      title="No Data"
+      description="There is no data to display."
     />
   ),
 }: DataTableProps<TData, TValue>) {

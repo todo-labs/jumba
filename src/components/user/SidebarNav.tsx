@@ -7,8 +7,8 @@ import { Role } from "@prisma/client";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 
-import { buttonVariants } from "~/components/ui/Button";
-import { cn } from "~/utils";
+import { buttonVariants } from "@/components/ui/Button";
+import { cn } from "@/utils";
 import {
   CogIcon,
   HomeIcon,
@@ -46,7 +46,7 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
               pathname === item.href
                 ? "bg-muted hover:bg-muted"
                 : "hover:bg-transparent hover:underline",
-              "justify-start items-center"
+              "items-center justify-start"
             )}
           >
             {item.icon && (

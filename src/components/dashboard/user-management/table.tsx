@@ -3,14 +3,14 @@ import type { Experiment, User } from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
 import { BatteryWarningIcon, Loader2Icon, User2Icon } from "lucide-react";
 
-import { DataTable } from "~/components/query-table/data-table";
-import { DataTableColumnHeader } from "~/components/query-table/header";
+import { DataTable } from "@/components/query-table/data-table";
+import { DataTableColumnHeader } from "@/components/query-table/header";
 import { DataTableRowActions } from "./row-actions";
-import { Checkbox } from "~/components/ui/Checkbox";
-import { Badge } from "~/components/ui/Badge";
-import DefaultState from "~/components/DefaultState";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { Badge } from "@/components/ui/Badge";
+import DefaultState from "@/components/DefaultState";
 
-import { api } from "~/utils/api";
+import { api } from "@/utils/api";
 
 type Column = User & { Experiment: Experiment[] };
 
@@ -99,7 +99,9 @@ const columns: ColumnDef<Column>[] = [
       ) {
         return <Badge variant="destructive">No experiments</Badge>;
       } else if (Array.isArray(experiments) && experiments.length > 0) {
-        return <div className="w-[100px] text-center">{experiments.length}</div>;
+        return (
+          <div className="w-[100px] text-center">{experiments.length}</div>
+        );
       }
     },
     filterFn: (row, id, value) => {

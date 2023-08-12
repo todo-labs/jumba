@@ -5,16 +5,16 @@ import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import type { Metadata } from "next";
 
-import { cn } from "~/utils";
-import { Button } from "~/components/ui/Button";
-import { Calendar } from "~/components/ui/Calendar";
-import { Input } from "~/components/ui/Input";
+import { cn } from "@/utils";
+import { Button } from "@/components/ui/Button";
+import { Calendar } from "@/components/ui/Calendar";
+import { Input } from "@/components/ui/Input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "~/components/ui/Popover";
-import { toast } from "~/hooks/useToast";
+} from "@/components/ui/Popover";
+import { toast } from "@/hooks/useToast";
 import {
   Form,
   FormControl,
@@ -23,12 +23,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/components/ui/Form";
+} from "@/components/ui/Form";
 
-import { Separator } from "~/components/ui/Separator";
-import { profileSchema, type Profile } from "~/schemas";
-import SettingsLayout from "~/components/user/SidebarNav";
-import { api } from "~/utils/api";
+import { Separator } from "@/components/ui/Separator";
+import { profileSchema, type Profile } from "@/schemas";
+import SettingsLayout from "@/components/user/SidebarNav";
+import { api } from "@/utils/api";
 
 export const metadata: Metadata = {
   title: "Forms",

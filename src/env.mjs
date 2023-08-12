@@ -25,6 +25,8 @@ const server = z.object({
   EMAIL_PASSWORD: z.string().min(1).optional(),
   EMAIL_FROM: z.string().min(1).optional(),
   PEXELS_API_KEY: z.string().min(1).optional(),
+  UPLOADTHING_SECRET: z.string().min(1).optional(),
+  UPLOADTHING_APP_ID: z.string().min(1).optional(),
 });
 
 /**
@@ -36,12 +38,11 @@ const client = z.object({
   NEXT_PUBLIC_MAX_PEOPLE: z.string().refine((val) => {
     const num = parseInt(val);
     return num > 0;
-    }
-  ),
+  }),
   NEXT_PUBLIC_MAX_INGREDIENTS: z.string().refine((val) => {
     const num = parseInt(val);
     return num > 0;
-    }),
+  }),
 });
 
 /**
@@ -64,6 +65,8 @@ const processEnv = {
   PEXELS_API_KEY: process.env.PEXELS_API_KEY,
   NEXT_PUBLIC_MAX_PEOPLE: process.env.NEXT_PUBLIC_MAX_PEOPLE,
   NEXT_PUBLIC_MAX_INGREDIENTS: process.env.NEXT_PUBLIC_MAX_INGREDIENTS,
+  UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
+  UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
 };
 
 // Don't touch the part below

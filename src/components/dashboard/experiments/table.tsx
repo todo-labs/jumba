@@ -1,17 +1,15 @@
-import type { Experiment, User } from "@prisma/client";
+import type { Experiment } from "@prisma/client";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import { Checkbox } from "~/components/ui/Checkbox";
-import { DataTableColumnHeader } from "~/components/query-table/header";
-import DefaultState from "~/components/DefaultState";
-import { DataTable } from "~/components/query-table/data-table";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { DataTableColumnHeader } from "@/components/query-table/header";
+import DefaultState from "@/components/DefaultState";
+import { DataTable } from "@/components/query-table/data-table";
+import { Badge } from "@/components/ui/Badge";
 
 import { DataTableRowActions } from "./row-actions";
-import { api } from "~/utils/api";
-
-type Column = Experiment & {
-  createdBy: User;
-};
+import { api } from "@/utils/api";
+import { BatteryWarningIcon, Loader2Icon } from "lucide-react";
 
 const columns: ColumnDef<Experiment>[] = [
   {
@@ -40,7 +38,7 @@ const columns: ColumnDef<Experiment>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Tag" />
     ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue("tag")}</div>,
+    cell: ({ row }) => <div className="w-[40px]">{row.getValue("tag")}</div>,
     enableSorting: true,
     enableHiding: false,
   },
@@ -49,9 +47,7 @@ const columns: ColumnDef<Experiment>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Category" />
     ),
-    cell: ({ row }) => (
-      <div className="w-[80px]">{row.getValue("category")}</div>
-    ),
+    cell: ({ row }) => <Badge>{row.getValue("category")}</Badge>,
     enableSorting: false,
     enableHiding: false,
   },
@@ -62,11 +58,9 @@ const columns: ColumnDef<Experiment>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className="flex space-x-2">
-          <span className="max-w-[300px] truncate font-medium capitalize">
-            {row.getValue("title")}
-          </span>
-        </div>
+        <span className="max-w-[300px] truncate font-medium capitalize">
+          {row.getValue("title")}
+        </span>
       );
     },
   },
@@ -122,10 +116,13 @@ const ExperimentTable = () => {
     <DefaultState
       title="Loading experiments"
       description="Please wait while we load the experiments"
+      iconClassName="animate-spin"
+      icon={Loader2Icon}
     />
   ) : isError ? (
     <DefaultState
       title="Error loading experiments"
+      icon={BatteryWarningIcon}
       description="Something went wrong while loading the experiments"
       btnText="Retry"
       onClick={void refetch()}

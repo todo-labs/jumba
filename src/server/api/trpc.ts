@@ -17,9 +17,9 @@
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
 
-import { getServerAuthSession } from "~/server/auth";
-import { prisma } from "~/server/db";
-import { formatZodError } from "~/utils/api";
+import { getServerAuthSession } from "@/server/auth";
+import { prisma } from "@/server/db";
+import { formatZodError } from "@/utils/api";
 
 type CreateContextOptions = {
   session: Session | null;
@@ -116,7 +116,7 @@ export const enforceUserIsAdmin = t.middleware(({ ctx, next }) => {
   if (
     !ctx.session ||
     !ctx.session.user ||
-    (ctx.session.user.role !== Role.ADMIN)
+    ctx.session.user.role !== Role.ADMIN
   ) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }

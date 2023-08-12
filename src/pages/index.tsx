@@ -6,23 +6,22 @@ import Link from "next/link";
 import type { Category } from "@prisma/client";
 import { ChefHatIcon, FileWarningIcon, Loader2Icon } from "lucide-react";
 
-import Option from "~/components/Option";
-import ExperimentCard from "~/components/Experiment";
-import DefaultState from "~/components/DefaultState";
+import Option from "@/components/Option";
+import ExperimentCard from "@/components/Experiment";
+import DefaultState from "@/components/DefaultState";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "~/components/ui/Dialog";
+} from "@/components/ui/Dialog";
+import { UserNav } from "@/components/user/Nav";
+import QueryWrapper from "@/components/QueryWrapper";
 
-import { UserNav } from "~/components/user/Nav";
-import QueryWrapper from "~/components/QueryWrapper";
-
-import { api } from "~/utils/api";
-import { options } from "~/constants";
-import CreateExperimentModal from "~/components/CreateExperimentModal";
+import { api } from "@/utils/api";
+import { options } from "@/utils/constants";
+import CreateExperimentModal from "@/components/CreateExperimentModal";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
@@ -83,8 +82,6 @@ const Home: NextPage = () => {
                     icon={Loader2Icon}
                     iconClassName="animate-spin"
                     description="We're working on loading all your experiments."
-                    btnText=""
-                    onClick={() => console.log("clicked")}
                   />
                 ),
                 Error: () => (
@@ -93,7 +90,7 @@ const Home: NextPage = () => {
                     icon={FileWarningIcon}
                     description="We're having trouble loading your experiments. Please try again later."
                     btnText="retry"
-                    onClick={void experimentsQuery.refetch()}
+                    onClick={() => void experimentsQuery.refetch()}
                   />
                 ),
                 Empty: () => (
@@ -108,7 +105,7 @@ const Home: NextPage = () => {
                 <ExperimentCard key={index} {...experiment} />
               )}
               height={400}
-              containerStyle="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 w-full items-start"
+              containerStyle="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-5 gap-3 w-full items-start"
             />
           </div>
         </section>

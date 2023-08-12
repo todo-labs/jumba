@@ -2,14 +2,14 @@ import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import type { Table } from "@tanstack/react-table";
 import { SlidersHorizontal } from "lucide-react";
 
-import { Button } from "~/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from "~/components/ui/DropdownMenu";
+} from "@/components/ui/DropdownMenu";
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;

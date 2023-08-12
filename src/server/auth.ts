@@ -6,12 +6,12 @@ import {
 } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { env } from "~/env.mjs";
-import { prisma } from "~/server/db";
+import { env } from "@/env.mjs";
+import { prisma } from "@/server/db";
 import type { Role } from "@prisma/client";
 import { createTransport } from "nodemailer";
 import { render } from "@react-email/render";
-import { MagicLinkEmail } from "~/emails/magic-link";
+import { MagicLinkEmail } from "@/emails/magic-link";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`

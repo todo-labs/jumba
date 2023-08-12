@@ -3,8 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { format } from "date-fns";
+import { UploadDropzone } from "@uploadthing/react";
 
-import { Textarea } from "~/components/ui/TextArea";
+import { Textarea } from "@/components/ui/TextArea";
 import {
   Form,
   FormControl,
@@ -13,23 +14,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/components/ui/Form";
-import { Slider } from "~/components/ui/Slider";
-import { Button } from "~/components/ui/Button";
-import { ScrollArea } from "~/components/ui/ScrollArea";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "~/components/ui/Card";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
+} from "@/components/ui/Form";
+import { Slider } from "@/components/ui/Slider";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 
-import { api } from "~/utils/api";
-import { type LeaveReview, leaveReviewSchema } from "~/schemas";
-import { useToast } from "~/hooks/useToast";
-import { displayUserName, getInitials } from "~/utils";
+import { api } from "@/utils/api";
+import { type LeaveReview, leaveReviewSchema } from "@/schemas";
+import { useToast } from "@/hooks/useToast";
+import { displayUserName, getInitials } from "@/utils";
 import type { IExperiment } from "types";
+import type { OurFileRouter } from "@/server/uploadthing";
+
+import "@uploadthing/react/styles.css";
 
 interface IReviewModalProps {
   experiment: IExperiment;
@@ -57,7 +55,7 @@ const ReviewModal = (props: IReviewModalProps) => {
         title: "Success",
         description: `Your review has been submitted`,
       });
-      await utils.experiments.getOne.invalidate();
+      await utils.experiments.getOne.refetch();
     },
     onError(error) {
       toast({
@@ -79,18 +77,13 @@ const ReviewModal = (props: IReviewModalProps) => {
     }
   }
 
-  console.log(
-    props.experiment?.Reviews.length === 0 ||
-      props.experiment.Reviews.some((e) => e.reviewedById != session?.user.id)
-  );
-
   return (
     <>
       <h2
         className="mt-10 scroll-m-20 border-b pb-1 text-3xl font-semibold tracking-tight first:mt-0"
         id="Reviews"
       >
-        Reviews
+        Leave a Review
       </h2>
       {(props.experiment?.Reviews.length === 0 ||
         props.experiment.Reviews.some(
@@ -116,6 +109,29 @@ const ReviewModal = (props: IReviewModalProps) => {
             </div>
           </CardHeader>
           <CardContent>
+            <div className="flex flex-col items-center justify-center gap-4">
+              <UploadDropzone<OurFileRouter>
+                endpoint="reviewImage"
+                onClientUploadComplete={(res) => {
+                  toast({
+                    title: "Upload Complete",
+                    description: (
+                      <div>
+                        <p>{res?.length} files uploaded successfully</p>
+                        <pre>{JSON.stringify(res, null, 2)}</pre>
+                      </div>
+                    ),
+                  });
+                }}
+                onUploadError={(error: Error) => {
+                  toast({
+                    title: "Upload Error",
+                    description: error.message,
+                    variant: "destructive",
+                  });
+                }}
+              />
+            </div>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}

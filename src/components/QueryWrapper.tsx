@@ -1,7 +1,7 @@
 import React from "react";
 import { type QueryObserverBaseResult } from "@tanstack/react-query";
-import { ScrollArea } from "~/components/ui/ScrollArea";
-import { cn } from "~/utils";
+import { ScrollArea } from "@/components/ui/ScrollArea";
+import { cn } from "@/utils";
 
 interface Components {
   Loading?: React.ComponentType;

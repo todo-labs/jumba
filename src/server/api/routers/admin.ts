@@ -1,4 +1,4 @@
-import { adminProcedure, createTRPCRouter } from "~/server/api/trpc";
+import { adminProcedure, createTRPCRouter } from "@/server/api/trpc";
 import * as z from "zod";
 
 export const adminRouter = createTRPCRouter({

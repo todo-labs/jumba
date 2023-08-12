@@ -1,8 +1,8 @@
 import type { Table } from "@tanstack/react-table";
 import { X } from "lucide-react";
 
-import { Button } from "~/components/ui/Button";
-import { Input } from "~/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { DataTableViewOptions } from "./view-options";
 // import type { Experiment } from "@prisma/client";
 

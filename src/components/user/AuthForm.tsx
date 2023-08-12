@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { cn } from "~/utils";
+import { cn } from "@/utils";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import {
@@ -66,7 +66,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                     {...field}
                   />
                 </FormControl>
-               
+
                 <FormMessage />
               </FormItem>
             )}

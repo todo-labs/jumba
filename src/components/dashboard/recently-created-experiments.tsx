@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
-import { api } from "~/utils/api";
+import { api } from "@/utils/api";
 import QueryWrapper from "../QueryWrapper";
 import DefaultState from "../DefaultState";
 import type { IExperiment } from "types";
@@ -36,7 +36,7 @@ export function RecentlyCreatedExperiments() {
       }}
       renderItem={(item: IExperiment) => (
         <Link
-          className="flex items-center hover:border-2 p-3 rounded-md"
+          className="flex items-center rounded-md p-3 hover:border-2"
           href={`/experiment/${item.id}`}
         >
           <Avatar className="h-9 w-9">

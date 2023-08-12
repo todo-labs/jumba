@@ -10,7 +10,7 @@ import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { type AppRouter } from "~/server/api/root";
+import { type AppRouter } from "@/server/api/root";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardTitle } from "./ui/Card";
 import { Badge } from "./ui/Badge";
 
-import { cn } from "~/utils";
+import { cn } from "@/utils";
 import type { IExperiment } from "types";
 
 const Experiment = ({ title, id, tag, Imgs, inspiration }: IExperiment) => {
@@ -15,7 +15,7 @@ const Experiment = ({ title, id, tag, Imgs, inspiration }: IExperiment) => {
         <Link href={`/experiment/${id}`}>
           <Image
             src={Imgs[0]?.url ?? "/default-food.jpeg"}
-            alt={title || "Default Food"}
+            alt={title || "Default Food Title"}
             width={300}
             height={200}
             className={cn("h-[200px] w-full rounded-xl", {

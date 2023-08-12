@@ -1,9 +1,9 @@
 import type { GetServerSideProps, NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { getServerAuthSession } from "~/server/auth";
+import { getServerAuthSession } from "@/server/auth";
 import { ChefHatIcon } from "lucide-react";
-import { UserAuthForm } from "~/components/user/AuthForm";
+import { UserAuthForm } from "@/components/user/AuthForm";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);

@@ -12,14 +12,14 @@ import {
   FormControl,
   FormDescription,
   FormMessage,
-} from "~/components/ui/Form";
+} from "@/components/ui/Form";
 
-import { Button } from "~/components/ui/Button";
-import { RadioGroup, RadioGroupItem } from "~/components/ui/RadioGroup";
-import SettingsLayout from "~/components/user/SidebarNav";
-import { Separator } from "~/components/ui/Separator";
+import { Button } from "@/components/ui/Button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/RadioGroup";
+import SettingsLayout from "@/components/user/SidebarNav";
+import { Separator } from "@/components/ui/Separator";
 
-import { toast } from "~/hooks/useToast";
+import { toast } from "@/hooks/useToast";
 
 type Theme = "light" | "dark";
 

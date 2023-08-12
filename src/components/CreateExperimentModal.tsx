@@ -13,24 +13,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "~/components/ui/Form";
+} from "@/components/ui/Form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/components/ui/Select";
-import { Slider } from "~/components/ui/Slider";
+} from "@/components/ui/Select";
+import { Slider } from "@/components/ui/Slider";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 
-import { type CreateExperiment, createExperimentSchema } from "~/schemas";
-import { Requirements } from "~/constants";
-import { env } from "~/env.mjs";
-import { api } from "~/utils/api";
-import { useToast } from "~/hooks/useToast";
-import { cn } from "~/utils";
+import { type CreateExperiment, createExperimentSchema } from "@/schemas";
+import { Requirements } from "@/utils/constants";
+import { env } from "@/env.mjs";
+import { api } from "@/utils/api";
+import { useToast } from "@/hooks/useToast";
+import { cn } from "@/utils";
 
 interface ICreateExperimentModalProps {
   onClose: () => void;
@@ -101,7 +101,25 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="desiredMeal"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Desired Meal <span className="text-primary">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input id="desired-meal" type="text" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is optional. Helps guide the AI towards a particular meal.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div>
           {fields.map((field, index) => (
             <FormField
@@ -113,9 +131,6 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
                   <FormLabel className={cn(index !== 0 && "sr-only")}>
                     Ingredients
                   </FormLabel>
-                  <FormDescription className={cn(index !== 0 && "sr-only")}>
-                    Add all the ingredients needed for this experiment 😁.
-                  </FormDescription>
                   <FormControl>
                     <article className="flex flex-row">
                       <Input
@@ -163,7 +178,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Object.keys(Requirements).map((requirement, index) => {
+                  {Object.values(Requirements).map((requirement, index) => {
                     return (
                       <SelectItem
                         key={index}

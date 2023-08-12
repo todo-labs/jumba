@@ -1,9 +1,12 @@
 import { Category } from "@prisma/client";
 
 export enum Requirements {
-  QUICK = "QUICK",
-  FANCY = "FANCY",
-  HEALTHY = "HEALTHY",
+  QUICK = "Quick",
+  FANCY = "Fancy",
+  HEALTHY = "Healthy",
+  KID_FRIENDLY = "Kid Friendly",
+  CHEAP = "Cheap",
+  ALLERGY_FRIENDLY = "Allergy Friendly",
 }
 
 type IOption = {

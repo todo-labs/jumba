@@ -7,9 +7,9 @@ import { PencilIcon, Trash2Icon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { Role } from "@prisma/client";
 
-import ReviewModal from "~/components/ReviewModal";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/Avatar";
-import { ScrollArea } from "~/components/ui/ScrollArea";
+import ReviewModal from "@/components/Review";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 
 import {
   Card,
@@ -17,7 +17,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-} from "~/components/ui/Card";
+} from "@/components/ui/Card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,13 +28,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/ui/AlertDialog";
+} from "@/components/ui/AlertDialog";
 
-import { api } from "~/utils/api";
-import { displayUserName, getInitials } from "~/utils";
-import DefaultState from "~/components/DefaultState";
-import { Button } from "~/components/ui/Button";
-import { useToast } from "~/hooks/useToast";
+import { api } from "@/utils/api";
+import { displayUserName, getInitials } from "@/utils";
+import DefaultState from "@/components/DefaultState";
+import { Button } from "@/components/ui/Button";
+import { useToast } from "@/hooks/useToast";
 
 const ExperimentPage: NextPage = () => {
   const router = useRouter();

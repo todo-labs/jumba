@@ -1,8 +1,5 @@
-import { 
-  Card, 
-  CardDescription
-} from "./ui/Card"
-import { cn } from "~/utils"
+import { Card, CardDescription } from "./ui/Card";
+import { cn } from "@/utils";
 
 interface IOptionProps {
   title: string;
@@ -14,15 +11,21 @@ interface IOptionProps {
 const Option = ({ title, icon, selected, onClick }: IOptionProps) => {
   return (
     <Card
-      className={cn('p-6 xl:m-3 mr-3 flex flex-col max-w-[200px] cursor-pointer text-center items-center justify-center rounded-xl border-2 hover:text-white hover:border-4 hover:border-primary',
-        { "border-4 border-primary bg-primary shadow-lg": selected })}
+      className={cn(
+        "mr-3 flex max-w-[200px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 p-6 text-center hover:border-4 hover:border-primary hover:text-white xl:m-3",
+        { "border-4 border-primary bg-primary shadow-lg": selected }
+      )}
       onClick={onClick}
     >
       <CardDescription>
         <h3 className="mb-4 text-4xl">{icon}</h3>
-        <h1 className={cn("font-medium", {
-          "text-white": selected,
-        })}>{title}</h1>
+        <h1
+          className={cn("font-medium", {
+            "text-white": selected,
+          })}
+        >
+          {title}
+        </h1>
       </CardDescription>
     </Card>
   );
