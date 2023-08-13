@@ -1,8 +1,12 @@
 "use client";
 
 import * as React from "react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2Icon } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { useForm } from "react-hook-form";
 
-import { cn } from "@/utils";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import {
@@ -14,11 +18,8 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/Form";
-import { z } from "zod";
-import { signIn } from "next-auth/react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2Icon } from "lucide-react";
+
+import { cn } from "@/utils";
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 

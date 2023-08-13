@@ -22,7 +22,6 @@ const LoadingScreen = () => {
   }, [router]);
 
   if (isLoading) {
-    // Return your loading screen component here
     return (
     <div className="flex flex-col items-center justify-center h-screen">
         <Loader2Icon className="w-16 h-16 text-primary/30 animate-spin" />

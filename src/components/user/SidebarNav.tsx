@@ -6,15 +6,16 @@ import type { Metadata } from "next";
 import { Role } from "@prisma/client";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-
-import { buttonVariants } from "@/components/ui/Button";
-import { cn } from "@/utils";
 import {
   CogIcon,
   HomeIcon,
   LayoutDashboardIcon,
   User2Icon,
 } from "lucide-react";
+
+import { buttonVariants } from "@/components/ui/Button";
+
+import { cn } from "@/utils";
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
