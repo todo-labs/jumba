@@ -7,11 +7,11 @@ const f = createUploadthing();
 
 export const ourFileRouter = {
   profilePicture: f({ image: { maxFileSize: "2MB", maxFileCount: 1 } })
-    .middleware(async ({ req, res }) => {
-      const session = await getServerAuthSession({ req, res });
-      if (!session?.user) throw new Error("Not logged in");
+    .middleware(async (req) => {
+      // const session = await getServerAuthSession(req);
+      // if (!session?.user) throw new Error("Not logged in");
       return {
-        email: session.user.email,
+        email: "session.user.email",
       };
     })
     .onUploadComplete(async (data) => {

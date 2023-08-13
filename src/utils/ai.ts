@@ -219,7 +219,7 @@ export async function reviewComment(
   console.log(`\nAI is thinking...`);
   const start = performance.now();
 
-  const data = await reviewChain.call({ comment, content: summary.text });
+  const data = await reviewChain.call({ comment, content: summary });
 
   const end = performance.now();
   console.log(
