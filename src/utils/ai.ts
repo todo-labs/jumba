@@ -169,10 +169,13 @@ export async function reviewComment(
   comment: string,
   content: string
 ): Promise<SentimentParserResponseType | undefined> {
-  const promptTemplate = `Is this {comment} appropriate for the given content: {content}? If not, please provide suggestions to make it more suitable.
-  {formatInstructions}`;
+  const promptTemplate = `Is this comment: {comment} appropriate for the given summary of a blog post: {content}? If not, please provide your explanation why and how it could be improved.
+  Please return your response in the following format: {formatInstructions}`;
 
   const format = sentimentParser.getFormatInstructions();
+
+  // NOTE: we might do this the first time and then save in db for later uses. 
+  //       reasoning is recipe content wont change one its been created.
 
   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 500 });
   const docs = await textSplitter.createDocuments([content]);
@@ -181,9 +184,7 @@ export async function reviewComment(
     verbose: env.NODE_ENV != "production",
   });
 
-  const summary = await chain.call({
-    input_documents: docs,
-  });
+  const summary = await chain.call({ input_documents: docs });
 
   const template = new PromptTemplate({
     template: promptTemplate,

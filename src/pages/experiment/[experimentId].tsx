@@ -15,25 +15,25 @@ import {
   CardHeader,
 } from "@/components/ui/Card";
 import DeleteReviewModal from "@/components/modals/DeleteReviewModal";
-import Option from '@/components/cards/Option'
+import Option from "@/components/cards/Option";
+import { Checkbox } from "@/components/ui/Checkbox";
 
 import { api } from "@/utils/api";
-import { displayUserName, getInitials } from "@/utils";
+import { cn, displayUserName, getInitials } from "@/utils";
 
 interface ListSectionProps {
   title: string;
   items: string[] | undefined;
-  ordered?: boolean;
+  order?: boolean;
 }
 
-
-const ListSection = ({ title, items, ordered = false }: ListSectionProps) => {
+const ListSection = ({ title, items, order = false }: ListSectionProps) => {
   if (!items) return <div>No Data to show</div>;
   return (
     <div className="mt-10 scroll-m-20 border-b pb-10 first:mt-0">
       <h1 className="mb-6 text-3xl font-semibold tracking-tight">{title}</h1>
-      {ordered ? (
-        <ol className="list-inside list-decimal space-y-2">
+      {order ? (
+        <ol className="list-inside list-disc space-y-2">
           {items?.map((item) => (
             <li key={item}>{item}</li>
           ))}
@@ -114,10 +114,12 @@ const HeaderSection = (
   );
 };
 
+type Ingredient = IExperiment["ingredients"][0];
+
 const ExperimentPage: NextPage = () => {
   const router = useRouter();
-  const [shoppingList, setShoppingList] = React.useState<IExperiment['ingredients'][]>([])
-  const [currentStep, setCurrentStep] = React.useState<number>(0);
+  const [shoppingList, setShoppingList] = React.useState<Ingredient[]>([]);
+  const [currentStep, setCurrentStep] = React.useState(0);
 
   const { experimentId } = router.query;
   const {
@@ -128,16 +130,18 @@ const ExperimentPage: NextPage = () => {
     { id: experimentId as string },
     {
       enabled: !!experimentId,
-      staleTime: 7 * 24 * 60 * 60 * 1000
+      staleTime: 7 * 24 * 60 * 60 * 1000,
     }
   );
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>;
 
-  const handleItemSelected = () => {
-
-  }
+  const handleItemSelected = (item: Ingredient) => {
+    setShoppingList((prev) => {
+      return [...prev, item];
+    });
+  };
 
   return (
     <div className="flex h-screen items-start justify-center">
@@ -148,7 +152,9 @@ const ExperimentPage: NextPage = () => {
       <article className="container min-h-screen max-w-3xl py-6 lg:py-12">
         <HeaderSection {...experiment} />
         <ListSection title="Ingredients" items={experiment?.rawIngredients} />
-        <h1 className="my-6 text-3xl font-semibold tracking-tight">Shopping List</h1>
+        <h1 className="my-6 text-3xl font-semibold tracking-tight">
+          Shopping List
+        </h1>
         <section className="flex overflow-hidden overflow-x-scroll">
           {experiment?.ingredients
             .sort((a, b) => a.name.localeCompare(b.name))
@@ -157,12 +163,45 @@ const ExperimentPage: NextPage = () => {
                 key={index}
                 title={ingredient.name}
                 icon={ingredient.icon}
-                onClick={handleItemSelected}
-                selected={shoppingList.contains(ingredient)}
+                onClick={() => handleItemSelected(ingredient)}
+                selected={
+                  !!shoppingList.find((item) => item.name === ingredient.name)
+                }
               />
             ))}
         </section>
-        <ListSection title="Steps" items={experiment?.steps} ordered />
+        <h1 className="my-6 text-3xl font-semibold tracking-tight">
+          Steps
+        </h1>
+        <ol className="list-inside list-decimal space-y-2">
+          {experiment?.steps?.map((item, index) => (
+            <div className="flex items-center space-x-2 py-2">
+              {
+                // NOTE: current item is unchecked but text is white
+                // NOTE: steps that are below current step are checked and text is gray
+                // NOTE: first item is unchecked and text is white
+              }
+              <Checkbox
+                id={item}
+                onClick={() => setCurrentStep(index)}
+                checked={currentStep >= index}
+                disabled={index < currentStep || index === currentStep - 1}
+              />
+              <label
+                htmlFor="terms"
+                className={cn(
+                  "text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+                  {
+                    "text-white": currentStep < index,
+                    "text-gray-700": currentStep < index - 1,
+                  }
+                )}
+              >
+                {item}
+              </label>
+            </div>
+          ))}
+        </ol>
         <ReviewModal experiment={experiment as IExperiment} />
         <ScrollArea className="max-h-[500px] py-3">
           {experiment?.reviews?.map((review) => (

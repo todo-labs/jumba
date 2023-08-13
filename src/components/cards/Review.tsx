@@ -57,8 +57,10 @@ const ReviewModal = (props: IReviewModalProps) => {
     },
     onError(error) {
       toast({
-        title: "Error",
-        description: error?.message || "Something went wrong",
+        title: "Suggestion",
+        description:
+          error.message ||
+          "Please provide a more constructive review of the content.",
         variant: "destructive",
       });
     },
@@ -149,7 +151,10 @@ const ReviewModal = (props: IReviewModalProps) => {
                         />
                       </FormControl>
                       <FormDescription>
-                      Please share your thoughts and insights by leaving a review comment. Your feedback is invaluable in helping us improve and provide a better experience for our users.
+                        Please share your thoughts and insights by leaving a
+                        review comment. Your feedback is invaluable in helping
+                        us improve and provide a better experience for our
+                        users.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -160,10 +165,11 @@ const ReviewModal = (props: IReviewModalProps) => {
                   name="rating"
                   render={({ field }) => (
                     <FormItem>
-                      <FormDescription className="float-right">Rating: <span className="text-primary">{field.value}</span> / 10</FormDescription>
-                      <FormLabel>
-                        How would you rate this experiment?
-                      </FormLabel>
+                      <FormDescription className="float-right">
+                        Rating:{" "}
+                        <span className="text-primary">{field.value}</span> / 10
+                      </FormDescription>
+                      <FormLabel>How would you rate this experiment?</FormLabel>
                       <FormControl>
                         <Slider
                           min={1}
@@ -184,7 +190,8 @@ const ReviewModal = (props: IReviewModalProps) => {
                   disabled={leaveReviewMutation.isLoading}
                 >
                   {leaveReviewMutation.isLoading && (
-                    <Loader2Icon className="mr-2 animate-spin" />)}
+                    <Loader2Icon className="mr-2 animate-spin" />
+                  )}
                   Submit
                 </Button>
               </form>

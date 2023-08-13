@@ -7,7 +7,7 @@ import type { Category } from "@prisma/client";
 import { ChefHatIcon, FileWarningIcon, Loader2Icon } from "lucide-react";
 
 import Option from "@/components/cards/Option";
-import ExperimentCard from "@/components/cards/ExperimentCard";
+import ExperimentCard from "@/components/cards/Experiment";
 import DefaultState from "@/components/DefaultState";
 import {
   Dialog,
