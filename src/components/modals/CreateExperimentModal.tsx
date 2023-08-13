@@ -225,11 +225,9 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
             type="submit"
             disabled={createExperiment.isLoading}
           >
-            {createExperiment.isLoading ? (
+            {createExperiment.isLoading && (
               <Loader2Icon className="mr-2 animate-spin" />
-            ) : (
-              "Submit"
-            )}
+            )} Submit
           </Button>
         ) : (
           <Button className="w-full" onClick={() => void signIn()}>

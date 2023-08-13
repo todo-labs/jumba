@@ -20,6 +20,8 @@ import { Checkbox } from "@/components/ui/Checkbox";
 
 import { api } from "@/utils/api";
 import { cn, displayUserName, getInitials } from "@/utils";
+import Step from "@/components/cards/Step";
+import FullScreenConfetti from "@/components/ui/Confetti";
 
 interface ListSectionProps {
   title: string;
@@ -120,6 +122,7 @@ const ExperimentPage: NextPage = () => {
   const router = useRouter();
   const [shoppingList, setShoppingList] = React.useState<Ingredient[]>([]);
   const [currentStep, setCurrentStep] = React.useState(0);
+  const [completed, setCompleted] = React.useState(false);
 
   const { experimentId } = router.query;
   const {
@@ -133,6 +136,18 @@ const ExperimentPage: NextPage = () => {
       staleTime: 7 * 24 * 60 * 60 * 1000,
     }
   );
+
+  React.useEffect(() => {
+    if (completed) {
+      setTimeout(() => {
+        setCompleted(false);
+      }, 5000);
+    } else {
+      if (currentStep === experiment?.steps.length) {
+        setCompleted(true);
+      }
+    }
+  }, [setCompleted, setCompleted, currentStep]);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>;
@@ -149,6 +164,9 @@ const ExperimentPage: NextPage = () => {
         <title>{experiment?.title}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <div className="pointer-events-none fixed inset-0 z-50">
+        <FullScreenConfetti active={completed} />
+      </div>
       <article className="container min-h-screen max-w-3xl py-6 lg:py-12">
         <HeaderSection {...experiment} />
         <ListSection title="Ingredients" items={experiment?.rawIngredients} />
@@ -170,36 +188,17 @@ const ExperimentPage: NextPage = () => {
               />
             ))}
         </section>
-        <h1 className="my-6 text-3xl font-semibold tracking-tight">
-          Steps
-        </h1>
+        <h1 className="my-6 text-3xl font-semibold tracking-tight">Steps</h1>
         <ol className="list-inside list-decimal space-y-2">
           {experiment?.steps?.map((item, index) => (
-            <div className="flex items-center space-x-2 py-2">
-              {
-                // NOTE: current item is unchecked but text is white
-                // NOTE: steps that are below current step are checked and text is gray
-                // NOTE: first item is unchecked and text is white
-              }
-              <Checkbox
-                id={item}
-                onClick={() => setCurrentStep(index)}
-                checked={currentStep >= index}
-                disabled={index < currentStep || index === currentStep - 1}
-              />
-              <label
-                htmlFor="terms"
-                className={cn(
-                  "text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-                  {
-                    "text-white": currentStep < index,
-                    "text-gray-700": currentStep < index - 1,
-                  }
-                )}
-              >
-                {item}
-              </label>
-            </div>
+            <Step
+              key={index}
+              title={item}
+              index={index}
+              completed={index < currentStep}
+              active={index === currentStep}
+              onCompleted={() => setCurrentStep((prev) => prev + 1)}
+            />
           ))}
         </ol>
         <ReviewCard experiment={experiment as IExperiment} />

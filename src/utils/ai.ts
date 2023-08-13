@@ -188,10 +188,11 @@ export async function reviewComment(
 
   if (!experiment?.summary) {
     console.log(`Generating summary for [${experiment?.title}]`);
-    summary = await summarize(content);
+    const { text } = await summarize(content);
+    summary = text;
     await prisma.experiment.update({
       where: { id: experimentId },
-      data: { summary: summary.text },
+      data: { summary },
     });
   } else {
     console.log(`Using cached summary for experiment: ${experiment?.title}`);
@@ -218,7 +219,7 @@ export async function reviewComment(
   console.log(`\nAI is thinking...`);
   const start = performance.now();
 
-  const data = await reviewChain.call({ comment, content: summary });
+  const data = await reviewChain.call({ comment, content: summary.text });
 
   const end = performance.now();
   console.log(
