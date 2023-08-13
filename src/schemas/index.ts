@@ -28,6 +28,8 @@ export const leaveReviewSchema = z.object({
   comment: z.string().min(20).max(300),
 });
 
+export const correctGrammarSchema = leaveReviewSchema.pick({ comment: true });
+
 export const profileSchema = z.object({
   name: z
     .string()
@@ -52,3 +54,4 @@ export type CreateExperiment = z.infer<typeof createExperimentSchema>;
 export type GetById = z.infer<typeof getByIdSchema>;
 export type LeaveReview = z.infer<typeof leaveReviewSchema>;
 export type Profile = z.infer<typeof profileSchema>;
+export type CorrectGrammar = z.infer<typeof correctGrammarSchema>;

@@ -130,4 +130,5 @@ model Experiment {
   imgs           Imgs[]
   reviews        Reviews[]
   ingredients    Ingredient[]
+  summary        String?
 }

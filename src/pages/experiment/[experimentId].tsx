@@ -5,7 +5,7 @@ import Head from "next/head";
 import { format } from "date-fns";
 import type { IExperiment } from "types";
 
-import ReviewModal from "@/components/cards/Review";
+import ReviewCard from "@/components/cards/Review";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import {
@@ -202,7 +202,7 @@ const ExperimentPage: NextPage = () => {
             </div>
           ))}
         </ol>
-        <ReviewModal experiment={experiment as IExperiment} />
+        <ReviewCard experiment={experiment as IExperiment} />
         <ScrollArea className="max-h-[500px] py-3">
           {experiment?.reviews?.map((review) => (
             <Card key={review.id} className="mb-3">

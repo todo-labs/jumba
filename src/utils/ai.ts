@@ -2,16 +2,18 @@ import { LLMChain, loadSummarizationChain } from "langchain/chains";
 import { OpenAI } from "langchain/llms/openai";
 import { StructuredOutputParser } from "langchain/output_parsers";
 import { PromptTemplate } from "langchain/prompts";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { z } from "zod";
+import { prisma } from "@/server/db";
 
 import { env } from "@/env/server.mjs";
 import type { CreateExperiment } from "@/schemas";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { Experiment } from "@prisma/client";
 
 const logResponse = (label: string, data: unknown) => {
   if (env.NODE_ENV === "production") return;
   console.log(`${label}: `, JSON.stringify(data, null, 2));
-}
+};
 
 const MAX_TOKENS = 2000;
 
@@ -27,7 +29,7 @@ const gpt3 = new OpenAI({
   temperature: 0,
   maxTokens: MAX_TOKENS,
   modelName: "gpt-3.5-turbo",
-})
+});
 
 const recipeParser = StructuredOutputParser.fromZodSchema(
   z.object({
@@ -52,34 +54,6 @@ const recipeParser = StructuredOutputParser.fromZodSchema(
 );
 
 type RecipeParserResponseType = z.infer<typeof recipeParser.schema>;
-
-const sentimentParser = StructuredOutputParser.fromZodSchema(
-  z.object({
-    approved: z
-      .boolean()
-      .describe(
-        "Whether or not this review is appropriate for the given content"
-      ),
-    suggestion: z
-      .string()
-      .describe(
-        "Why this comment was not approved, if approved return an empty string"
-      ),
-  })
-);
-
-type SentimentParserResponseType = z.infer<typeof sentimentParser.schema>;
-
-const ingredientsParser = StructuredOutputParser.fromZodSchema(
-  z.array(
-    z.object({
-      name: z.string().describe("The name of the ingredient"),
-      icon: z.string().emoji().describe("The icon of the ingredient"),
-    })
-  )
-);
-
-type IngredientsParserResponseType = z.infer<typeof ingredientsParser.schema>;
 
 export async function getRecipe(
   arg: CreateExperiment
@@ -117,7 +91,9 @@ export async function getRecipe(
   console.log(`\nAI is thinking...`);
   const start = performance.now();
 
-  const ingredients = arg.ingredients.map((ingredient) => ingredient.name).join(", ");
+  const ingredients = arg.ingredients
+    .map((ingredient) => ingredient.name)
+    .join(", ");
   const data = await recipeChain.call({
     ...arg,
     ingredients,
@@ -125,9 +101,19 @@ export async function getRecipe(
 
   const end = performance.now();
   console.log(`\nAI took ${Math.fround((end - start) / 1000)}s to respond`);
-  logResponse('RECIPE', data['review'])
+  logResponse("RECIPE", data["review"]);
   return data["review"] as RecipeParserResponseType;
 }
+const ingredientsParser = StructuredOutputParser.fromZodSchema(
+  z.array(
+    z.object({
+      name: z.string().describe("The name of the ingredient"),
+      icon: z.string().emoji().describe("The icon of the ingredient"),
+    })
+  )
+);
+
+type IngredientsParserResponseType = z.infer<typeof ingredientsParser.schema>;
 
 export async function getIngredients(
   ingredients: string[]
@@ -148,7 +134,7 @@ export async function getIngredients(
     prompt: template,
     outputKey: "ingredients",
     outputParser: ingredientsParser,
-    verbose: env.NODE_ENV != "production"
+    verbose: env.NODE_ENV != "production",
   });
 
   console.log(`\nAI is thinking...`);
@@ -160,31 +146,58 @@ export async function getIngredients(
 
   const end = performance.now();
   console.log(`\nAI took ${Math.fround((end - start) / 1000)}s to respond`);
-  logResponse('INGREDIENTS', data['ingredients'])
+  logResponse("INGREDIENTS", data["ingredients"]);
   return data["ingredients"] as IngredientsParserResponseType;
-
 }
 
+const sentimentParser = StructuredOutputParser.fromZodSchema(
+  z.object({
+    approved: z
+      .boolean()
+      .describe(
+        "Whether or not this review is appropriate for the given content"
+      ),
+    suggestion: z
+      .string()
+      .describe(
+        "Why this comment was not approved, if approved return an empty string"
+      ),
+  })
+);
+
+type SentimentParserResponseType = z.infer<typeof sentimentParser.schema>;
+
 export async function reviewComment(
+  experimentId: string,
   comment: string,
   content: string
 ): Promise<SentimentParserResponseType | undefined> {
-  const promptTemplate = `Is this comment: {comment} appropriate for the given summary of a blog post: {content}? If not, please provide your explanation why and how it could be improved.
+  const promptTemplate = `Is this comment: {comment} appropriate for the given summary of a recipe: {content}? If not, please provide your explanation why and how it could be improved.
   Please return your response in the following format: {formatInstructions}`;
 
   const format = sentimentParser.getFormatInstructions();
 
-  // NOTE: we might do this the first time and then save in db for later uses. 
-  //       reasoning is recipe content wont change one its been created.
+  let summary;
 
-  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 500 });
-  const docs = await textSplitter.createDocuments([content]);
-  const chain = loadSummarizationChain(gpt3, {
-    type: "map_reduce",
-    verbose: env.NODE_ENV != "production",
+  const experiment = await prisma.experiment.findUnique({
+    where: {
+      id: experimentId,
+    },
+    select: { summary: true, title: true },
   });
 
-  const summary = await chain.call({ input_documents: docs });
+  if (!experiment?.summary) {
+    console.log(`Generating summary for [${experiment?.title}]`);
+    summary = await summarize(content);
+    await prisma.experiment.update({
+      where: { id: experimentId },
+      data: { summary: summary.text },
+    });
+  } else {
+    console.log(`Using cached summary for experiment: ${experiment?.title}`);
+    console.log("Summary: ", experiment?.summary);
+    summary = experiment?.summary;
+  }
 
   const template = new PromptTemplate({
     template: promptTemplate,
@@ -199,7 +212,7 @@ export async function reviewComment(
     prompt: template,
     outputKey: "review",
     outputParser: sentimentParser,
-    verbose: env.NODE_ENV != "production"
+    verbose: env.NODE_ENV != "production",
   });
 
   console.log(`\nAI is thinking...`);
@@ -211,6 +224,65 @@ export async function reviewComment(
   console.log(
     `\nAI took ${Math.fround((end - start) / 1000).toFixed(2)}s to respond`
   );
-  logResponse('REVIEW', data['review'])
+  logResponse("REVIEW", data["review"]);
   return data["review"] as SentimentParserResponseType;
+}
+
+const simpleTextParser = StructuredOutputParser.fromZodSchema(
+  z.object({
+    text: z.string().describe("The corrected text"),
+  })
+);
+
+type SimpleParserResponseType = z.infer<typeof simpleTextParser.schema>;
+
+export async function correctGrammar(
+  text: string
+): Promise<SimpleParserResponseType | undefined> {
+  const promptTemplate = `You are a grammar teacher. You are tasked with correcting the following text: {text}. Please return your response in the following format: {formatInstructions}`;
+
+  const format = simpleTextParser.getFormatInstructions();
+
+  const template = new PromptTemplate({
+    template: promptTemplate,
+    inputVariables: ["text"],
+    partialVariables: {
+      formatInstructions: format,
+    },
+  });
+
+  const grammarChain = new LLMChain({
+    llm: gpt4,
+    prompt: template,
+    outputKey: "text",
+    outputParser: simpleTextParser,
+    verbose: env.NODE_ENV != "production",
+  });
+
+  console.log(`\nAI is thinking...`);
+  const start = performance.now();
+
+  const data = await grammarChain.call({ text });
+
+  const end = performance.now();
+  console.log(
+    `\nAI took ${Math.fround((end - start) / 1000).toFixed(2)}s to respond`
+  );
+  logResponse("GRAMMAR", data["text"]);
+  return data["text"] as SimpleParserResponseType;
+}
+
+export async function summarize(
+  content: string,
+  chunkSize: number = 500
+): Promise<SimpleParserResponseType> {
+  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize });
+  const docs = await textSplitter.createDocuments([content]);
+  const chain = loadSummarizationChain(gpt3, {
+    type: "map_reduce",
+    verbose: env.NODE_ENV != "production",
+  });
+
+  const summary = await chain.call({ input_documents: docs });
+  return summary["text"] as SimpleParserResponseType;
 }

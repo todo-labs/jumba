@@ -1,9 +1,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2Icon } from "lucide-react";
+import { BotIcon, Loader2Icon, RefreshCcwIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 import { UploadDropzone } from "@uploadthing/react";
+import { useState, useEffect } from "react";
 
 import { Textarea } from "@/components/ui/TextArea";
 import {
@@ -27,17 +28,17 @@ import { displayUserName, getInitials } from "@/utils";
 import type { IExperiment } from "types";
 import type { OurFileRouter } from "@/server/uploadthing";
 
-interface IReviewModalProps {
+interface IReviewCardProps {
   experiment: IExperiment;
 }
 
-const ReviewModal = (props: IReviewModalProps) => {
+const ReviewCard = (props: IReviewCardProps) => {
   const { toast } = useToast();
+  const [askAi, setAskAi] = useState(false);
 
   const form = useForm<LeaveReview>({
     resolver: zodResolver(leaveReviewSchema),
     defaultValues: {
-      comment: "",
       rating: 5,
       experimentId: props.experiment.id,
     },
@@ -76,6 +77,31 @@ const ReviewModal = (props: IReviewModalProps) => {
       console.error(error);
     }
   }
+
+  const {
+    data: result,
+    isLoading: asIsThinking,
+    isError: isAiError,
+    refetch: aiRefetch,
+  } = api.experiments.correctGrammar.useQuery(
+    {
+      comment: form.watch("comment"),
+    },
+    { enabled: askAi }
+  );
+
+  const handleAskAi = () => {
+    setAskAi(true);
+    void aiRefetch();
+  };
+
+  useEffect(() => {
+    if (result && !asIsThinking && askAi) {
+      form.resetField("comment");
+      form.setValue("comment", result as string);
+      setAskAi(false);
+    }
+  }, [result, form]);
 
   return (
     <>
@@ -142,7 +168,27 @@ const ReviewModal = (props: IReviewModalProps) => {
                   name="comment"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Comment</FormLabel>
+                      <div className="flex items-center justify-between">
+                        <FormLabel>Comment</FormLabel>
+                        {/* <Button
+                          variant="link"
+                          size="sm"
+                          disabled={asIsThinking && askAi && field.value === ""}
+                          onClick={handleAskAi}
+                          className="disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {asIsThinking && askAi ? (
+                            <Loader2Icon className="h-4 w-4 animate-spin" />
+                          ) : isAiError ? (
+                            <RefreshCcwIcon
+                              onClick={handleAskAi}
+                              className="h-4 w-4"
+                            />
+                          ) : (
+                            <BotIcon className="h-4 w-4" />
+                          )}
+                        </Button> */}
+                      </div>
                       <FormControl>
                         <Textarea
                           className="resize-none"
@@ -185,7 +231,7 @@ const ReviewModal = (props: IReviewModalProps) => {
                   )}
                 />
                 <Button
-                  className="w-full"
+                  className="w-full tt-6"
                   type="submit"
                   disabled={leaveReviewMutation.isLoading}
                 >
@@ -203,4 +249,6 @@ const ReviewModal = (props: IReviewModalProps) => {
   );
 };
 
-export default ReviewModal;
+ReviewCard.displayName = "ReviewCard";
+
+export default ReviewCard;

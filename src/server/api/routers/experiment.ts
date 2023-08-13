@@ -8,11 +8,17 @@ import {
   publicProcedure,
 } from "@/server/api/trpc";
 import {
+  correctGrammarSchema,
   createExperimentSchema,
   getByIdSchema,
   leaveReviewSchema,
 } from "@/schemas";
-import { getIngredients, getRecipe, reviewComment } from "@/utils/ai";
+import {
+  getIngredients,
+  getRecipe,
+  reviewComment,
+  correctGrammar,
+} from "@/utils/ai";
 
 export const experimentRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -24,7 +30,7 @@ export const experimentRouter = createTRPCRouter({
         createdBy: true,
         imgs: {
           where: {
-            approved: true
+            approved: true,
           },
           select: {
             url: true,
@@ -41,22 +47,22 @@ export const experimentRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       try {
         const recipe = await getRecipe(input);
-        
+
         if (!recipe) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message:
-            "Something went wrong while generating a recipe. Try again",
+              "Something went wrong while generating a recipe. Try again",
           });
         }
-        
+
         const ingredients = await getIngredients(recipe.ingredients);
 
         if (!ingredients) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message:
-            "Something went wrong while generating your recipe. Try again",
+              "Something went wrong while generating your recipe. Try again",
           });
         }
 
@@ -79,7 +85,7 @@ export const experimentRouter = createTRPCRouter({
               createMany: {
                 data: ingredients,
               },
-            }
+            },
           },
         });
         return data;
@@ -127,11 +133,20 @@ export const experimentRouter = createTRPCRouter({
         },
       });
 
-      const content = [experiment?.title, experiment?.inspiration, experiment?.rawIngredients.join(", "), experiment?.steps.join(", ")].join('\n')
+      const content = [
+        experiment?.title,
+        experiment?.inspiration,
+        experiment?.rawIngredients.join(", "),
+        experiment?.steps.join(", "),
+      ].join("\n");
 
-      const approval = await reviewComment(input.comment, content);
+      const review = await reviewComment(
+        input.experimentId,
+        input.comment,
+        content
+      );
 
-      if (approval?.approved) {
+      if (review?.approved) {
         await ctx.prisma.reviews.create({
           data: {
             comment: input.comment,
@@ -144,7 +159,7 @@ export const experimentRouter = createTRPCRouter({
         throw new TRPCError({
           code: "BAD_REQUEST",
           message:
-            approval?.suggestion ||
+            review?.suggestion ||
             "Your comment was not deemed appropriate for the current recipe. Please try again!",
         });
       }
@@ -157,5 +172,18 @@ export const experimentRouter = createTRPCRouter({
           id: input.id,
         },
       });
+    }),
+  correctGrammar: protectedProcedure
+    .input(correctGrammarSchema)
+    .query(async ({ input, ctx }) => {
+      const fixed = await correctGrammar(input.comment);
+      if (!fixed) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong while correcting your grammar",
+        });
+      }
+      const { text } = fixed;
+      return text;
     }),
 });
