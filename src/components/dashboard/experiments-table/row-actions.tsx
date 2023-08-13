@@ -1,7 +1,6 @@
 import type { Row } from "@tanstack/react-table";
 import { EyeIcon, MoreHorizontal, Trash } from "lucide-react";
-import { toast } from "@/hooks/useToast";
-import type { Experiment, User } from "@prisma/client";
+import type { Experiment } from "@prisma/client";
 
 import { Button } from "@/components/ui/Button";
 import {
@@ -25,21 +24,24 @@ import {
 } from "@/components/ui/AlertDialog";
 
 import { api } from "@/utils/api";
+import { toast } from "@/hooks/useToast";
 
 interface DataTableRowActionsProps<T> {
   row: Row<T>;
 }
 
-export function DataTableRowActions({ row }: DataTableRowActionsProps<User>) {
+export function DataTableRowActions({
+  row,
+}: DataTableRowActionsProps<Experiment>) {
   const utils = api.useContext();
 
-  const deleteMutation = api.admin.removeUser.useMutation({
+  const deleteMutation = api.experiments.remove.useMutation({
     async onSuccess() {
+      await utils.experiments.getAll.invalidate();
       toast({
-        title: "User deleted",
-        description: `User ${row.original.name || "NA"} has been deleted.`,
+        title: `Experiment #${row.original.tag} deleted`,
+        description: "This Experiment has been deleted. No User can access it.",
       });
-      await utils.admin.allUsers.invalidate();
     },
     onError(error) {
       toast({
@@ -52,7 +54,9 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps<User>) {
 
   const handleDelete = async () => {
     try {
-      await deleteMutation.mutateAsync(row.original.id);
+      await deleteMutation.mutateAsync({
+        id: row.original.id,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -71,7 +75,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps<User>) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          {/* <DropdownMenuItem
+          <DropdownMenuItem
             onClick={() =>
               window.open(`/experiment/${row.original.id}`, "_blank")
             }
@@ -79,7 +83,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps<User>) {
             <EyeIcon className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
             View Experiment
           </DropdownMenuItem>
-          <DropdownMenuSeparator /> */}
+          <DropdownMenuSeparator />
           <AlertDialogTrigger asChild>
             <DropdownMenuItem>
               <Trash className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
@@ -93,8 +97,8 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps<User>) {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete this user
-            record and all their associated data.
+            This action cannot be undone. This will permanently delete this
+            experiment and all associated data.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

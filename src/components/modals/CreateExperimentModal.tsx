@@ -22,8 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import { Slider } from "@/components/ui/Slider";
-import { Button } from "./ui/Button";
-import { Input } from "./ui/Input";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/Input";
 
 import { type CreateExperiment, createExperimentSchema } from "@/schemas";
 import { Requirements } from "@/utils/constants";
@@ -49,6 +49,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
       category: props.category,
       requirements: Requirements.QUICK,
       ingredients: [],
+      desiredMeal: undefined
     },
   });
 
@@ -108,7 +109,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Desired Meal <span className="text-primary">*</span>
+                Desired Meal
               </FormLabel>
               <FormControl>
                 <Input id="desired-meal" type="text" {...field} />

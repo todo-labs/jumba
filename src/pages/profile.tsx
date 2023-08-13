@@ -3,9 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
-import type { Metadata } from "next";
+import { UploadButton } from "@uploadthing/react";
 
-import { cn } from "@/utils";
 import { Button } from "@/components/ui/Button";
 import { Calendar } from "@/components/ui/Calendar";
 import { Input } from "@/components/ui/Input";
@@ -14,7 +13,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/Popover";
-import { toast } from "@/hooks/useToast";
 import {
   Form,
   FormControl,
@@ -24,16 +22,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/Form";
-
 import { Separator } from "@/components/ui/Separator";
-import { profileSchema, type Profile } from "@/schemas";
 import SettingsLayout from "@/components/user/SidebarNav";
-import { api } from "@/utils/api";
 
-export const metadata: Metadata = {
-  title: "Forms",
-  description: "Advanced form example using react-hook-form and Zod.",
-};
+import { cn } from "@/utils";
+import { toast } from "@/hooks/useToast";
+import { profileSchema, type Profile } from "@/schemas";
+import { api } from "@/utils/api";
+import type { OurFileRouter } from "@/server/uploadthing";
 
 const ProfilePage: NextPage = () => {
   const { data: profile } = api.profile.get.useQuery();
@@ -102,18 +98,23 @@ const ProfilePage: NextPage = () => {
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="profilePicture"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Profile Picture</FormLabel>
                   <FormControl>
-                    <Input
-                      className="w-[300px]"
-                      id="picture"
-                      type="file"
-                      {...field}
+                    <UploadButton<OurFileRouter>
+                      endpoint="profilePicture"
+                      onClientUploadComplete={(res) => {
+                        console.log("Files: ", res);
+                        // form.setValue("profilePicture", res[0]?.fileUrl);
+                        alert("Upload Completed");
+                      }}
+                      onUploadError={(error: Error) => {
+                        alert(`ERROR! ${error.message}`);
+                      }}
                     />
                   </FormControl>
                   <FormDescription>
@@ -123,7 +124,7 @@ const ProfilePage: NextPage = () => {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="dob"

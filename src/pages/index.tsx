@@ -6,8 +6,8 @@ import Link from "next/link";
 import type { Category } from "@prisma/client";
 import { ChefHatIcon, FileWarningIcon, Loader2Icon } from "lucide-react";
 
-import Option from "@/components/Option";
-import ExperimentCard from "@/components/Experiment";
+import Option from "@/components/cards/Option";
+import ExperimentCard from "@/components/cards/ExperimentCard";
 import DefaultState from "@/components/DefaultState";
 import {
   Dialog,
@@ -21,7 +21,7 @@ import QueryWrapper from "@/components/QueryWrapper";
 
 import { api } from "@/utils/api";
 import { options } from "@/utils/constants";
-import CreateExperimentModal from "@/components/CreateExperimentModal";
+import CreateExperimentModal from "@/components/modals/CreateExperimentModal";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();

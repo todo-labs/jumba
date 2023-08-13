@@ -1,7 +1,6 @@
 import React from "react";
 import { type QueryObserverBaseResult } from "@tanstack/react-query";
 import { ScrollArea } from "@/components/ui/ScrollArea";
-import { cn } from "@/utils";
 
 interface Components {
   Loading?: React.ComponentType;
@@ -53,7 +52,7 @@ function QueryWrapper<TQueryFnData, TData>({
   }
 
   return (
-    <div>
+    <React.Fragment>
       {HeaderComponent && <HeaderComponent />}
       <ScrollArea className={`h-[${height}px]`}>
         <div className={containerStyle}>
@@ -71,7 +70,7 @@ function QueryWrapper<TQueryFnData, TData>({
         </div>
       </ScrollArea>
       {FooterComponent && <FooterComponent />}
-    </div>
+    </React.Fragment>
   );
 }
 

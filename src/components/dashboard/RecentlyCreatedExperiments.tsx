@@ -1,9 +1,11 @@
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
-import { api } from "@/utils/api";
+import Link from "next/link";
+import type { IExperiment } from "types";
+
 import QueryWrapper from "../QueryWrapper";
 import DefaultState from "../DefaultState";
-import type { IExperiment } from "types";
-import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
+
+import { api } from "@/utils/api";
 
 export function RecentlyCreatedExperiments() {
   const recentlyCreatedExperimentsQuery =
@@ -47,7 +49,7 @@ export function RecentlyCreatedExperiments() {
           </Avatar>
           <div className="ml-4 space-y-1">
             <p className="text-sm font-medium leading-none">{item.title}</p>
-            <div className="ml-auto text-sm font-medium text-muted-foreground">
+            <div className="ml-auto text-sm font-medium text-primary">
               {item.category}
             </div>
           </div>

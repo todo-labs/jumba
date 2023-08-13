@@ -1,7 +1,6 @@
 import type { Row } from "@tanstack/react-table";
 import { EyeIcon, MoreHorizontal, Trash } from "lucide-react";
-import { toast } from "@/hooks/useToast";
-import type { Experiment } from "@prisma/client";
+import type { Experiment, User } from "@prisma/client";
 
 import { Button } from "@/components/ui/Button";
 import {
@@ -24,24 +23,23 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/AlertDialog";
 
+import { toast } from "@/hooks/useToast";
 import { api } from "@/utils/api";
 
 interface DataTableRowActionsProps<T> {
   row: Row<T>;
 }
 
-export function DataTableRowActions({
-  row,
-}: DataTableRowActionsProps<Experiment>) {
+export function DataTableRowActions({ row }: DataTableRowActionsProps<User>) {
   const utils = api.useContext();
 
-  const deleteMutation = api.experiments.remove.useMutation({
+  const deleteMutation = api.admin.removeUser.useMutation({
     async onSuccess() {
       toast({
-        title: `Experiment #${row.original.tag} deleted`,
-        description: "This Experiment has been deleted. No User can access it.",
+        title: "User deleted",
+        description: `User ${row.original.name || "NA"} has been deleted.`,
       });
-      await utils.experiments.getAll.invalidate();
+      await utils.admin.allUsers.invalidate();
     },
     onError(error) {
       toast({
@@ -54,9 +52,7 @@ export function DataTableRowActions({
 
   const handleDelete = async () => {
     try {
-      await deleteMutation.mutateAsync({
-        id: row.original.id,
-      });
+      await deleteMutation.mutateAsync(row.original.id);
     } catch (error) {
       console.error(error);
     }
@@ -97,8 +93,8 @@ export function DataTableRowActions({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete this
-            experiment and all associated data.
+            This action cannot be undone. This will permanently delete this user
+            record and all their associated data.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

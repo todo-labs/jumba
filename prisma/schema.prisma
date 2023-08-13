@@ -103,20 +103,31 @@ model Reviews {
   reviewedById String?
 }
 
+model Ingredient {
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  icon         String
+  name         String
+  Experiment   Experiment @relation(fields: [experimentId], references: [id])
+  experimentId String
+}
+
 model Experiment {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  title       String
-  tag         Int
-  inspiration String?
-  category    Category
-  ingredients String[]
-  steps       String[]
-  duration    Int?
-  feeds       Int?      @default(1)
-  createdBy   User?     @relation(fields: [createdById], references: [id])
-  createdById String?
-  Imgs        Imgs[]
-  Reviews     Reviews[]
+  id             String       @id @default(cuid())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  title          String
+  tag            Int
+  inspiration    String?
+  category       Category
+  rawIngredients String[]
+  steps          String[]
+  duration       Int?
+  feeds          Int?         @default(1)
+  createdBy      User?        @relation(fields: [createdById], references: [id])
+  createdById    String?
+  imgs           Imgs[]
+  reviews        Reviews[]
+  ingredients    Ingredient[]
 }

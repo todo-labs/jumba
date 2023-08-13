@@ -27,8 +27,6 @@ import { displayUserName, getInitials } from "@/utils";
 import type { IExperiment } from "types";
 import type { OurFileRouter } from "@/server/uploadthing";
 
-import "@uploadthing/react/styles.css";
-
 interface IReviewModalProps {
   experiment: IExperiment;
 }
@@ -80,13 +78,13 @@ const ReviewModal = (props: IReviewModalProps) => {
   return (
     <>
       <h2
-        className="mt-10 scroll-m-20 border-b pb-1 text-3xl font-semibold tracking-tight first:mt-0"
+        className="mt-10 scroll-m-20 border-b pb-4 text-3xl font-semibold tracking-tight first:mt-0"
         id="Reviews"
       >
         Leave a Review
       </h2>
-      {(props.experiment?.Reviews.length === 0 ||
-        props.experiment.Reviews.some(
+      {(props.experiment?.reviews.length === 0 ||
+        props.experiment.reviews.some(
           (e) => e.reviewedById != session?.user.id
         )) && (
         <Card>
@@ -109,7 +107,7 @@ const ReviewModal = (props: IReviewModalProps) => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center gap-4">
+            {/* <div className="flex flex-col items-center justify-center gap-4">
               <UploadDropzone<OurFileRouter>
                 endpoint="reviewImage"
                 onClientUploadComplete={(res) => {
@@ -131,7 +129,7 @@ const ReviewModal = (props: IReviewModalProps) => {
                   });
                 }}
               />
-            </div>
+            </div> */}
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -142,7 +140,7 @@ const ReviewModal = (props: IReviewModalProps) => {
                   name="comment"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>What did you think?</FormLabel>
+                      <FormLabel>Comment</FormLabel>
                       <FormControl>
                         <Textarea
                           className="resize-none"
@@ -150,6 +148,9 @@ const ReviewModal = (props: IReviewModalProps) => {
                           {...field}
                         />
                       </FormControl>
+                      <FormDescription>
+                      Please share your thoughts and insights by leaving a review comment. Your feedback is invaluable in helping us improve and provide a better experience for our users.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -159,10 +160,10 @@ const ReviewModal = (props: IReviewModalProps) => {
                   name="rating"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Rating: {field.value} / 10</FormLabel>
-                      <FormDescription>
+                      <FormDescription className="float-right">Rating: <span className="text-primary">{field.value}</span> / 10</FormDescription>
+                      <FormLabel>
                         How would you rate this experiment?
-                      </FormDescription>
+                      </FormLabel>
                       <FormControl>
                         <Slider
                           min={1}
@@ -182,11 +183,9 @@ const ReviewModal = (props: IReviewModalProps) => {
                   type="submit"
                   disabled={leaveReviewMutation.isLoading}
                 >
-                  {leaveReviewMutation.isLoading ? (
-                    <Loader2Icon className="mr-2 animate-spin" />
-                  ) : (
-                    "Submit"
-                  )}
+                  {leaveReviewMutation.isLoading && (
+                    <Loader2Icon className="mr-2 animate-spin" />)}
+                  Submit
                 </Button>
               </form>
             </Form>

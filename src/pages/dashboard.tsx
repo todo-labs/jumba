@@ -12,12 +12,12 @@ import {
 } from "@/components/ui/Card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { BarChartComponent } from "@/components/dashboard/overview";
-import { RecentlyCreatedExperiments } from "@/components/dashboard/recently-created-experiments";
+import { RecentlyCreatedExperiments } from "@/components/dashboard/RecentlyCreatedExperiments";
 import SettingsLayout from "@/components/user/SidebarNav";
-import ExperimentTable from "@/components/dashboard/experiments/table";
+import ExperimentTable from "@/components/dashboard/experiments-table";
+import UserTable from "@/components/dashboard/user-management-table";
 
 import { api } from "@/utils/api";
-import UserTable from "@/components/dashboard/user-management/table";
 
 export default function DashboardPage() {
   const { data: session } = useSession();

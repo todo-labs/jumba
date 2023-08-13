@@ -12,19 +12,21 @@ import {
   getByIdSchema,
   leaveReviewSchema,
 } from "@/schemas";
-import { getRecipe, reviewComment } from "@/utils/ai";
+import { getIngredients, getRecipe, reviewComment } from "@/utils/ai";
 
 export const experimentRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.experiment.findMany({
       where: {
-        createdById: ctx.session?.user.id || undefined,
+        createdById: ctx.session?.user.id,
       },
       include: {
         createdBy: true,
-        Imgs: {
+        imgs: {
+          where: {
+            approved: true
+          },
           select: {
-            approved: true,
             url: true,
           },
         },
@@ -39,18 +41,28 @@ export const experimentRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       try {
         const recipe = await getRecipe(input);
-
+        
         if (!recipe) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message:
-              "Something went wrong while generating a recipe. Try again",
+            "Something went wrong while generating a recipe. Try again",
+          });
+        }
+        
+        const ingredients = await getIngredients(recipe.ingredients);
+
+        if (!ingredients) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+            "Something went wrong while generating your recipe. Try again",
           });
         }
 
         const tag = Math.floor(Math.random() * 1000);
 
-        // TODO: check for duplicates
+        // TODO: check for duplicate tags
 
         const data = await ctx.prisma.experiment.create({
           data: {
@@ -60,9 +72,14 @@ export const experimentRouter = createTRPCRouter({
             feeds: input.feeds,
             inspiration: recipe.inspiration,
             title: recipe.title,
-            ingredients: recipe.ingredients,
+            rawIngredients: recipe.ingredients,
             category: input.category,
             duration: recipe.duration,
+            ingredients: {
+              createMany: {
+                data: ingredients,
+              },
+            }
           },
         });
         return data;
@@ -81,12 +98,13 @@ export const experimentRouter = createTRPCRouter({
       },
       include: {
         createdBy: true,
-        Reviews: {
+        reviews: {
           include: {
             reviewedBy: true,
           },
         },
-        Imgs: true,
+        ingredients: true,
+        imgs: true,
       },
     });
   }),
@@ -109,8 +127,7 @@ export const experimentRouter = createTRPCRouter({
         },
       });
 
-      const content =
-        experiment?.ingredients.concat(experiment?.steps).join(" ") || "";
+      const content = [experiment?.title, experiment?.inspiration, experiment?.rawIngredients.join(", "), experiment?.steps.join(", ")].join('\n')
 
       const approval = await reviewComment(input.comment, content);
 

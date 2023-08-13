@@ -2,24 +2,24 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Card, CardContent, CardDescription, CardTitle } from "./ui/Card";
-import { Badge } from "./ui/Badge";
+import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 
 import { cn } from "@/utils";
 import type { IExperiment } from "types";
 
-const Experiment = ({ title, id, tag, Imgs, inspiration }: IExperiment) => {
+const ExperimentCard = ({ title, id, tag, imgs, inspiration }: IExperiment) => {
   return (
-    <Card className="flex flex-col justify-center rounded-xl border-none shadow-none">
+    <Card className="flex flex-col justify-center rounded-xl border-none shadow-none max-w-[500px]">
       <figure className="relative">
         <Link href={`/experiment/${id}`}>
           <Image
-            src={Imgs[0]?.url ?? "/default-food.jpeg"}
+            src={imgs[0]?.url ?? "/default-food.jpeg"}
             alt={title || "Default Food Title"}
             width={300}
             height={200}
             className={cn("h-[200px] w-full rounded-xl", {
-              "object-cover": Imgs[0]?.url,
+              "object-cover": imgs[0]?.url,
             })}
           />
         </Link>
@@ -37,4 +37,6 @@ const Experiment = ({ title, id, tag, Imgs, inspiration }: IExperiment) => {
   );
 };
 
-export default Experiment;
+ExperimentCard.displayName = "ExperimentCard"
+
+export default ExperimentCard;
