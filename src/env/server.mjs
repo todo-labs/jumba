@@ -24,7 +24,9 @@ export const env = createEnv({
     EMAIL_FROM: z.string().min(1).optional(),
     PEXELS_API_KEY: z.string().min(1).optional(),
     UPLOADTHING_SECRET: z.string().min(1).optional(),
-    UPLOADTHING_APP_ID: z.string().min(1).optional()
+    UPLOADTHING_APP_ID: z.string().min(1).optional(),
+    UPSTASH_REDIS_REST_URL: z.string().min(1),
+    UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
@@ -39,6 +41,8 @@ export const env = createEnv({
     EMAIL_USER: process.env.EMAIL_USER,
     PEXELS_API_KEY: process.env.PEXELS_API_KEY,
     UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
-    UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID
+    UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
   },
 });

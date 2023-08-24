@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { UploadButton } from "@uploadthing/react";
+import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/Button";
 import { Calendar } from "@/components/ui/Calendar";
@@ -29,15 +29,15 @@ import { cn } from "@/utils";
 import { toast } from "@/hooks/useToast";
 import { profileSchema, type Profile } from "@/schemas";
 import { api } from "@/utils/api";
-import type { OurFileRouter } from "@/server/uploadthing";
 
 const ProfilePage: NextPage = () => {
   const { data: profile } = api.profile.get.useQuery();
+  const { data: session, update } = useSession();
 
   const form = useForm<Profile>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: profile?.name || "",
+      name: profile?.name || session?.user?.name || "",
       dob: profile?.dob ? new Date(profile.dob) : new Date(),
     },
   });
@@ -60,6 +60,9 @@ const ProfilePage: NextPage = () => {
   async function onSubmit(data: Profile) {
     try {
       await updateProfileMutation.mutateAsync(data);
+      update({
+        name: data.name,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -98,33 +101,6 @@ const ProfilePage: NextPage = () => {
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name="profilePicture"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Profile Picture</FormLabel>
-                  <FormControl>
-                    <UploadButton<OurFileRouter>
-                      endpoint="profilePicture"
-                      onClientUploadComplete={(res) => {
-                        console.log("Files: ", res);
-                        // form.setValue("profilePicture", res[0]?.fileUrl);
-                        alert("Upload Completed");
-                      }}
-                      onUploadError={(error: Error) => {
-                        alert(`ERROR! ${error.message}`);
-                      }}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    This is the name that will be displayed on your profile and
-                    in emails.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
             <FormField
               control={form.control}
               name="dob"

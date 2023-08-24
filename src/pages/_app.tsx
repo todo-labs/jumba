@@ -12,8 +12,6 @@ import { api } from "@/utils/api";
 import "@/styles/globals.css";
 import "@uploadthing/react/styles.css";
 
-
-
 const dmSans = DM_Sans({
   weight: ["400", "500", "700"],
   style: ["normal"],
@@ -25,7 +23,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider session={session}>
+    <SessionProvider session={session} refetchInterval={60 * 1 * 5}>
       <main className={cn(dmSans.className)}>
         <ThemeProvider attribute="class">
           <LoadingScreen />
