@@ -16,13 +16,12 @@ import {
 } from "@/components/ui/Card";
 import DeleteReviewModal from "@/components/modals/DeleteReviewModal";
 import Option from "@/components/cards/Option";
-import { Checkbox } from "@/components/ui/Checkbox";
-
-import { api } from "@/utils/api";
-import { cn, displayUserName, getInitials } from "@/utils";
 import Step from "@/components/cards/Step";
 import FullScreenConfetti from "@/components/ui/Confetti";
 import { UserCard } from "@/components/cards/User";
+
+import { api } from "@/utils/api";
+import { displayUserName, getInitials } from "@/utils";
 
 interface ListSectionProps {
   title: string;
@@ -74,7 +73,7 @@ const HeaderSection = (
           {props.inspiration}
         </blockquote>
       </div>
-      <div className="mt-3 flex flex-col space-x-6 space-y-6 lg:flex-row lg:items-center">
+      <div className="mt-3 flex flex-col space-x-6 space-y-6 md:flex-row lg:items-center">
         <UserCard createdAt={props.createdAt} createdBy={props.createdBy} />
         <div className="flex-1">
           <h1>
