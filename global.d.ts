@@ -1,1 +1,1 @@
-declare module 'tailwindcss-animate';
+declare module "tailwindcss-animate";

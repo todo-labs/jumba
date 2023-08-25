@@ -23,8 +23,8 @@ const LoadingScreen = () => {
 
   if (isLoading) {
     return (
-    <div className="flex flex-col items-center justify-center h-screen">
-        <Loader2Icon className="w-16 h-16 text-primary/30 animate-spin" />
+      <div className="flex h-screen flex-col items-center justify-center">
+        <Loader2Icon className="h-16 w-16 animate-spin text-primary/30" />
         <h1 className="text-4xl dark:text-white">Loading...</h1>
       </div>
     );

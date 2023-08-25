@@ -34,7 +34,9 @@ const ExperimentCard = ({
         <CardTitle className="overflow-ellipsis text-2xl">{title}</CardTitle>
       </CardHeader>
       <CardContent className="flex w-full flex-col justify-between space-y-4">
-        <CardDescription className="text-sm text-clip">{inspiration}</CardDescription>
+        <CardDescription className="text-clip text-sm">
+          {inspiration}
+        </CardDescription>
       </CardContent>
     </Card>
   );

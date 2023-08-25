@@ -49,7 +49,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
       category: props.category,
       requirements: Requirements.QUICK,
       ingredients: [],
-      desiredMeal: undefined
+      desiredMeal: undefined,
     },
   });
 
@@ -108,9 +108,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
           name="desiredMeal"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                Desired Meal
-              </FormLabel>
+              <FormLabel>Desired Meal</FormLabel>
               <FormControl>
                 <Input id="desired-meal" type="text" {...field} />
               </FormControl>
@@ -227,7 +225,8 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
           >
             {createExperiment.isLoading && (
               <Loader2Icon className="mr-2 animate-spin" />
-            )} Submit
+            )}{" "}
+            Submit
           </Button>
         ) : (
           <Button className="w-full" onClick={() => void signIn()}>

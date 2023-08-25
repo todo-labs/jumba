@@ -231,7 +231,7 @@ const ReviewCard = (props: IReviewCardProps) => {
                   )}
                 />
                 <Button
-                  className="w-full tt-6"
+                  className="tt-6 w-full"
                   type="submit"
                   disabled={leaveReviewMutation.isLoading}
                 >

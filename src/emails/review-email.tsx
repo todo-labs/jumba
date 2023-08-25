@@ -65,12 +65,11 @@ export const ReviewEmail = ({
                 <Text style={review}>{reviewText}</Text>
                 <Text style={paragraph}>
                   Now that the review period is over, we’ve posted {authorName}
-                  ’s review to your  profile.
+                  ’s review to your profile.
                 </Text>
                 <Text style={{ ...paragraph, paddingBottom: "16px" }}>
                   While it’s too late to write a review of your own, you can
-                  send your feedback to {authorName} using your  message
-                  thread.
+                  send your feedback to {authorName} using your message thread.
                 </Text>
 
                 <Button pY={19} style={button} href="https://airbnb.com/">

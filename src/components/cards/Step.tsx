@@ -19,7 +19,7 @@ const Step: React.FC<IStepProps> = (props) => {
         id={props.title}
         onClick={props.onCompleted}
         checked={props.completed}
-        disabled={props.completed || !props.active} 
+        disabled={props.completed || !props.active}
       />
       <label
         htmlFor="terms"
@@ -37,6 +37,6 @@ const Step: React.FC<IStepProps> = (props) => {
   );
 };
 
-Step.displayName = "ExperimentStep"
+Step.displayName = "ExperimentStep";
 
 export default Step;
