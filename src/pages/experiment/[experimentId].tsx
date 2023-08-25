@@ -22,6 +22,7 @@ import { api } from "@/utils/api";
 import { cn, displayUserName, getInitials } from "@/utils";
 import Step from "@/components/cards/Step";
 import FullScreenConfetti from "@/components/ui/Confetti";
+import { UserCard } from "@/components/cards/User";
 
 interface ListSectionProps {
   title: string;
@@ -74,28 +75,7 @@ const HeaderSection = (
         </blockquote>
       </div>
       <div className="mt-3 flex flex-col space-x-6 space-y-6 lg:flex-row lg:items-center">
-        <div className="flex-1">
-          <div className="flex flex-col space-y-4">
-            <div className="flex items-center space-x-4">
-              <Avatar>
-                <AvatarImage src={props.createdBy?.image as string} />
-                <AvatarFallback>
-                  {getInitials(props.createdBy?.name)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <h2 className="text-xl font-semibold">
-                  {displayUserName(props?.createdBy?.name)}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  {props.createdAt
-                    ? format(props.createdAt || new Date(), "MMMM dd, yyyy")
-                    : "Unavailable"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <UserCard createdAt={props.createdAt} createdBy={props.createdBy} />
         <div className="flex-1">
           <h1>
             Feeds:{" "}
