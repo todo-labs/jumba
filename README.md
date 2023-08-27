@@ -1,30 +1,12 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a name="readme-top"></a>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
 
-
-
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
-
 
 
 <!-- PROJECT LOGO -->
@@ -92,10 +74,10 @@ Jumba is a recipe generation app that offers a personalized and hassle-free cook
 
 * [![Next][Next.js]][Next-url]
 * [![React][React.js]][React-url]
-* [![Prisma][Prisma ORM]][Prisma-url]
-* [Next Auth]()
-* [Langchain]()
-* [shadcn/ui]
+* [![Prisma][Prisma]][Prisma-url]
+* [Next Auth](https://next-auth.js.org/)
+* [Langchain](https://js.langchain.com/docs/get_started/introduction)
+* [shadcn/ui](https://ui.shadcn.com/docs)
 
 
 ### What I Learned ?
@@ -103,7 +85,7 @@ Jumba is a recipe generation app that offers a personalized and hassle-free cook
 - How to use NextAuth.js to implement authentication and authorization
 - Langchain API integration
 - How to use tRPC to implement a GraphQL-like API
-- How to use Tailwind CSS to implement a responsive UI
+- How to use Tailwind CSS & Radix UI to build a responsive and engaging UI
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -131,10 +113,12 @@ Make sure you have the following tools installed on your system:
    ```sh
   yarn
    ```
-4. Copy over your env file `cp .env.example > .env`
+4. Copy over your env file
+  ```sh
+  cp .env.example > .env
+  ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- ROADMAP -->
@@ -168,14 +152,12 @@ Don't forget to give the project a star! Thanks again!
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
 <!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- CONTACT -->
@@ -186,7 +168,6 @@ David Ojo - [@conceptcodes](https://github.com/conceptcodes) - conceptcodes@gmai
 Project Link: [https://github.com/todo-labs/jumba](https://github.com/todo-labs/jumba)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
