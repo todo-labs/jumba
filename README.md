@@ -1,17 +1,30 @@
+<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+<a name="readme-top"></a>
+
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
+
+
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/your-username/jumba">
-    <img src="public/assets/favicon.ico" alt="Logo" width="80" height="80">
+  <a href="https://github.com/todo-labs/jumba">
+    <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
-  <h3 align="center">Jumba</h3>
+
+<h3 align="center">Jumba</h3>
+
   <p align="center">
-    Innovative recipe generation app, offering a personalized and hassle-free cooking experience akin to HelloFresh.
+    Jumba is a recipe generation app that offers a personalized and hassle-free cooking experience akin to HelloFresh. It is built using the T3 Stack, a modern full-stack framework for building scalable web apps.
     <br />
-    <a href="https://create.t3.gg/"><strong>Learn more »</strong></a>
+    <a href="https://github.com/todo-labs/jumba"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://jumba.conceptcodes.dev">View Demo</a>
+    <a href="https://github.com/todo-labs/jumba">View Demo</a>
     ·
     <a href="https://github.com/todo-labs/jumba/issues">Report Bug</a>
     ·
@@ -19,83 +32,162 @@
   </p>
 </div>
 
+
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
+
+
+
+<!-- ABOUT THE PROJECT -->
 ## About The Project
+
+[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 Jumba is a recipe generation app that offers a personalized and hassle-free cooking experience akin to HelloFresh. It is built using the T3 Stack, a modern full-stack framework for building scalable web apps.
 
-### Features
-
-- 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+* [![Next][Next.js]][Next-url]
+* [![React][React.js]][React-url]
+* [![Prisma][Prisma]][Prisma-url]
+* [Next Auth](https://next-auth.js.org/)
+* [Langchain](https://js.langchain.com/docs/get_started/introduction)
+* [shadcn/ui](https://ui.shadcn.com/docs)
+
 
 ### What I Learned ?
 
 - How to use NextAuth.js to implement authentication and authorization
 - Langchain API integration
 - How to use tRPC to implement a GraphQL-like API
-- How to use Tailwind CSS to implement a responsive UI
+- How to use Tailwind CSS & Radix UI to build a responsive and engaging UI
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+Follow these steps to get your Jumba app up and running on your local machine.
+
+### Prerequisites
+
+Make sure you have the following tools installed on your system:
+
+- [Node.js](https://nodejs.org/) (Recommended version: +18)
+- [Yarn](https://yarnpkg.com/) (Recommended version: 1.22.x)
+- [Postgresql](https://www.postgresql.org/) (Recommended version: 15)
 
 ### Installation
 
-1. Clone the repo :fire:
-
+1. Get an Open AI API Key at [Open AI Platform](https://platform.openai.com/)
+2. Clone the repo
    ```sh
    git clone https://github.com/todo-labs/jumba.git
    ```
-
-2. Install yarn packages :package:
-
+3. Install NPM packages
    ```sh
-   yarn install
+  yarn
    ```
+4. Copy over your env file
+  ```sh
+  cp .env.example > .env
+  ```
 
-3. Start the development server. :hammer:
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-   ```sh
-   yarn dev
-   ```
 
-4. Start the build. :sparkles:
-
-   ```sh
-   yarn build
-   ```
-
-## Learn More
-
-To learn more about the T3 Stack, take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
+<!-- ROADMAP -->
 ## Roadmap
 
 - [ ] Add a filters for home experiment listing
 - [ ] Add a photo uploads to review card
+- [ ] Add Dashbord Image review tab
 
+
+See the [open issues](https://github.com/todo-labs/jumba/issues) for a full list of proposed features (and known issues).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- CONTRIBUTING -->
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request.
-You can also simply open an issue with the tag "enhancement".
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
 Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feat/AmazingFeature`)
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feat/AmazingFeature`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- LICENSE -->
 ## License
 
-Distributed under the MIT License.
+Distributed under the MIT License. See `LICENSE.txt` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- CONTACT -->
+## Contact
+
+David Ojo - [@conceptcodes](https://github.com/conceptcodes) - conceptcodes@gmail.com
+
+Project Link: [https://github.com/todo-labs/jumba](https://github.com/todo-labs/jumba)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/todo-labs/jumba.svg?style=for-the-badge
+[contributors-url]: https://github.com/todo-labs/jumba/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/todo-labs/jumba.svg?style=for-the-badge
+[forks-url]: https://github.com/todo-labs/jumba/network/members
+[stars-shield]: https://img.shields.io/github/stars/todo-labs/jumba.svg?style=for-the-badge
+[stars-url]: https://github.com/todo-labs/jumba/stargazers
+[issues-shield]: https://img.shields.io/github/issues/todo-labs/jumba.svg?style=for-the-badge
+[issues-url]: https://github.com/todo-labs/jumba/issues
+[license-shield]: https://img.shields.io/github/license/todo-labs/jumba.svg?style=for-the-badge
+[license-url]: https://github.com/todo-labs/jumba/blob/master/LICENSE.txt
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/david-ojo-66a12a147
+[product-screenshot]: images/screenshot.png
+[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Next-url]: https://nextjs.org/
+[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactjs.org/
+[Prisma]: https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white
+[Prisma-url]: https://www.prisma.io/
