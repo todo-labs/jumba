@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { Metadata } from "next";
 import { Role } from "@prisma/client";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
@@ -60,11 +59,6 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
     </nav>
   );
 }
-
-export const metadata: Metadata = {
-  title: "Forms",
-  description: "Advanced form example using react-hook-form and Zod.",
-};
 
 interface SettingsLayoutProps {
   children: React.ReactNode;
