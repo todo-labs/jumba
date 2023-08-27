@@ -50,7 +50,7 @@
 
 [![Product Name Screen Shot][product-screenshot]][app-url]
 
-Introducing Jumba 🍳: Your personalized recipe generator, crafting hassle-free cooking experiences akin to HelloFresh. Powered by the T3 Stack, this modern full-stack marvel combines Next.js and TypeScript for a sleek frontend, while leveraging NextAuth.js, Prisma, and tRPC for seamless authentication, efficient database management, and robust APIs. Elevate your culinary journey today with Jumba, where every dish is an adventure! 🌟🍽️
+Introducing Jumba 🍳: Your personalized recipe generator, crafting hassle-free cooking experiences akin to HelloFresh. The name Jumba actually comes from the TV show [Lilo & Stich](https://en.wikipedia.org/wiki/Lilo_&_Stitch), where Dr. Jumba was an alien scientist who was convicted for creating illegal genetic experiments 😮. Jumba is a recipe generator that uses the OpenAI & Langchain to generate recipes based on the ingredients you have lying around your fridge/pantry. Powered by the T3 Stack, this modern full-stack marvel combines Next.js and TypeScript for a sleek frontend, while leveraging NextAuth.js, Prisma, and tRPC for seamless authentication, efficient database management, and robust APIs. Elevate your culinary journey today with Jumba, where every dish is an adventure! 🌟🍽️
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -63,6 +63,11 @@ Introducing Jumba 🍳: Your personalized recipe generator, crafting hassle-free
 - [Langchain](https://js.langchain.com/docs/get_started/introduction)
 - [shadcn/ui](https://ui.shadcn.com/docs)
 
+
+### Features
+- Email Magic Link Authentication
+- AI Experiment Generator
+- Experiment Listing & Reviews
 
 
 ### What I Learned ?
