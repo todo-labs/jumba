@@ -37,7 +37,7 @@ const Home: NextPage = () => {
     <div className="flex h-screen items-start justify-center">
       <Head>
         <title>Jumba</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo.svg" />
       </Head>
       <main className="flex w-full flex-col p-10">
         <section className="flex w-full justify-between">

@@ -18,6 +18,7 @@ import ExperimentTable from "@/components/dashboard/experiments-table";
 import UserTable from "@/components/dashboard/user-management-table";
 
 import { api } from "@/utils/api";
+import Head from "next/head";
 
 export default function DashboardPage() {
   const { data: session } = useSession();
@@ -58,6 +59,10 @@ export default function DashboardPage() {
   }, [allExperiments]);
   return (
     <SettingsLayout>
+       <Head>
+        <title>Dashboard</title>
+        <link rel="icon" href="/logo.svg" />
+      </Head>
       <main className="w-full">
         <div className="md:hidden">
           <Image

@@ -19,6 +19,7 @@ import SettingsLayout from "@/components/user/SidebarNav";
 import { Separator } from "@/components/ui/Separator";
 
 import { toast } from "@/hooks/useToast";
+import Head from "next/head";
 
 type Theme = "light" | "dark";
 
@@ -50,6 +51,10 @@ const SettingsPage: NextPage = () => {
 
   return (
     <SettingsLayout>
+       <Head>
+        <title>Settings</title>
+        <link rel="icon" href="/logo.svg" />
+      </Head>
       <div className="space-y-6">
         <div>
           <h3 className="text-lg font-medium">Settings</h3>

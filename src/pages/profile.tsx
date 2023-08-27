@@ -29,6 +29,7 @@ import { cn } from "@/utils";
 import { toast } from "@/hooks/useToast";
 import { profileSchema, type Profile } from "@/schemas";
 import { api } from "@/utils/api";
+import Head from "next/head";
 
 const ProfilePage: NextPage = () => {
   const { data: profile } = api.profile.get.useQuery();
@@ -69,6 +70,10 @@ const ProfilePage: NextPage = () => {
   }
   return (
     <SettingsLayout>
+      <Head>
+        <title>Profile</title>
+        <link rel="icon" href="/logo.svg" />
+      </Head>
       <div className="space-y-6">
         <div>
           <h3 className="text-lg font-medium">Profile</h3>

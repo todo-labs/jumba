@@ -141,7 +141,7 @@ const ExperimentPage: NextPage = () => {
     <div className="flex h-screen items-start justify-center">
       <Head>
         <title>{experiment?.title}</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo.svg" />
       </Head>
       <div className="pointer-events-none fixed inset-0 z-50">
         <FullScreenConfetti active={completed} />
