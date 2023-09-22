@@ -19,29 +19,38 @@ import {
   reviewComment,
   correctGrammar,
 } from "@/utils/ai";
+import { z } from "zod";
+import { Category } from "@prisma/client";
 
 export const experimentRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.experiment.findMany({
-      where: {
-        createdById: ctx.session?.user.id,
-      },
-      include: {
-        createdBy: true,
-        imgs: {
-          where: {
-            approved: true,
-          },
-          select: {
-            url: true,
+  getAll: publicProcedure
+    .input(
+      z.object({
+        category: z.nativeEnum(Category).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.experiment.findMany({
+        where: {
+          createdById: ctx.session?.user.id,
+          category: input.category,
+        },
+        include: {
+          createdBy: true,
+          imgs: {
+            where: {
+              approved: true,
+            },
+            select: {
+              url: true,
+            },
           },
         },
-      },
-      orderBy: {
-        tag: "asc",
-      },
-    });
-  }),
+        orderBy: {
+          tag: "asc",
+        },
+      });
+    }),
   create: protectedProcedure
     .input(createExperimentSchema)
     .mutation(async ({ input, ctx }) => {

@@ -59,6 +59,14 @@ export const options: IOption[] = [
     title: Category.DINNER,
     icon: "🍱",
   },
+  {
+    title: Category.CHINESE,
+    icon: "🥡",
+  },
+  {
+    title: Category.JAPANESE,
+    icon: "🍣",
+  },
 ];
 
 export const languages = [

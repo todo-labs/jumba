@@ -229,7 +229,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
             Submit
           </Button>
         ) : (
-          <Button className="w-full" onClick={() => void signIn()}>
+          <Button className="w-full" onClick={() => signIn()}>
             <LockIcon className="mr-2" />
             Login
           </Button>

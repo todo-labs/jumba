@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BotIcon, Loader2Icon, RefreshCcwIcon } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { BotIcon, Loader2Icon, LockIcon, RefreshCcwIcon } from "lucide-react";
+import { signIn, useSession } from "next-auth/react";
 import { format } from "date-fns";
 import { UploadDropzone } from "@uploadthing/react";
 import { useState, useEffect } from "react";
@@ -230,16 +230,24 @@ const ReviewCard = (props: IReviewCardProps) => {
                     </FormItem>
                   )}
                 />
-                <Button
-                  className="tt-6 w-full"
-                  type="submit"
-                  disabled={leaveReviewMutation.isLoading}
-                >
-                  {leaveReviewMutation.isLoading && (
-                    <Loader2Icon className="mr-2 animate-spin" />
-                  )}
-                  Submit
-                </Button>
+
+                {session?.user ? (
+                  <Button
+                    className="tt-6 w-full"
+                    type="submit"
+                    disabled={leaveReviewMutation.isLoading}
+                  >
+                    {leaveReviewMutation.isLoading && (
+                      <Loader2Icon className="mr-2 animate-spin" />
+                    )}
+                    Submit
+                  </Button>
+                ) : (
+                  <Button className="w-full" onClick={() => signIn()}>
+                    <LockIcon className="mr-2" />
+                    Login
+                  </Button>
+                )}
               </form>
             </Form>
           </CardContent>

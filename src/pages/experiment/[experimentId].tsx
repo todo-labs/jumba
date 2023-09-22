@@ -3,7 +3,6 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { format } from "date-fns";
-import type { IExperiment } from "types";
 
 import ReviewCard from "@/components/cards/Review";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
@@ -15,13 +14,14 @@ import {
   CardHeader,
 } from "@/components/ui/Card";
 import DeleteReviewModal from "@/components/modals/DeleteReviewModal";
-import Option from "@/components/cards/Option";
-import Step from "@/components/cards/Step";
 import FullScreenConfetti from "@/components/ui/Confetti";
-import { UserCard } from "@/components/cards/User";
+import HeaderSection from "@/components/Header";
+import Steps from "@/components/Steps";
+import ShoppingList from "@/components/ShoppingList";
 
 import { api } from "@/utils/api";
 import { displayUserName, getInitials } from "@/utils";
+import { IExperiment } from "types";
 
 interface ListSectionProps {
   title: string;
@@ -51,50 +51,6 @@ const ListSection = ({ title, items, order = false }: ListSectionProps) => {
   );
 };
 
-type HeaderSectionProps =
-  | "feeds"
-  | "tag"
-  | "title"
-  | "createdBy"
-  | "duration"
-  | "createdAt"
-  | "inspiration";
-
-const HeaderSection = (
-  props: Pick<Partial<IExperiment>, HeaderSectionProps>
-) => {
-  return (
-    <React.Fragment>
-      <div className="space-y-4">
-        <h1 className="font-heading inline-block text-4xl lg:text-5xl">
-          <strong className="text-primary">#{props.tag}</strong> {props.title}
-        </h1>
-        <blockquote className="flex flex-col border-l-2 py-6 pl-6 text-xl italic text-muted-foreground">
-          {props.inspiration}
-        </blockquote>
-      </div>
-      <div className="mt-3 flex flex-col space-x-6 space-y-6 md:flex-row lg:items-center">
-        <UserCard createdAt={props.createdAt} createdBy={props.createdBy} />
-        <div className="flex-1">
-          <h1>
-            Feeds:{" "}
-            <strong className="text-primary">
-              {props.feeds}
-              {props.feeds === 1 ? " person" : " people"}
-            </strong>
-          </h1>
-        </div>
-        <div className="flex-1">
-          <h1>
-            Duration:{" "}
-            <strong className="text-primary">{props.duration} Mins</strong>
-          </h1>
-        </div>
-      </div>
-    </React.Fragment>
-  );
-};
-
 type Ingredient = IExperiment["ingredients"][0];
 
 const ExperimentPage: NextPage = () => {
@@ -112,7 +68,6 @@ const ExperimentPage: NextPage = () => {
     { id: experimentId as string },
     {
       enabled: !!experimentId,
-      staleTime: 7 * 24 * 60 * 60 * 1000,
     }
   );
 
@@ -128,14 +83,14 @@ const ExperimentPage: NextPage = () => {
     }
   }, [setCompleted, setCompleted, currentStep]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
-
   const handleItemSelected = (item: Ingredient) => {
     setShoppingList((prev) => {
       return [...prev, item];
     });
   };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
 
   return (
     <div className="flex h-screen items-start justify-center">
@@ -146,40 +101,19 @@ const ExperimentPage: NextPage = () => {
       <div className="pointer-events-none fixed inset-0 z-50">
         <FullScreenConfetti active={completed} />
       </div>
-      <article className="container min-h-screen max-w-3xl py-6 lg:py-12">
+      <article className="container min-h-screen w-3xl py-6 lg:py-12">
         <HeaderSection {...experiment} />
         <ListSection title="Ingredients" items={experiment?.rawIngredients} />
-        <h1 className="my-6 text-3xl font-semibold tracking-tight">
-          Shopping List
-        </h1>
-        <section className="flex overflow-hidden overflow-x-scroll">
-          {experiment?.ingredients
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((ingredient, index) => (
-              <Option
-                key={index}
-                title={ingredient.name}
-                icon={ingredient.icon}
-                onClick={() => handleItemSelected(ingredient)}
-                selected={
-                  !!shoppingList.find((item) => item.name === ingredient.name)
-                }
-              />
-            ))}
-        </section>
-        <h1 className="my-6 text-3xl font-semibold tracking-tight">Steps</h1>
-        <ol className="list-inside list-decimal space-y-2">
-          {experiment?.steps?.map((item, index) => (
-            <Step
-              key={index}
-              title={item}
-              index={index}
-              completed={index < currentStep}
-              active={index === currentStep}
-              onCompleted={() => setCurrentStep((prev) => prev + 1)}
-            />
-          ))}
-        </ol>
+        <ShoppingList
+          ingredients={experiment?.ingredients}
+          shoppingList={shoppingList}
+          handleItemSelected={handleItemSelected}
+        />
+        <Steps
+          steps={experiment?.steps}
+          currentStep={currentStep}
+          setCurrentStep={setCurrentStep}
+        />
         <ReviewCard experiment={experiment as IExperiment} />
         <ScrollArea className="max-h-[500px] py-3">
           {experiment?.reviews?.map((review) => (
