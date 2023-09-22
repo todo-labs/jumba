@@ -3,8 +3,13 @@ import { useState } from "react";
 import Head from "next/head";
 import type { IExperiment } from "types";
 import Link from "next/link";
-import type { Category } from "@prisma/client";
-import { ChefHatIcon, FileWarningIcon, Loader2Icon } from "lucide-react";
+import { Category } from "@prisma/client";
+import {
+  ChefHatIcon,
+  FileWarningIcon,
+  Loader2Icon,
+  CircleOffIcon,
+} from "lucide-react";
 
 import Option from "@/components/cards/Option";
 import ExperimentCard from "@/components/cards/Experiment";
@@ -18,14 +23,25 @@ import {
 } from "@/components/ui/Dialog";
 import { UserNav } from "@/components/user/Nav";
 import QueryWrapper from "@/components/QueryWrapper";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
+import CreateExperimentModal from "@/components/modals/CreateExperimentModal";
 
 import { api } from "@/utils/api";
 import { options } from "@/utils/constants";
-import CreateExperimentModal from "@/components/modals/CreateExperimentModal";
+import { ScrollArea, ScrollBar } from "@/components/ui/ScrollArea";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
-  const experimentsQuery = api.experiments.getAll.useQuery();
+  const [categoryFilter, setCategoryFilter] = useState<Category>();
+  const experimentsQuery = api.experiments.getAll.useQuery({
+    category: categoryFilter,
+  });
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
 
   const handleOptionPress = (option: Category) => {
@@ -53,25 +69,54 @@ const Home: NextPage = () => {
           </div>
         </section>
 
-        <section className="mt-10 flex overflow-hidden overflow-x-scroll">
-          {options
-            .sort((a, b) => a.title.localeCompare(b.title))
-            .map((option, index) => (
-              <Option
-                key={index}
-                title={option.title}
-                icon={option.icon}
-                selected={selectedOption === option.title}
-                onClick={() => handleOptionPress(option.title)}
-              />
-            ))}
-        </section>
+        <ScrollArea className="mt-10 flex">
+          <div className="flex space-x-4 pb-4">
+            {options
+              .sort((a, b) => a.title.localeCompare(b.title))
+              .map((option, index) => (
+                <Option
+                  key={index}
+                  title={option.title}
+                  icon={option.icon}
+                  selected={selectedOption === option.title}
+                  onClick={() => handleOptionPress(option.title)}
+                />
+              ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
 
         <section className="mt-10 flex h-full flex-col">
-          <h1 className="text-2xl xl:text-4xl">
-            Past Experiments{" "}
-            <span className="">({experimentsQuery.data?.length || 0})</span>
-          </h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl xl:text-4xl">
+              Past Experiments{" "}
+              <span className="">({experimentsQuery.data?.length || 0})</span>
+            </h1>
+            <article className="flex items-center space-x-4">
+              <Select onValueChange={(e) => setCategoryFilter(e as Category)}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(Category)
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((category, index) => (
+                      <SelectItem
+                        value={category as Category}
+                        key={index}
+                        className="capitalize"
+                      >
+                        {category}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <CircleOffIcon
+                className="ml-2 h-4 w-4 cursor-pointer text-muted-foreground hover:text-primary"
+                onClick={() => setCategoryFilter(undefined)}
+              />
+            </article>
+          </div>
           <div className="mt-10">
             <QueryWrapper
               query={experimentsQuery}
