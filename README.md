@@ -85,8 +85,8 @@ Introducing Jumba 🍳: Your personalized recipe generator, crafting hassle-free
 
 Make sure you have the following tools installed on your system:
 
-- [Node.js](https://nodejs.org/) (Recommended version: +18)
-- [Yarn](https://yarnpkg.com/) (Recommended version: 1.22.x)
+- [Node.js](https://nodejs.org/) (Recommended version: 18)
+- [pnpm](https://pnpm.io/) (Recommended version: 6)
 - [Postgresql](https://www.postgresql.org/) (Recommended version: 15)
 
 
@@ -100,15 +100,15 @@ Make sure you have the following tools installed on your system:
    ```
 3. Install NPM packages
    ```bash
-    yarn install
+    pnpm install
    ```
 4. Copy over your env file
    ```bash
-    cp .env.example  .env
+    cp .env.example .env
    ```
 6. Run the development server
    ```bash
-    yarn dev
+    pnpm dev
    ```
 7. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -118,10 +118,11 @@ Make sure you have the following tools installed on your system:
 
 ## Roadmap
 
-- [ ] Add a filters for home experiment listing
-- [ ] Add a photo uploads to review card
-- [ ] Add Dashboard Image review tab
-- [ ] Add timer component to the steps if applicable
+- [ ] Implement filters for the home experiment listing.
+- [ ] Enable photo uploads for reviews
+- [ ] Create a new tab in dashboard to review image uploads 
+  - look for automated solution, possibly yolov3 🤔
+- [ ] Include a timer component for the steps, if applicable.
 
 See the [open issues](https://github.com/todo-labs/jumba/issues) for a full list of proposed features (and known issues).
 
