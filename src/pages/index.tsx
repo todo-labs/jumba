@@ -31,10 +31,11 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import CreateExperimentModal from "@/components/modals/CreateExperimentModal";
+import { ScrollArea, ScrollBar } from "@/components/ui/ScrollArea";
 
 import { api } from "@/utils/api";
 import { options } from "@/utils/constants";
-import { ScrollArea, ScrollBar } from "@/components/ui/ScrollArea";
+import { useMixpanel } from "@/utils/mixpanel";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
@@ -44,9 +45,44 @@ const Home: NextPage = () => {
   });
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
 
+  const { trackEvent } = useMixpanel();
+
   const handleOptionPress = (option: Category) => {
     setSelectedOption(option);
     setShowSidebar(true);
+    trackEvent("ButtonClick", {
+      label: `Option`,
+      value: option,
+    });
+  };
+
+  const handleReset = () => {
+    setCategoryFilter(undefined);
+    trackEvent("ButtonClick", {
+      label: "Reset",
+    });
+  };
+
+  const handleRefetch = () => {
+    experimentsQuery.refetch();
+    trackEvent("ButtonClick", {
+      label: "Refetch",
+    });
+  };
+
+  const handleClose = () => {
+    setShowSidebar(false);
+    trackEvent("ButtonClick", {
+      label: "Close",
+    });
+  };
+
+  const handleChooseCategory = (category: Category) => {
+    setCategoryFilter(category);
+    trackEvent("ButtonClick", {
+      label: "Choose Category",
+      value: category,
+    });
   };
 
   return (
@@ -93,7 +129,9 @@ const Home: NextPage = () => {
               <span className="">({experimentsQuery.data?.length || 0})</span>
             </h1>
             <article className="flex items-center space-x-4">
-              <Select onValueChange={(e) => setCategoryFilter(e as Category)}>
+              <Select
+                onValueChange={(e) => handleChooseCategory(e as Category)}
+              >
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
@@ -113,7 +151,7 @@ const Home: NextPage = () => {
               </Select>
               <CircleOffIcon
                 className="ml-2 h-4 w-4 cursor-pointer text-muted-foreground hover:text-primary"
-                onClick={() => setCategoryFilter(undefined)}
+                onClick={handleReset}
               />
             </article>
           </div>
@@ -135,7 +173,7 @@ const Home: NextPage = () => {
                     icon={FileWarningIcon}
                     description="We're having trouble loading your experiments. Please try again later."
                     btnText="retry"
-                    onClick={() => void experimentsQuery.refetch()}
+                    onClick={handleRefetch}
                   />
                 ),
                 Empty: () => (
@@ -171,7 +209,7 @@ const Home: NextPage = () => {
           </DialogHeader>
           <CreateExperimentModal
             category={selectedOption as Category}
-            onClose={() => setShowSidebar(false)}
+            onClose={handleClose}
           />
         </DialogContent>
       </Dialog>
