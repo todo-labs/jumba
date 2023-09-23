@@ -22,8 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import { Slider } from "@/components/ui/Slider";
-import { Button } from "../ui/Button";
-import { Input } from "../ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 import { type CreateExperiment, createExperimentSchema } from "@/schemas";
 import { Requirements } from "@/utils/constants";
@@ -31,6 +31,7 @@ import { env } from "@/env/client.mjs";
 import { api } from "@/utils/api";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils";
+import { useMixpanel } from "@/utils/mixpanel";
 
 interface ICreateExperimentModalProps {
   onClose: () => void;
@@ -41,6 +42,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
   const utils = api.useContext();
   const { toast } = useToast();
   const { data: session } = useSession();
+  const { trackEvent } = useMixpanel();
 
   const form = useForm<CreateExperiment>({
     resolver: zodResolver(createExperimentSchema),
@@ -79,6 +81,11 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
           </Button>
         ),
       });
+      trackEvent("FormSubmission", {
+        label: "Create Experiment",
+        success: true,
+        ...value,
+      });
       await utils.experiments.getAll.invalidate();
       form.reset();
     },
@@ -88,6 +95,11 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
         description: error?.message || "Something went wrong",
         variant: "destructive",
       });
+      trackEvent("FormSubmission", {
+        label: "Create Experiment",
+        success: false,
+        error: error?.message || "Something went wrong",
+      });
     },
   });
 
@@ -95,10 +107,33 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
     try {
       await createExperiment.mutateAsync(values);
       props.onClose();
+      trackEvent("FormSubmission", {
+        label: "Create Experiment",
+        ...values,
+      });
     } catch (error) {
       console.error(error);
     }
   }
+
+  const handleRemove = (index: number) => {
+    remove(index);
+    trackEvent("ButtonClick", {
+      label: "Remove Ingredient",
+    });
+  };
+
+  const handleAppend = () => {
+    append({ name: "" });
+    trackEvent("ButtonClick", {
+      label: "Add Ingredient",
+    });
+  };
+
+  const handleLogin = () => {
+    void signIn();
+    trackEvent("Login");
+  };
 
   return (
     <Form {...form}>
@@ -140,7 +175,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => remove(index)}
+                        onClick={() => handleRemove(index)}
                       >
                         <Trash2Icon className="h-3 w-3 text-destructive" />
                       </Button>
@@ -155,7 +190,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
             type="button"
             variant="link"
             className="mt-4 w-full border-2 border-primary bg-primary/10 font-medium"
-            onClick={() => append({ name: "" })}
+            onClick={handleAppend}
           >
             Add Ingredient
           </Button>
@@ -229,7 +264,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
             Submit
           </Button>
         ) : (
-          <Button className="w-full" onClick={() => signIn()}>
+          <Button className="w-full" onClick={handleLogin}>
             <LockIcon className="mr-2" />
             Login
           </Button>

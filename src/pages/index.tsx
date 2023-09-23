@@ -44,7 +44,6 @@ const Home: NextPage = () => {
     category: categoryFilter,
   });
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
-
   const { trackEvent } = useMixpanel();
 
   const handleOptionPress = (option: Category) => {
@@ -79,7 +78,7 @@ const Home: NextPage = () => {
 
   const handleChooseCategory = (category: Category) => {
     setCategoryFilter(category);
-    trackEvent("ButtonClick", {
+    trackEvent("Filter", {
       label: "Choose Category",
       value: category,
     });
@@ -104,7 +103,6 @@ const Home: NextPage = () => {
             <UserNav />
           </div>
         </section>
-
         <ScrollArea className="mt-10 flex">
           <div className="flex space-x-4 pb-4">
             {options
@@ -121,7 +119,6 @@ const Home: NextPage = () => {
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
-
         <section className="mt-10 flex h-full flex-col">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl xl:text-4xl">

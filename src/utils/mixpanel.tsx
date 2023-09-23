@@ -21,7 +21,7 @@ export const mixpanelEventConfig = {
 export type MixpanelPayload = {
   is_error: boolean;
   label: string;
-  [key: string]: any;
+  [key: string]: string | number | boolean | undefined;
 };
 
 type TrackEvent = (
@@ -38,7 +38,7 @@ export function MixpanelProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!env.NEXT_PUBLIC_MIXPANEL_ENABLED) return;
-    Mixpanel.identify(session?.user?.id);
+    Mixpanel.identify(session?.user?.id || session?.user?.email || "anonymous");
     Mixpanel.people.set({
       $email: session?.user?.email,
       $name: session?.user?.name,

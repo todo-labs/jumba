@@ -25,8 +25,11 @@ import {
   AlertDialogTrigger,
 } from "../ui/AlertDialog";
 
+import { useMixpanel } from "@/utils/mixpanel";
+
 export function UserNav() {
   const { data: session } = useSession();
+  const { trackEvent } = useMixpanel();
 
   const getInitials = (name: string) => {
     const [firstName, lastName] = name.split(" ");
@@ -36,10 +39,24 @@ export function UserNav() {
   };
 
   const handleSignOut = () => {
+    trackEvent("Logout");
     void signOut();
   };
 
-  if (!session) return <Button onClick={() => signIn()}>Login</Button>;
+  const handleLogin = () => {
+    trackEvent("Login");
+    void signIn();
+  };
+
+  const handleNavigate = (path: string) => {
+    trackEvent("ButtonClick", {
+      label: `Navigate`,
+      value: path,
+    });
+    void router.push(path);
+  };
+
+  if (!session) return <Button onClick={handleLogin}>Login</Button>;
 
   return (
     <AlertDialog>
@@ -70,11 +87,11 @@ export function UserNav() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => void router.push(`/profile`)}>
+            <DropdownMenuItem onClick={() => handleNavigate(`/profile`)}>
               <User className="mr-2 h-4 w-4" />
               <p className="capitalize">Profile</p>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => void router.push(`/settings`)}>
+            <DropdownMenuItem onClick={() => handleNavigate(`/settings`)}>
               <Settings className="mr-2 h-4 w-4" />
               <p className="capitalize">Settings</p>
             </DropdownMenuItem>
