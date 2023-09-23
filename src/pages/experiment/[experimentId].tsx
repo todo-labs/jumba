@@ -93,7 +93,7 @@ const ExperimentPage: NextPage = () => {
   if (isError) return <div>Error</div>;
 
   return (
-    <div className="flex h-screen items-start justify-center">
+    <div className="flex h-screen justify-center px-20">
       <Head>
         <title>{experiment?.title}</title>
         <link rel="icon" href="/logo.svg" />

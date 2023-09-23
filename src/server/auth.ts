@@ -59,7 +59,7 @@ export const authOptions: NextAuthOptions = {
     EmailProvider({
       server: {
         host: env.EMAIL_HOST,
-        port: Number(env.EMAIL_PORT),
+        port: env.EMAIL_PORT,
         auth: {
           user: env.EMAIL_USER,
           pass: env.EMAIL_PASSWORD,
@@ -68,8 +68,8 @@ export const authOptions: NextAuthOptions = {
       },
       from: env.EMAIL_FROM,
       async sendVerificationRequest({
-        identifier: email,
         url,
+        identifier: email,
         provider: { server, from },
       }) {
         try {
@@ -90,12 +90,11 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   jwt: {
-    maxAge: 3 * 24 * 60 * 60, // 3 days
+    maxAge: 7 * 24 * 60 * 60,
   },
   secret: env.NEXTAUTH_SECRET,
   pages: {
     verifyRequest: "/auth/verify-request",
-    error: "/auth/error",
     signIn: "/auth/sign-in",
   },
   debug: env.NODE_ENV === "development",

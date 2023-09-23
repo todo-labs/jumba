@@ -39,7 +39,7 @@ export function UserNav() {
     void signOut();
   };
 
-  if (!session) return <Button onClick={() => void signIn()}>Login</Button>;
+  if (!session) return <Button onClick={() => signIn()}>Login</Button>;
 
   return (
     <AlertDialog>
