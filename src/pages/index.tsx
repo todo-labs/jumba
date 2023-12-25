@@ -89,10 +89,7 @@ const Home: NextPage = () => {
                 <SelectValue>{selection || "All"}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem
-                  value={undefined}
-                  onClick={() => setSelection(undefined)}
-                >
+                <SelectItem value={''} onClick={() => setSelection(undefined)}>
                   All
                 </SelectItem>
                 {options.map((option, index) => (
@@ -147,7 +144,7 @@ const Home: NextPage = () => {
       </main>
       <Sheet open={showSidebar} onOpenChange={setShowSidebar}>
         <SheetContent>
-          <SheetHeader className="text-left pb-4">
+          <SheetHeader className="pb-4 text-left">
             <SheetTitle>
               New{" "}
               <span className="capitalize text-primary">

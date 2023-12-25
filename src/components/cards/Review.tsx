@@ -3,7 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { BotIcon, Loader2Icon, RefreshCcwIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { format } from "date-fns";
-import { UploadDropzone } from "@uploadthing/react";
 import { useState, useEffect } from "react";
 
 import { Textarea } from "@/components/ui/TextArea";
@@ -26,7 +25,6 @@ import { type LeaveReview, leaveReviewSchema } from "@/schemas";
 import { useToast } from "@/hooks/useToast";
 import { displayUserName, getInitials } from "@/utils";
 import type { IExperiment } from "types";
-import type { OurFileRouter } from "@/server/uploadthing";
 
 interface IReviewCardProps {
   experiment: IExperiment;
@@ -135,29 +133,6 @@ const ReviewCard = (props: IReviewCardProps) => {
             </div>
           </CardHeader>
           <CardContent>
-            {/* <div className="flex flex-col items-center justify-center gap-4">
-              <UploadDropzone<OurFileRouter>
-                endpoint="reviewImage"
-                onClientUploadComplete={(res) => {
-                  toast({
-                    title: "Upload Complete",
-                    description: (
-                      <div>
-                        <p>{res?.length} files uploaded successfully</p>
-                        <pre>{JSON.stringify(res, null, 2)}</pre>
-                      </div>
-                    ),
-                  });
-                }}
-                onUploadError={(error: Error) => {
-                  toast({
-                    title: "Upload Error",
-                    description: error.message,
-                    variant: "destructive",
-                  });
-                }}
-              />
-            </div> */}
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
