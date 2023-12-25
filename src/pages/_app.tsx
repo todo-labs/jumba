@@ -11,6 +11,7 @@ import { api } from "@/utils/api";
 
 import "@/styles/globals.css";
 import "@uploadthing/react/styles.css";
+import { MixpanelProvider } from "@/lib/mixpanel";
 
 const dmSans = DM_Sans({
   weight: ["400", "500", "700"],
@@ -23,11 +24,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider session={session} refetchInterval={60 * 1 * 5}>
+    <SessionProvider session={session}>
       <main className={cn(dmSans.className)}>
         <ThemeProvider attribute="class">
           <LoadingScreen />
-          <Component {...pageProps} />
+          <MixpanelProvider>
+            <Component {...pageProps} />
+          </MixpanelProvider>
           <Toaster />
         </ThemeProvider>
       </main>

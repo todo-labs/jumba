@@ -152,6 +152,9 @@ dependencies:
   lucide-react:
     specifier: 0.263.1
     version: 0.263.1(react@18.2.0)
+  mixpanel-browser:
+    specifier: ^2.48.1
+    version: 2.48.1
   next:
     specifier: ^13.5.6
     version: 13.5.6(@babel/core@7.23.6)(@opentelemetry/api@1.7.0)(react-dom@18.2.0)(react@18.2.0)
@@ -220,6 +223,9 @@ devDependencies:
   '@types/jaro-winkler':
     specifier: ^0.2.3
     version: 0.2.3
+  '@types/mixpanel-browser':
+    specifier: 2.48.0
+    version: 2.48.0
   '@types/node':
     specifier: ^18.19.3
     version: 18.19.3
@@ -4047,6 +4053,10 @@ packages:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
 
+  /@types/mixpanel-browser@2.48.0:
+    resolution: {integrity: sha512-3SO/SKqVrkn8ipXHUc9ew3ZFyvIKYsIxbwhyzwqlcHdro1UC9inSwr2Cgq519bYljC/1tZA4ALZJJPQNOnhPbw==}
+    dev: true
+
   /@types/node@18.19.3:
     resolution: {integrity: sha512-k5fggr14DwAytoA/t8rPrIz++lXK7/DqckthCmoZOKNsEbJkId4Z//BqgApXBUGrGddrigYa1oqheo/7YmW4rg==}
     dependencies:
@@ -6936,6 +6946,10 @@ packages:
   /minipass@7.0.4:
     resolution: {integrity: sha512-jYofLM5Dam9279rdkWzqHozUo4ybjdZmCsDHePy5V/PbBcVMiSZR97gmAy45aqi8CK1lG2ECd356FU86avfwUQ==}
     engines: {node: '>=16 || 14 >=14.17'}
+
+  /mixpanel-browser@2.48.1:
+    resolution: {integrity: sha512-vXTuUzZMg+ht7sRqyjtc3dUDy/81Z/H6FLFgFkUZJqKFaAqcx1JSXmOdY/2kmsxCkUdy5JN5zW9m9TMCk+rxGQ==}
+    dev: false
 
   /mkdirp@1.0.4:
     resolution: {integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==}

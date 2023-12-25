@@ -75,6 +75,7 @@
     "jaro-winkler": "^0.2.8",
     "langchain": "^0.0.88",
     "lucide-react": "0.263.1",
+    "mixpanel-browser": "^2.48.1",
     "next": "^13.5.6",
     "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",
@@ -99,6 +100,7 @@
   "devDependencies": {
     "@types/eslint": "^8.56.0",
     "@types/jaro-winkler": "^0.2.3",
+    "@types/mixpanel-browser": "2.48.0",
     "@types/node": "^18.19.3",
     "@types/nodemailer": "^6.4.14",
     "@types/prettier": "^2.7.3",
