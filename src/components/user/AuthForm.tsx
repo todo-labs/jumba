@@ -20,11 +20,14 @@ import {
 } from "../ui/Form";
 
 import { cn } from "@/utils";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [_, setEmail] = useLocalStorage<string>("email", "");
 
   const formSchema = z.object({
     email: z.string().email(),
@@ -41,6 +44,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     try {
       setIsLoading(true);
       await signIn("email", { email: values.email });
+      setEmail(values.email);
     } catch (error) {
       console.error(error);
     }

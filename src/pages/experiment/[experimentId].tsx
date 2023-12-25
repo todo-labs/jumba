@@ -69,11 +69,11 @@ const HeaderSection = (
         <h1 className="font-heading inline-block text-4xl lg:text-5xl">
           <strong className="text-primary">#{props.tag}</strong> {props.title}
         </h1>
-        <blockquote className="flex flex-col border-l-2 py-6 pl-6 text-xl italic text-muted-foreground">
+        <blockquote className="border-l-2 py-6 pl-6 text-xl italic text-muted-foreground">
           {props.inspiration}
         </blockquote>
       </div>
-      <div className="mt-3 flex flex-col space-x-6 space-y-6 md:flex-row lg:items-center">
+      <div className="mt-3 flex flex-col space-x-6  space-y-6 lg:flex-row lg:items-center">
         <UserCard createdAt={props.createdAt} createdBy={props.createdBy} />
         <div className="flex-1">
           <h1>

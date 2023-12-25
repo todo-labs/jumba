@@ -1,5 +1,5 @@
-import { LogOut, PlusCircle, Settings, User } from "lucide-react";
-import { useSession, signOut, signIn } from "next-auth/react";
+import { LogOut, Settings, User } from "lucide-react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import router from "next/router";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/Avatar";
@@ -39,9 +39,9 @@ export function UserNav() {
     void signOut();
   };
 
-  if (!session) return <Button onClick={() => void signIn()}>Login</Button>;
-
-  return (
+  return !session ? (
+    <Button onClick={() => void signIn()}>Login</Button>
+  ) : (
     <AlertDialog>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -70,11 +70,11 @@ export function UserNav() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => void router.push(`/profile`)}>
+            <DropdownMenuItem onClick={() => router.push(`/profile`)}>
               <User className="mr-2 h-4 w-4" />
               <p className="capitalize">Profile</p>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => void router.push(`/settings`)}>
+            <DropdownMenuItem onClick={() => router.push(`/settings`)}>
               <Settings className="mr-2 h-4 w-4" />
               <p className="capitalize">Settings</p>
             </DropdownMenuItem>
@@ -89,22 +89,22 @@ export function UserNav() {
             </AlertDialogTrigger>
           </DropdownMenuItem>
         </DropdownMenuContent>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleSignOut}>
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
       </DropdownMenu>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your
+            account and remove your data from our servers.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleSignOut}>
+            Continue
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
     </AlertDialog>
   );
 }

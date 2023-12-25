@@ -6,11 +6,12 @@ import {
 } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { render } from "@react-email/render";
+import { createTransport } from "nodemailer";
+
 import { env } from "@/env/server.mjs";
 import { prisma } from "@/server/db";
 import type { Role } from "@prisma/client";
-import { createTransport } from "nodemailer";
-import { render } from "@react-email/render";
 import { MagicLinkEmail } from "@/emails/magic-link";
 
 /**

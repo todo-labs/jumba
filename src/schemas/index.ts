@@ -22,6 +22,10 @@ export const getByIdSchema = z.object({
   id: z.string().nonempty().cuid(),
 });
 
+export const getAllSchema = z.object({
+  category: z.nativeEnum(Category).optional(),
+});
+
 export const leaveReviewSchema = z.object({
   experimentId: z.string().cuid(),
   rating: z.number().min(1).max(10),

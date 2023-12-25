@@ -53,6 +53,7 @@ model User {
   dob           DateTime?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  MealPrep      MealPrep[]
 }
 
 model VerificationToken {
@@ -131,4 +132,18 @@ model Experiment {
   reviews        Reviews[]
   ingredients    Ingredient[]
   summary        String?
+  MealPrep       MealPrep?    @relation(fields: [mealPrepId], references: [id])
+  mealPrepId     String?
+}
+
+model MealPrep {
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  title       String
+  description String?
+  experiments Experiment[]
+  createdBy   User?        @relation(fields: [userId], references: [id])
+  createdById String?
+  userId      String?
 }

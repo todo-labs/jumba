@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useTheme } from "next-themes";
+import Head from "next/head";
 
 import {
   Form,
@@ -19,7 +20,6 @@ import SettingsLayout from "@/components/user/SidebarNav";
 import { Separator } from "@/components/ui/Separator";
 
 import { toast } from "@/hooks/useToast";
-import Head from "next/head";
 
 type Theme = "light" | "dark";
 

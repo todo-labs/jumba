@@ -10,6 +10,7 @@ import {
 import {
   correctGrammarSchema,
   createExperimentSchema,
+  getAllSchema,
   getByIdSchema,
   leaveReviewSchema,
 } from "@/schemas";
@@ -21,10 +22,11 @@ import {
 } from "@/utils/ai";
 
 export const experimentRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
+  getAll: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
     return await ctx.prisma.experiment.findMany({
       where: {
         createdById: ctx.session?.user.id,
+        category: input.category,
       },
       include: {
         createdBy: true,
@@ -67,8 +69,6 @@ export const experimentRouter = createTRPCRouter({
         }
 
         const tag = Math.floor(Math.random() * 1000);
-
-        // TODO: check for duplicate tags
 
         const data = await ctx.prisma.experiment.create({
           data: {

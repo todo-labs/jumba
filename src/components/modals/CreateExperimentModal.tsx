@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession, signIn } from "next-auth/react";
@@ -8,7 +8,6 @@ import { Loader2Icon, LockIcon, Trash2Icon } from "lucide-react";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -21,9 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/Select";
+import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/Slider";
-import { Button } from "../ui/Button";
-import { Input } from "../ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 
 import { type CreateExperiment, createExperimentSchema } from "@/schemas";
 import { Requirements } from "@/utils/constants";
@@ -31,16 +32,20 @@ import { env } from "@/env/client.mjs";
 import { api } from "@/utils/api";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils";
+import { Label } from "../ui/Label";
 
 interface ICreateExperimentModalProps {
   onClose: () => void;
   category: Category;
 }
 
+const randomMeals = ["Ramen", "Chicken and Rice", "Pasta"];
+
 const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
   const utils = api.useContext();
   const { toast } = useToast();
   const { data: session } = useSession();
+  const [hasAMealInMind, setHasAMealInMind] = useState(false);
 
   const form = useForm<CreateExperiment>({
     resolver: zodResolver(createExperimentSchema),
@@ -103,22 +108,41 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="desiredMeal"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Desired Meal</FormLabel>
-              <FormControl>
-                <Input id="desired-meal" type="text" {...field} />
-              </FormControl>
-              <FormDescription>
-                This is optional. Helps guide the AI towards a particular meal.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex flex-row items-center justify-between">
+          <Label htmlFor="desired-meal">Desired Meal</Label>
+          <Switch
+            name="desired-meal"
+            disabled={createExperiment.isLoading}
+            checked={hasAMealInMind}
+            onCheckedChange={setHasAMealInMind}
+          />
+        </div>
+        <p className="text-sm text-muted-foreground">
+          This is optional. Helps guide the AI towards a particular meal.
+        </p>
+        {hasAMealInMind && (
+          <FormField
+            control={form.control}
+            name="desiredMeal"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    id="desired-meal"
+                    placeholder={
+                      randomMeals[
+                        Math.floor(Math.random() * randomMeals.length)
+                      ]
+                    }
+                    type="text"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         <div>
           {fields.map((field, index) => (
             <FormField

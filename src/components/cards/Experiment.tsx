@@ -18,10 +18,7 @@ const ExperimentCard = ({
   title,
   id,
   tag,
-  imgs,
   inspiration,
-  createdAt,
-  createdBy,
 }: IExperiment) => {
   const router = useRouter();
   return (

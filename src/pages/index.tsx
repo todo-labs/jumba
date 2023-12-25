@@ -10,22 +10,33 @@ import Option from "@/components/cards/Option";
 import ExperimentCard from "@/components/cards/Experiment";
 import DefaultState from "@/components/DefaultState";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/Dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { UserNav } from "@/components/user/Nav";
 import QueryWrapper from "@/components/QueryWrapper";
+import CreateExperimentModal from "@/components/modals/CreateExperimentModal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
 
 import { api } from "@/utils/api";
 import { options } from "@/utils/constants";
-import CreateExperimentModal from "@/components/modals/CreateExperimentModal";
+import { Separator } from "@/components/ui/Separator";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
-  const experimentsQuery = api.experiments.getAll.useQuery();
+  const [selection, setSelection] = useState<Category | undefined>(undefined);
+  const experimentsQuery = api.experiments.getAll.useQuery({
+    category: selection,
+  });
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
 
   const handleOptionPress = (option: Category) => {
@@ -68,10 +79,34 @@ const Home: NextPage = () => {
         </section>
 
         <section className="mt-10 flex h-full flex-col">
-          <h1 className="text-2xl xl:text-4xl">
-            Past Experiments{" "}
-            <span className="">({experimentsQuery.data?.length || 0})</span>
-          </h1>
+          <div className="flex flex-row items-center justify-between">
+            <h1 className="text-2xl xl:text-4xl">
+              Past Experiments{" "}
+              <span className="">({experimentsQuery.data?.length || 0})</span>
+            </h1>
+            <Select onValueChange={(item) => setSelection(item as Category)}>
+              <SelectTrigger className="max-w-72">
+                <SelectValue>{selection || "All"}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  value={undefined}
+                  onClick={() => setSelection(undefined)}
+                >
+                  All
+                </SelectItem>
+                {options.map((option, index) => (
+                  <SelectItem
+                    key={index}
+                    value={option.title}
+                    onClick={() => setSelection(option.title)}
+                  >
+                    {option.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="mt-10">
             <QueryWrapper
               query={experimentsQuery}
@@ -110,26 +145,27 @@ const Home: NextPage = () => {
           </div>
         </section>
       </main>
-      <Dialog open={showSidebar} onOpenChange={setShowSidebar}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
+      <Sheet open={showSidebar} onOpenChange={setShowSidebar}>
+        <SheetContent>
+          <SheetHeader className="text-left pb-4">
+            <SheetTitle>
               New{" "}
               <span className="capitalize text-primary">
                 {selectedOption?.toLowerCase()}
               </span>{" "}
               Experiment
-            </DialogTitle>
-            <DialogDescription>
+            </SheetTitle>
+            <SheetDescription>
               Pick all the options needed to create your new experiment.
-            </DialogDescription>
-          </DialogHeader>
+            </SheetDescription>
+          </SheetHeader>
+          <Separator className="mb-8" />
           <CreateExperimentModal
             category={selectedOption as Category}
             onClose={() => setShowSidebar(false)}
           />
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };

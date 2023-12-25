@@ -8,7 +8,6 @@ import { prisma } from "@/server/db";
 
 import { env } from "@/env/server.mjs";
 import type { CreateExperiment } from "@/schemas";
-import { Experiment } from "@prisma/client";
 
 const logResponse = (label: string, data: unknown) => {
   if (env.NODE_ENV === "production") return;
@@ -118,7 +117,7 @@ type IngredientsParserResponseType = z.infer<typeof ingredientsParser.schema>;
 export async function getIngredients(
   ingredients: string[]
 ): Promise<IngredientsParserResponseType | undefined> {
-  const actionTemplate = `You are tasked with parsing an ingredients list and returning the icon and name without units, Simply return the generic name like one you would find in the groccery store. The ingredients are: {ingredients}. Please provide the ingredients in the following format: {formatInstructions}. Don't include any explanation in your response`;
+  const actionTemplate = `You are tasked with parsing an ingredients list and returning the icon and name without units, Simply return the generic name like one you would find in the grocery store. The ingredients are: {ingredients}. Please provide the ingredients in the following format: {formatInstructions}. Don't include any explanation in your response`;
   const format = ingredientsParser.getFormatInstructions();
 
   const template = new PromptTemplate({
@@ -194,9 +193,9 @@ export async function reviewComment(
       where: { id: experimentId },
       data: { summary },
     });
+    console.log(`Saved summary for [${experiment?.title}]: ${summary}`);
   } else {
     console.log(`Using cached summary for experiment: ${experiment?.title}`);
-    console.log("Summary: ", experiment?.summary);
     summary = experiment?.summary;
   }
 
@@ -218,6 +217,11 @@ export async function reviewComment(
 
   console.log(`\nAI is thinking...`);
   const start = performance.now();
+
+  console.log({
+    comment,
+    content: summary,
+  });
 
   const data = await reviewChain.call({ comment, content: summary });
 
@@ -285,5 +289,5 @@ export async function summarize(
   });
 
   const summary = await chain.call({ input_documents: docs });
-  return summary["text"] as SimpleParserResponseType;
+  return summary as SimpleParserResponseType;
 }

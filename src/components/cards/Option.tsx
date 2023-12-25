@@ -1,10 +1,10 @@
-import { Card, CardDescription } from "../ui/Card";
+import { Card, CardDescription } from "@/components/ui/Card";
 
 import { cn } from "@/utils";
 
 interface IOptionProps {
   title: string;
-  icon: string;
+  icon: string | JSX.Element;
   selected: boolean;
   onClick: () => void;
 }
@@ -31,5 +31,7 @@ const Option = ({ title, icon, selected, onClick }: IOptionProps) => {
     </Card>
   );
 };
+
+Option.displayName = "Option";
 
 export default Option;
