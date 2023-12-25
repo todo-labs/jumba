@@ -9,22 +9,26 @@ import {
   CardTitle,
 } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { UserCard } from "./User";
 
-import { cn } from "@/utils";
 import type { IExperiment } from "types";
+import { useMixpanel } from "@/lib/mixpanel";
 
-const ExperimentCard = ({
-  title,
-  id,
-  tag,
-  inspiration,
-}: IExperiment) => {
+const ExperimentCard = ({ title, id, tag, inspiration }: IExperiment) => {
   const router = useRouter();
+  const { trackEvent } = useMixpanel();
+
+  const handleClick = () => {
+    trackEvent("ButtonClick", {
+      experimentId: id,
+      experimentTitle: title,
+      label: "ExperimentCard",
+    });
+    router.push(`/experiment/${id}`)
+  }
   return (
     <Card
       className="h-[300px] max-w-[500px] cursor-pointer justify-center rounded-xl border-2 p-2 shadow-none transition-shadow hover:border-primary hover:border-primary hover:shadow-lg"
-      onClick={() => router.push(`/experiment/${id}`)}
+      onClick={handleClick}
     >
       <CardHeader className="mt-2">
         <Badge className="w-fit rounded-md">#{tag}</Badge>
