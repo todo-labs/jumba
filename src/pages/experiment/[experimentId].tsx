@@ -22,6 +22,7 @@ import { UserCard } from "@/components/cards/User";
 
 import { api } from "@/utils/api";
 import { displayUserName, getInitials } from "@/utils";
+import { useMixpanel } from "@/lib/mixpanel";
 
 interface ListSectionProps {
   title: string;
@@ -102,6 +103,7 @@ const ExperimentPage: NextPage = () => {
   const [shoppingList, setShoppingList] = React.useState<Ingredient[]>([]);
   const [currentStep, setCurrentStep] = React.useState(0);
   const [completed, setCompleted] = React.useState(false);
+  const { trackEvent } = useMixpanel();
 
   const { experimentId } = router.query;
   const {
@@ -134,6 +136,10 @@ const ExperimentPage: NextPage = () => {
   const handleItemSelected = (item: Ingredient) => {
     setShoppingList((prev) => {
       return [...prev, item];
+    });
+    trackEvent("ButtonClick", {
+      label: "Ingredient Selected",
+      value: item.name,
     });
   };
 
@@ -176,7 +182,13 @@ const ExperimentPage: NextPage = () => {
               index={index}
               completed={index < currentStep}
               active={index === currentStep}
-              onCompleted={() => setCurrentStep((prev) => prev + 1)}
+              onCompleted={() => {
+                setCurrentStep((prev) => prev + 1);
+                trackEvent("ButtonClick", {
+                  label: "Step Completed",
+                  value: currentStep - 1,
+                });
+              }}
             />
           ))}
         </ol>

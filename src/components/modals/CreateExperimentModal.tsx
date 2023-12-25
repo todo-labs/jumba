@@ -24,7 +24,6 @@ import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/Slider";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { ScrollArea } from "@/components/ui/ScrollArea";
 
 import { type CreateExperiment, createExperimentSchema } from "@/schemas";
 import { Requirements } from "@/utils/constants";
@@ -33,6 +32,7 @@ import { api } from "@/utils/api";
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/utils";
 import { Label } from "../ui/Label";
+import { useMixpanel } from "@/lib/mixpanel";
 
 interface ICreateExperimentModalProps {
   onClose: () => void;
@@ -46,6 +46,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
   const { toast } = useToast();
   const { data: session } = useSession();
   const [hasAMealInMind, setHasAMealInMind] = useState(false);
+  const { trackEvent } = useMixpanel();
 
   const form = useForm<CreateExperiment>({
     resolver: zodResolver(createExperimentSchema),
@@ -99,6 +100,10 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
   async function onSubmit(values: CreateExperiment) {
     try {
       await createExperiment.mutateAsync(values);
+      trackEvent("FormSubmission", {
+        label: "Create Experiment",
+        ...values,
+      });
       props.onClose();
     } catch (error) {
       console.error(error);

@@ -30,6 +30,7 @@ import {
 import { api } from "@/utils/api";
 import { options } from "@/utils/constants";
 import { Separator } from "@/components/ui/Separator";
+import { useMixpanel } from "@/lib/mixpanel";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
@@ -38,10 +39,15 @@ const Home: NextPage = () => {
     category: selection,
   });
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
+  const { trackEvent } = useMixpanel();
 
   const handleOptionPress = (option: Category) => {
     setSelectedOption(option);
     setShowSidebar(true);
+    trackEvent("ButtonClick", {
+      value: option,
+      label: "Create Experiment",
+    });
   };
 
   return (
@@ -89,14 +95,20 @@ const Home: NextPage = () => {
                 <SelectValue>{selection || "All"}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={''} onClick={() => setSelection(undefined)}>
+                <SelectItem value={""} onClick={() => setSelection(undefined)}>
                   All
                 </SelectItem>
                 {options.map((option, index) => (
                   <SelectItem
                     key={index}
                     value={option.title}
-                    onClick={() => setSelection(option.title)}
+                    onClick={() => {
+                      setSelection(option.title);
+                      trackEvent("ButtonClick", {
+                        value: option.title,
+                        label: "Filter Experiments",
+                      });
+                    }}
                   >
                     {option.title}
                   </SelectItem>
@@ -159,7 +171,13 @@ const Home: NextPage = () => {
           <Separator className="mb-8" />
           <CreateExperimentModal
             category={selectedOption as Category}
-            onClose={() => setShowSidebar(false)}
+            onClose={() => {
+              setShowSidebar(false);
+              setSelectedOption(undefined);
+              trackEvent("ButtonClick", {
+                label: "Close Create Experiment Modal",
+              });
+            }}
           />
         </SheetContent>
       </Sheet>
