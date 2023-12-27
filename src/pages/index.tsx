@@ -31,6 +31,7 @@ import { api } from "@/utils/api";
 import { options } from "@/utils/constants";
 import { Separator } from "@/components/ui/Separator";
 import { useMixpanel } from "@/lib/mixpanel";
+import { ScrollArea, ScrollBar } from "@/components/ui/ScrollArea";
 
 const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState<Category>();
@@ -47,6 +48,29 @@ const Home: NextPage = () => {
     trackEvent("ButtonClick", {
       value: option,
       label: "Create Experiment",
+    });
+  };
+
+  const handleFilterSelection = (option: Category) => {
+    setSelection(option);
+    trackEvent("ButtonClick", {
+      value: option,
+      label: "Filter Experiments",
+    });
+  };
+
+  const handleOnClose = () => {
+    setSelectedOption(undefined);
+    setShowSidebar(false);
+    trackEvent("ButtonClick", {
+      label: "Close Create Experiment Modal",
+    });
+  };
+
+  const handleRefetch = () => {
+    void experimentsQuery.refetch();
+    trackEvent("ButtonClick", {
+      label: "Refetch Experiments",
     });
   };
 
@@ -82,6 +106,7 @@ const Home: NextPage = () => {
                 onClick={() => handleOptionPress(option.title)}
               />
             ))}
+          {/* <ScrollBar orientation="horizontal" className="mt-2" /> */}
         </section>
 
         <section className="mt-10 flex h-full flex-col">
@@ -102,13 +127,7 @@ const Home: NextPage = () => {
                   <SelectItem
                     key={index}
                     value={option.title}
-                    onClick={() => {
-                      setSelection(option.title);
-                      trackEvent("ButtonClick", {
-                        value: option.title,
-                        label: "Filter Experiments",
-                      });
-                    }}
+                    onClick={() => handleFilterSelection(option.title)}
                   >
                     {option.title}
                   </SelectItem>
@@ -134,7 +153,7 @@ const Home: NextPage = () => {
                     icon={FileWarningIcon}
                     description="We're having trouble loading your experiments. Please try again later."
                     btnText="retry"
-                    onClick={() => void experimentsQuery.refetch()}
+                    onClick={handleRefetch}
                   />
                 ),
                 Empty: () => (
@@ -171,13 +190,7 @@ const Home: NextPage = () => {
           <Separator className="mb-8" />
           <CreateExperimentModal
             category={selectedOption as Category}
-            onClose={() => {
-              setShowSidebar(false);
-              setSelectedOption(undefined);
-              trackEvent("ButtonClick", {
-                label: "Close Create Experiment Modal",
-              });
-            }}
+            onClose={handleOnClose}
           />
         </SheetContent>
       </Sheet>

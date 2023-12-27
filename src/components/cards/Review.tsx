@@ -32,7 +32,6 @@ interface IReviewCardProps {
 
 const ReviewCard = (props: IReviewCardProps) => {
   const { toast } = useToast();
-  const [askAi, setAskAi] = useState(false);
 
   const form = useForm<LeaveReview>({
     resolver: zodResolver(leaveReviewSchema),
@@ -44,7 +43,7 @@ const ReviewCard = (props: IReviewCardProps) => {
 
   const { data: session } = useSession();
 
-  const utils = api.useContext();
+  const utils = api.useUtils();
 
   const leaveReviewMutation = api.experiments.leaveReview.useMutation({
     async onSuccess() {
@@ -52,6 +51,9 @@ const ReviewCard = (props: IReviewCardProps) => {
         title: "Success",
         description: `Your review has been submitted`,
       });
+    },
+    async onSettled() {
+      form.reset();
       await utils.experiments.getOne.refetch();
     },
     onError(error) {
@@ -67,39 +69,11 @@ const ReviewCard = (props: IReviewCardProps) => {
 
   async function onSubmit(values: LeaveReview) {
     try {
-      await leaveReviewMutation.mutateAsync({
-        ...values,
-        experimentId: props.experiment.id,
-      });
+      await leaveReviewMutation.mutateAsync(values);
     } catch (error) {
       console.error(error);
     }
   }
-
-  const {
-    data: result,
-    isLoading: asIsThinking,
-    isError: isAiError,
-    refetch: aiRefetch,
-  } = api.experiments.correctGrammar.useQuery(
-    {
-      comment: form.watch("comment"),
-    },
-    { enabled: askAi }
-  );
-
-  const handleAskAi = () => {
-    setAskAi(true);
-    void aiRefetch();
-  };
-
-  useEffect(() => {
-    if (result && !asIsThinking && askAi) {
-      form.resetField("comment");
-      form.setValue("comment", result as string);
-      setAskAi(false);
-    }
-  }, [result, form]);
 
   return (
     <>
@@ -145,24 +119,6 @@ const ReviewCard = (props: IReviewCardProps) => {
                     <FormItem>
                       <div className="flex items-center justify-between">
                         <FormLabel>Comment</FormLabel>
-                        {/* <Button
-                          variant="link"
-                          size="sm"
-                          disabled={asIsThinking && askAi && field.value === ""}
-                          onClick={handleAskAi}
-                          className="disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {asIsThinking && askAi ? (
-                            <Loader2Icon className="h-4 w-4 animate-spin" />
-                          ) : isAiError ? (
-                            <RefreshCcwIcon
-                              onClick={handleAskAi}
-                              className="h-4 w-4"
-                            />
-                          ) : (
-                            <BotIcon className="h-4 w-4" />
-                          )}
-                        </Button> */}
                       </div>
                       <FormControl>
                         <Textarea

@@ -6,9 +6,11 @@ import { ChefHatIcon } from "lucide-react";
 import { UserAuthForm } from "@/components/user/AuthForm";
 
 import { getServerAuthSession } from "@/server/auth";
+import { useMixpanel } from "@/lib/mixpanel";
 
 const SignIn: NextPage = () => {
-  
+  const { trackEvent } = useMixpanel();
+
   return (
     <>
       <div className="md:hidden">
@@ -43,27 +45,34 @@ const SignIn: NextPage = () => {
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl font-semibold tracking-tight">
-                signin to your account
+                Sign in to your account
               </h1>
-              <p className="text-sm text-muted-foreground">
-                Dont have an account?{" "}
-              </p>
             </div>
             <UserAuthForm />
             <p className="px-8 text-center text-sm text-muted-foreground">
-              By signing up, you agree to our{" "}
+              By signing in, you agree to our{" "}
               <Link
-                href="/terms"
+                href="/terms-of-service"
                 className="underline underline-offset-4 hover:text-primary"
+                onClick={() =>
+                  trackEvent("ButtonClick", {
+                    label: "Terms of Service",
+                  })
+                }
               >
-                terms
+                Terms of Service
               </Link>{" "}
               and
               <Link
-                href="/privacy"
+                href="/privacy-policy"
                 className="underline underline-offset-4 hover:text-primary"
+                onClick={() =>
+                  trackEvent("ButtonClick", {
+                    label: "Privacy Policy",
+                  })
+                }
               >
-                service
+                Privacy Policy
               </Link>
               .
             </p>

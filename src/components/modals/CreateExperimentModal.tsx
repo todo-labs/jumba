@@ -85,6 +85,8 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
           </Button>
         ),
       });
+    },
+    async onSettled() {
       await utils.experiments.getAll.invalidate();
       form.reset();
     },
@@ -109,6 +111,13 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
       console.error(error);
     }
   }
+
+  const handleSignIn = () => {
+    signIn();
+    trackEvent("ButtonClick", {
+      label: "Sign In",
+    });
+  };
 
   return (
     <Form {...form}>
@@ -258,7 +267,7 @@ const CreateExperimentModal = (props: ICreateExperimentModalProps) => {
             Submit
           </Button>
         ) : (
-          <Button className="w-full" onClick={() => void signIn()}>
+          <Button className="w-full" onClick={handleSignIn}>
             <LockIcon className="mr-2" />
             Login
           </Button>

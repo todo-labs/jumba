@@ -6,9 +6,11 @@ import { getServerAuthSession } from "@/server/auth";
 import { Button } from "@/components/ui/Button";
 import { signIn } from "next-auth/react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useMixpanel } from "@/lib/mixpanel";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);
+
   if (session) {
     return {
       redirect: {
@@ -26,6 +28,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const VerifyRequestPage: NextPage = () => {
   const router = useRouter();
   const [email, _] = useLocalStorage<string>("email", "");
+  const { trackEvent } = useMixpanel();
+
+  const handleResend = () => {
+    signIn("email", { email });
+    trackEvent("ButtonClick", {
+      label: "Resend Verification Email",
+    });
+  };
+
+  const handleGoBack = () => {
+    router.back();
+    trackEvent("ButtonClick", {
+      label: "Go Back",
+    });
+  };
 
   return (
     <section className="body-font mx-auto flex h-screen flex-col items-center justify-center space-y-4 px-5 py-24">
@@ -39,8 +56,8 @@ const VerifyRequestPage: NextPage = () => {
           link to complete your account setup.
         </p>
         <div className="flex justify-center space-x-5">
-          <Button onClick={() => signIn("email", { email })}>Resend</Button>
-          <Button onClick={() => router.back()} variant="secondary">
+          <Button onClick={handleResend}>Resend</Button>
+          <Button onClick={handleGoBack} variant="secondary">
             Go Back
           </Button>
         </div>
